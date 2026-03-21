@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>不定项选择练习</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background-color: #f5f7fa; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); padding: 30px; }
+        h1 { text-align: center; color: #8e44ad; margin-bottom: 10px; }
+        .description { text-align: center; color: #7f8c8d; margin-bottom: 30px; }
+        .question { margin-bottom: 25px; padding: 20px; background: #f8fafc; border-radius: 8px; border-left: 4px solid #8e44ad; }
+        .question-number { font-weight: bold; color: #8e44ad; margin-bottom: 10px; }
+        .warning { background: #fff3cd; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 0.9rem; color: #856404; }
+        .options { margin-top: 10px; }
+        .option-item { display: flex; align-items: center; margin-bottom: 10px; padding: 12px; background: white; border-radius: 5px; cursor: pointer; transition: all 0.2s; border: 2px solid transparent; }
+        .option-item:hover { background: #f3e5f5; }
+        .option-item.selected { background: #e8daef; border-color: #8e44ad; }
+        .option-item input[type="checkbox"] { margin-right: 10px; width: 18px; height: 18px; }
+        .btn { background: #8e44ad; color: white; border: none; padding: 12px 25px; font-size: 1rem; border-radius: 5px; cursor: pointer; transition: background 0.3s; width: 100%; font-weight: 600; margin-top: 20px; }
+        .btn:hover { background: #732d91; }
+        .message { margin-top: 20px; padding: 15px; border-radius: 5px; text-align: center; display: none; }
+        .message.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
+        .message.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+        .loading { background-color: #fff3cd; color: #856404; padding: 15px; border-radius: 5px; text-align: center; display: none; }
+        footer { text-align: center; margin-top: 30px; color: #718096; font-size: 0.9rem; }
+        hr { border: none; border-top: 1px solid #e2e8f0; margin: 20px 0; }
+        .score-display { font-size: 1.5rem; color: #27ae60; text-align: center; margin: 20px 0; padding: 15px; background: #d4edda; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 不定项选择练习</h1>
+        <p class="description">包含 5 道题目，正确答案个数不确定（可能 1-4 个），请仔细思考</p>
+        
+        <form id="quizForm">
+            <input type="hidden" id="teacher" value="{{teacher}}">
+            <input type="hidden" id="activityId" value="{{task}}">
+            
+            <div style="margin-bottom:20px;padding:15px;background:#e8f4fd;border-radius:8px;border-left:4px solid #3498db;">
+                <strong>⚠️ 重要提示：</strong>不定项选择题的答案可能是 1 个、2 个或多个选项，请根据知识判断，不要多选也不要漏选！
+            </div>
+            
+            <div id="questions"></div>
+            <button type="submit" class="btn">✅ 提交答案</button>
+        </form>
+        
+        <div id="loading" class="loading">正在提交...</div>
+        <div id="message" class="message"></div>
+        <div id="scoreDisplay" class="score-display" style="display:none;"></div>
+        
+        <footer><hr><p>© 2026 QuickForge 课堂教学系统</p></footer>
+    </div>
+    <script>
+        const questions = [
+            { 
+                id: 1, 
+                text: "下列哪些是中国的直辖市？", 
+                options: ["北京", "上海", "广州", "天津"], 
+                correct: [0,1,3] 
+            },
+            { 
+                id: 2, 
+                text: "以下哪些属于光的反射现象？", 
+                options: ["平面镜成像", "小孔成像", "水中倒影", "海市蜃楼"], 
+                correct: [0,2] 
+            },
+            { 
+                id: 3, 
+                text: "生物进化的主要证据包括？", 
+                options: ["化石记录", "比较解剖学", "分子生物学", "胚胎发育"], 
+                correct: [0,1,2,3] 
+            },
+            { 
+                id: 4, 
+                text: "下列哪些是人类的基本权利？", 
+                options: ["生存权", "发展权", "选举权", "受教育权"], 
+                correct: [0,1,3] 
+            },
+            { 
+                id: 5, 
+                text: "地球的外部圈层包括？", 
+                options: ["大气圈", "水圈", "岩石圈", "生物圈"], 
+                correct: [0,1,3] 
+            }
+        ];
+        
+        const teacher = document.getElementById('teacher').value;
+        const activityId = document.getElementById('activityId').value;
+
+        function renderQuestions() {
+            document.getElementById('questions').innerHTML = questions.map((q, idx) => 
+                `<div class="question">
+                    <div class="question-number">${idx+1}. ${q.text}</div>
+                    <div class="options">
+                        ${q.options.map((opt, optIdx) => 
+                            `<label class="option-item" onclick="toggleOption(this, '${q.id}', ${optIdx})">
+                                <input type="checkbox" name="q${q.id}" value="${optIdx}" onchange="updateLabel(this)">
+                                <span>${String.fromCharCode(65+optIdx)}) ${opt}</span>
+                            </label>`).join('')}
+                    </div>
+                </div>`
+            ).join('');
+        }
+
+        window.toggleOption = function(label, qid, val) {
+            const checkbox = label.querySelector('input');
+            checkbox.checked = !checkbox.checked;
+            updateLabel(checkbox);
+        };
+
+        window.updateLabel = function(checkbox) {
+            const label = checkbox.closest('.option-item');
+            if (checkbox.checked) {
+                label.classList.add('selected');
+            } else {
+                label.classList.remove('selected');
+            }
+        };
+
+        document.getElementById('quizForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const loadingDiv = document.getElementById('loading');
+            const messageDiv = document.getElementById('message');
+            const scoreDiv = document.getElementById('scoreDisplay');
+            
+            loadingDiv.style.display = 'block';
+            messageDiv.style.display = 'none';
+            scoreDiv.style.display = 'none';
+
+            try {
+                const answers = [];
+                questions.forEach(q => {
+                    const selected = Array.from(document.querySelectorAll(`input[name="q${q.id}"]:checked`)).map(cb => parseInt(cb.value));
+                    answers.push(selected.length ? selected : null);
+                });
+
+                if (answers.includes(null)) {
+                    loadingDiv.style.display = 'none';
+                    messageDiv.textContent = '⚠️ 请回答所有题目！';
+                    messageDiv.className = 'message error';
+                    messageDiv.style.display = 'block';
+                    return;
+                }
+
+                let score = 0;
+                answers.forEach((ans, idx) => {
+                    const correct = questions[idx].correct.sort().toString();
+                    const userAns = ans.sort().toString();
+                    if (correct === userAns) score++;
+                });
+                
+                const finalScore = Math.round((score / questions.length) * 100);
+
+                const formData = new FormData();
+                formData.append('teacher', teacher);
+                formData.append('activity_id', activityId);
+                formData.append('student_id', window.studentId || 'S001');
+                formData.append('data', JSON.stringify({
+                    answers: answers,
+                    score: score,
+                    total: questions.length,
+                    percentage: finalScore,
+                    client_timestamp: new Date().toISOString()
+                }));
+
+                const response = await fetch('/api/submit', { method: 'POST', body: formData });
+                const result = await response.json();
+                loadingDiv.style.display = 'none';
+
+                if (response.ok && result.success) {
+                    scoreDiv.textContent = `🎉 你的得分：${finalScore}分 (${score}/${questions.length} 完全正确)`;
+                    scoreDiv.style.display = 'block';
+                    messageDiv.textContent = '✅ 答案已提交！';
+                    messageDiv.className = 'message success';
+                    messageDiv.style.display = 'block';
+                    document.getElementById('quizForm').reset();
+                } else {
+                    messageDiv.textContent = '❌ 提交失败：' + (result.message || result.error || '未知错误');
+                    messageDiv.className = 'message error';
+                    messageDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('提交错误:', error);
+                loadingDiv.style.display = 'none';
+                messageDiv.textContent = '❌ 网络错误：' + error.message;
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+            }
+        });
+
+        renderQuestions();
+    </script>
+</body>
+</html>

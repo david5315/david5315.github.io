@@ -1,0 +1,8 @@
+{
+  "public": true,
+  "allowOtherTeachers": false,
+  "allowPrivateStudents": true,
+  "allowGlobalStudents": false,
+  "templateType": "34",
+  "templateId": "data_34_whiteboard"
+}

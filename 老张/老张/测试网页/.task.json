@@ -1,0 +1,9 @@
+{
+  "name": "测试网站",
+  "createdAt": "2026-03-06T21:08:57.465465",
+  "public": true,
+  "allowOtherTeachers": true,
+  "allowPrivateStudents": true,
+  "allowGlobalStudents": true,
+  "creator": "admin"
+}

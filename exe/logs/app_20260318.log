@@ -1,0 +1,751 @@
+🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - teach (教师) - 学科: 语文✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - teach (教师) - 学科: 语文✅ 使用硬编码的 AI 配置🔝 school 模式：已将 teach 用户设置为管理员🏫 校园版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80⚠️ 自定义字体验证码生成失败，使用备用方法: 'ImageDraw' object has no attribute 'textsize'🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - teach (管理员) - 学科: 语文✅ 使用硬编码的 AI 配置🏫 校园版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (管理员) - 学科: 语文  - njzx1 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置🏫 校园版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80✅ 文本模型已切换为: qwen3.5-flash📂 加载教师数据: QFS001, 目录: C:\Users\Administrator\Desktop\测试\data\teacher_QFS001✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 QFS001 的数据到内存🔐 Web登录尝试: username=teach, ip=192.168.22.28📂 加载教师数据: teach, 目录: C:\Users\Administrator\Desktop\测试\data\teacher_teach✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 teach 的数据到内存✅ Web登录成功: teach (角色: admin)🔐 Web登录尝试: username=teach, ip=192.168.22.28✅ Web登录成功: teach (角色: admin)🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (管理员) - 学科: 语文  - njzx1 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置🏫 校园版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (管理员) - 学科: 语文  - njzx1 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置🏫 校园版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)端口 80 已被占用，请选择其他端口用户取消了操作，程序将退出🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (管理员) - 学科: 语文  - njzx1 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置🏫 校园版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80✅ 文本模型已切换为: qwen3.5-flash📂 加载教师数据: QFS001, 目录: C:\Users\Administrator\Desktop\测试\data\teacher_QFS001✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 QFS001 的数据到内存🔐 Web登录尝试: username=teach, ip=192.168.22.28📂 加载教师数据: teach, 目录: C:\Users\Administrator\Desktop\测试\data\teacher_teach✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 teach 的数据到内存✅ Web登录成功: teach (角色: admin)🔐 Web登录尝试: username=QFS001, ip=127.0.0.1🔐 Web登录尝试: username=QFS001, ip=127.0.0.1🔐 Web登录尝试: username=QFS001, ip=127.0.0.1🔐 Web登录尝试: username=QFS001, ip=127.0.0.1🔐 Web登录尝试: username=QFS001, ip=127.0.0.1🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (管理员) - 学科: 语文  - njzx1 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置🏫 校园版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (管理员) - 学科: 语文  - njzx1 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置🏫 校园版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80✅ 文本模型已切换为: qwen3.5-flash📂 加载教师数据: QFS001, 目录: C:\Users\Administrator\Desktop\测试\data\teacher_QFS001✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 QFS001 的数据到内存🔐 Web登录尝试: username=teach, ip=192.168.22.28📂 加载教师数据: teach, 目录: C:\Users\Administrator\Desktop\测试\data\teacher_teach✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 teach 的数据到内存✅ Web登录成功: teach (角色: admin)🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (管理员) - 学科: 语文  - njzx1 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔐 Web登录尝试: username=teach, ip=192.168.22.28📂 加载教师数据: teach, 目录: C:\Users\Administrator\Desktop\测试\data\teacher_teach✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 teach 的数据到内存✅ Web登录成功: teach (角色: admin)🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (教师) - 学科: 语文  - njzx1 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔐 Web登录尝试: username=teach, ip=192.168.22.28📂 加载教师数据: teach, 目录: C:\Users\Administrator\Desktop\测试\data\teacher_teach✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 teach 的数据到内存✅ Web登录成功: teach (角色: teacher)🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (教师) - 学科: 语文  - njzx1 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔐 Web登录尝试: username=teach, ip=192.168.22.28📂 加载教师数据: teach, 目录: D:\测试\exe\data\teacher_teach✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 teach 的数据到内存✅ Web登录成功: teach (角色: teacher)
+=== 进入 /ai/generate-page ===📥 收到请求: prompt='生成一个英语单词听写页面。包含10个单词的音频（可嵌入MP3或使用文字转语音），每个单词播放后，学生...', target_folder='模板网页', file_name='英语单词听写_20260318_201616.html'📎 参考文件: []🔑 配额检查: can_use=True, msg=, using_master=False📁 目标目录: D:\测试\exe\templates\teach\模板网页📄 参考文件内容长度: 5 字符📄 模板内容 (前200字符): '你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。\n\n目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。\n\n数据中台接口规范\n\n1. 提交接口\nURL：/api/submit\n方法：POST\n支持 Con'...
+============================================================【DEBUG】完整提示词内容：你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Content-Type：application/json 或 multipart/form-data（用于文件上传）
+必填字段（所有请求均需包含）：
+  - teacher：教师用户名（例如：teach ），必须提供。
+  - activity_id：活动标识（例如 course_001），必须提供。也可使用字段名 task 作为替代，但建议统一使用 activity_id。
+  - student_id：学生标识，可以是学号或匿名ID。
+其他自定义字段（如题目答案、操作记录等）可任意添加。
+
+文件上传方式（如果需要）
+使用 FormData，将上述必要字段作为独立的表单字段添加，其他数据可放入一个名为 data 的 JSON 字符串中。文件字段名固定为 files，可重复添加多个文件。
+示例（JavaScript）：
+const formData = new FormData();
+formData.append('teacher', 'teach ');
+formData.append('activity_id', '模板网页');
+formData.append('student_id', 'S001');
+formData.append('data', JSON.stringify({ answer1: 'A', memo: '备注' }));
+for (let file of fileInput.files) {
+  formData.append('files', file);
+}
+await fetch('/api/submit', { method: 'POST', body: formData });
+
+纯 JSON 提交（无文件）：
+await fetch('/api/submit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    teacher: 'teach ',
+    activity_id: '模板网页',
+    student_id: 'S001',
+    answer1: 'A',
+    memo: '备注'
+  })
+});
+
+2. 查询接口
+URL：/api/submissions
+方法：GET
+参数（通过 query string 传递）：
+  - teacher（必选）：教师用户名。
+  - activity_id（可选）：筛选指定活动。
+  - student_id（可选）：筛选指定学生。
+  - limit（可选）：返回条数限制（默认100，最大500）。
+  - offset（可选）：分页偏移量（默认0）。
+响应示例（重要：数据实际存储在 "submissions" 字段中）：
+{
+  "success": true,
+  "total": 200,
+  "offset": 0,
+  "limit": 100,
+  "submissions": [              // ← 记录数组在此字段内
+    {
+      "teacher": "teach ",
+      "activity_id": "'模板网页",
+      "student_id": "S001",
+      "answer1": "A",
+      "memo": "备注",
+      "_server_timestamp": "2025-03-21T14:30:00",
+      "_files": [ /* 文件列表，若无则为空数组 */ ],
+      "_meta": { "filename": "..." }
+    }
+  ]
+}
+解析时，应先检查 response.ok 和 data.success，然后从 data.submissions 中获取数组。
+
+3. 文件访问
+上传的文件可通过 /templates/teach/uploads/<filename> 直接访问。在 API 返回的 _files 字段中会包含完整的 url，可直接使用。
+
+生成要求：
+- 页面应美观、响应式，使用现代化 CSS（如 Flexbox、Grid），可引入 Tailwind CSS 或自定义样式。
+- 使用原生 JavaScript（ES6+）实现交互和 API 调用，无需额外框架。
+- 根据用户需求合理选择调用上述 API 接口，并处理成功/失败提示。
+- 如果页面包含表单，必须包含隐藏字段 teacher 和 task（值为 teach 和 模板网页，由后端替换），以及 studentId（可由登录填充或用户输入）。
+- 所有 API 调用应使用 fetch，并处理好 loading 状态和错误反馈。
+- **特别注意**：在调用查询接口 `/api/submissions` 获取记录列表时，必须从响应的 `data.submissions` 中提取数组（而非直接假设 data 本身是数组）。示例：
+  ```javascript
+  const response = await fetch(`/api/submissions?teacher=...`);
+  const data = await response.json();
+  if (data.success && Array.isArray(data.submissions)) {
+    const records = data.submissions;
+    // 渲染表格
+  } else {
+    console.error('获取失败', data.message);
+  }
+
+直接返回完整的 HTML 代码，不要包含任何解释或其他文本。
+
+用户需求：
+生成一个英语单词听写页面。包含10个单词的音频（可嵌入MP3或使用文字转语音），每个单词播放后，学生输入拼写。完成后点击提交，将答案（单词拼写列表）通过 /api/submit 提交（包含 teacher=teach, activity_id=模板网页, student_id）。页面需有播放按钮、输入框和提交按钮。可使用Font Awesome图标。
+ 
+如果以下提供了附件内容，则附件可能包含：参考网页、数据文件、图片、文档等。请务必仔细阅读附件内容，并根据附件中的信息，根据用户的需求进行数据分析、或者修改、或者生成网页：
+
+ 若附件为 HTML 代码，请将其作为参考样式或功能基础，必要时可复用或改造。
+- 若附件为 JSON 数据，请基于数据生成相应的展示图表、表格或分析界面。
+- 若附件为图片或其他文件，可在页面中引用或展示（使用提供的 URL）。
+- 若附件为文本或文档，请提取关键信息并融入页面设计或功能中。
+
+生成时，需将附件内容与用户需求紧密结合，使最终网页既能满足用户需求，又能体现附件中的已有信息或设计意图。
+
+附件内容如下：
+无参考文件============================================================
+🤖 最终发送给 AI 的提示词（前200字符）: 你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Con...🤖 模型配置: model=qwen3.5-flash, base_url=https://dashscope.aliyuncs.com/compatible-mode/v1--- 进入 call_ai_model_for_html ---📤 发送请求至: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions📦 请求体摘要: {"model": "qwen3.5-flash", "messages": [{"role": "system", "content": "你是一个专业的网页生成助手，只返回纯HTML代码，不要包含任何额外解释。"}, {"role": "user", "content": "你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript...📡 AI API响应状态码: 200✅ AI API调用成功📊 token 使用: {'prompt_tokens': 1386, 'completion_tokens': 3150, 'total_tokens': 4536, 'completion_tokens_details': {'reasoning_tokens': 598, 'text_tokens': 3150}, 'prompt_tokens_details': {'text_tokens': 1386}}💬 AI 原始响应长度: 11018 字符✅ 提取后 HTML 长度: 11006 字符✅ 网页已保存至: D:\测试\exe\templates\teach\模板网页\20260318_201616.html
+=== 进入 /ai/generate-page ===📥 收到请求: prompt='生成一个物理实验数据记录页面。模拟“探究弹簧伸长与拉力的关系”实验。页面展示一个可拖动的滑块代表拉力...', target_folder='模板网页', file_name='物理实验数据记录'📎 参考文件: []🔑 配额检查: can_use=True, msg=, using_master=False📁 目标目录: D:\测试\exe\templates\teach\模板网页📄 参考文件内容长度: 5 字符📄 模板内容 (前200字符): '你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。\n\n目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。\n\n数据中台接口规范\n\n1. 提交接口\nURL：/api/submit\n方法：POST\n支持 Con'...
+============================================================【DEBUG】完整提示词内容：你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Content-Type：application/json 或 multipart/form-data（用于文件上传）
+必填字段（所有请求均需包含）：
+  - teacher：教师用户名（例如：teach ），必须提供。
+  - activity_id：活动标识（例如 course_001），必须提供。也可使用字段名 task 作为替代，但建议统一使用 activity_id。
+  - student_id：学生标识，可以是学号或匿名ID。
+其他自定义字段（如题目答案、操作记录等）可任意添加。
+
+文件上传方式（如果需要）
+使用 FormData，将上述必要字段作为独立的表单字段添加，其他数据可放入一个名为 data 的 JSON 字符串中。文件字段名固定为 files，可重复添加多个文件。
+示例（JavaScript）：
+const formData = new FormData();
+formData.append('teacher', 'teach ');
+formData.append('activity_id', '模板网页');
+formData.append('student_id', 'S001');
+formData.append('data', JSON.stringify({ answer1: 'A', memo: '备注' }));
+for (let file of fileInput.files) {
+  formData.append('files', file);
+}
+await fetch('/api/submit', { method: 'POST', body: formData });
+
+纯 JSON 提交（无文件）：
+await fetch('/api/submit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    teacher: 'teach ',
+    activity_id: '模板网页',
+    student_id: 'S001',
+    answer1: 'A',
+    memo: '备注'
+  })
+});
+
+2. 查询接口
+URL：/api/submissions
+方法：GET
+参数（通过 query string 传递）：
+  - teacher（必选）：教师用户名。
+  - activity_id（可选）：筛选指定活动。
+  - student_id（可选）：筛选指定学生。
+  - limit（可选）：返回条数限制（默认100，最大500）。
+  - offset（可选）：分页偏移量（默认0）。
+响应示例（重要：数据实际存储在 "submissions" 字段中）：
+{
+  "success": true,
+  "total": 200,
+  "offset": 0,
+  "limit": 100,
+  "submissions": [              // ← 记录数组在此字段内
+    {
+      "teacher": "teach ",
+      "activity_id": "'模板网页",
+      "student_id": "S001",
+      "answer1": "A",
+      "memo": "备注",
+      "_server_timestamp": "2025-03-21T14:30:00",
+      "_files": [ /* 文件列表，若无则为空数组 */ ],
+      "_meta": { "filename": "..." }
+    }
+  ]
+}
+解析时，应先检查 response.ok 和 data.success，然后从 data.submissions 中获取数组。
+
+3. 文件访问
+上传的文件可通过 /templates/teach/uploads/<filename> 直接访问。在 API 返回的 _files 字段中会包含完整的 url，可直接使用。
+
+生成要求：
+- 页面应美观、响应式，使用现代化 CSS（如 Flexbox、Grid），可引入 Tailwind CSS 或自定义样式。
+- 使用原生 JavaScript（ES6+）实现交互和 API 调用，无需额外框架。
+- 根据用户需求合理选择调用上述 API 接口，并处理成功/失败提示。
+- 如果页面包含表单，必须包含隐藏字段 teacher 和 task（值为 teach 和 模板网页，由后端替换），以及 studentId（可由登录填充或用户输入）。
+- 所有 API 调用应使用 fetch，并处理好 loading 状态和错误反馈。
+- **特别注意**：在调用查询接口 `/api/submissions` 获取记录列表时，必须从响应的 `data.submissions` 中提取数组（而非直接假设 data 本身是数组）。示例：
+  ```javascript
+  const response = await fetch(`/api/submissions?teacher=...`);
+  const data = await response.json();
+  if (data.success && Array.isArray(data.submissions)) {
+    const records = data.submissions;
+    // 渲染表格
+  } else {
+    console.error('获取失败', data.message);
+  }
+
+直接返回完整的 HTML 代码，不要包含任何解释或其他文本。
+
+用户需求：
+生成一个物理实验数据记录页面。模拟“探究弹簧伸长与拉力的关系”实验。页面展示一个可拖动的滑块代表拉力（0-5N），一个动态的弹簧图示，实时显示伸长量。学生记录5组数据后，点击提交，将数据数组通过 /api/submit 发送（包含 teacher=teach, activity_id=模板网页, student_id, data）。页面需有重置按钮。
+ 
+如果以下提供了附件内容，则附件可能包含：参考网页、数据文件、图片、文档等。请务必仔细阅读附件内容，并根据附件中的信息，根据用户的需求进行数据分析、或者修改、或者生成网页：
+
+ 若附件为 HTML 代码，请将其作为参考样式或功能基础，必要时可复用或改造。
+- 若附件为 JSON 数据，请基于数据生成相应的展示图表、表格或分析界面。
+- 若附件为图片或其他文件，可在页面中引用或展示（使用提供的 URL）。
+- 若附件为文本或文档，请提取关键信息并融入页面设计或功能中。
+
+生成时，需将附件内容与用户需求紧密结合，使最终网页既能满足用户需求，又能体现附件中的已有信息或设计意图。
+
+附件内容如下：
+无参考文件============================================================
+🤖 最终发送给 AI 的提示词（前200字符）: 你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Con...🤖 模型配置: model=qwen3.5-flash, base_url=https://dashscope.aliyuncs.com/compatible-mode/v1--- 进入 call_ai_model_for_html ---📤 发送请求至: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions📦 请求体摘要: {"model": "qwen3.5-flash", "messages": [{"role": "system", "content": "你是一个专业的网页生成助手，只返回纯HTML代码，不要包含任何额外解释。"}, {"role": "user", "content": "你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript...📡 AI API响应状态码: 200✅ AI API调用成功📊 token 使用: {'prompt_tokens': 1389, 'completion_tokens': 5387, 'total_tokens': 6776, 'completion_tokens_details': {'reasoning_tokens': 1383, 'text_tokens': 5387}, 'prompt_tokens_details': {'text_tokens': 1389}}💬 AI 原始响应长度: 15320 字符✅ 提取后 HTML 长度: 15320 字符✅ 网页已保存至: D:\测试\exe\templates\teach\模板网页\.html🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (教师) - 学科: 语文  - njzx1 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔐 Web登录尝试: username=13815120911, ip=192.168.22.28📂 加载教师数据: 13815120911, 目录: D:\测试\exe\data\teacher_13815120911✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 13815120911 的数据到内存✅ Web登录成功: 13815120911 (角色: admin)🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (教师) - 学科: 语文  - njzx1 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔐 Web登录尝试: username=13815120911, ip=192.168.22.28📂 加载教师数据: 13815120911, 目录: D:\测试\exe\data\teacher_13815120911✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 13815120911 的数据到内存✅ Web登录成功: 13815120911 (角色: admin)
+=== 进入 /ai/generate-page ===📥 收到请求: prompt='生成一个课堂签到页面。包含一个输入框用于输入学号，一个按钮“签到”。点击后通过 /api/submi...', target_folder='模板网页', file_name='课堂签到'📎 参考文件: []🔑 配额检查: can_use=True, msg=, using_master=False📁 目标目录: D:\测试\exe\templates\13815120911\模板网页📄 参考文件内容长度: 5 字符📄 模板内容 (前200字符): '你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。\n\n目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。\n\n数据中台接口规范\n\n1. 提交接口\nURL：/api/submit\n方法：POST\n支持 Con'...
+============================================================【DEBUG】完整提示词内容：你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Content-Type：application/json 或 multipart/form-data（用于文件上传）
+必填字段（所有请求均需包含）：
+  - teacher：教师用户名（例如：13815120911 ），必须提供。
+  - activity_id：活动标识（例如 course_001），必须提供。也可使用字段名 task 作为替代，但建议统一使用 activity_id。
+  - student_id：学生标识，可以是学号或匿名ID。
+其他自定义字段（如题目答案、操作记录等）可任意添加。
+
+文件上传方式（如果需要）
+使用 FormData，将上述必要字段作为独立的表单字段添加，其他数据可放入一个名为 data 的 JSON 字符串中。文件字段名固定为 files，可重复添加多个文件。
+示例（JavaScript）：
+const formData = new FormData();
+formData.append('teacher', '13815120911 ');
+formData.append('activity_id', '模板网页');
+formData.append('student_id', 'S001');
+formData.append('data', JSON.stringify({ answer1: 'A', memo: '备注' }));
+for (let file of fileInput.files) {
+  formData.append('files', file);
+}
+await fetch('/api/submit', { method: 'POST', body: formData });
+
+纯 JSON 提交（无文件）：
+await fetch('/api/submit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    teacher: '13815120911 ',
+    activity_id: '模板网页',
+    student_id: 'S001',
+    answer1: 'A',
+    memo: '备注'
+  })
+});
+
+2. 查询接口
+URL：/api/submissions
+方法：GET
+参数（通过 query string 传递）：
+  - teacher（必选）：教师用户名。
+  - activity_id（可选）：筛选指定活动。
+  - student_id（可选）：筛选指定学生。
+  - limit（可选）：返回条数限制（默认100，最大500）。
+  - offset（可选）：分页偏移量（默认0）。
+响应示例（重要：数据实际存储在 "submissions" 字段中）：
+{
+  "success": true,
+  "total": 200,
+  "offset": 0,
+  "limit": 100,
+  "submissions": [              // ← 记录数组在此字段内
+    {
+      "teacher": "13815120911 ",
+      "activity_id": "'模板网页",
+      "student_id": "S001",
+      "answer1": "A",
+      "memo": "备注",
+      "_server_timestamp": "2025-03-21T14:30:00",
+      "_files": [ /* 文件列表，若无则为空数组 */ ],
+      "_meta": { "filename": "..." }
+    }
+  ]
+}
+解析时，应先检查 response.ok 和 data.success，然后从 data.submissions 中获取数组。
+
+3. 文件访问
+上传的文件可通过 /templates/13815120911/uploads/<filename> 直接访问。在 API 返回的 _files 字段中会包含完整的 url，可直接使用。
+
+生成要求：
+- 页面应美观、响应式，使用现代化 CSS（如 Flexbox、Grid），可引入 Tailwind CSS 或自定义样式。
+- 使用原生 JavaScript（ES6+）实现交互和 API 调用，无需额外框架。
+- 根据用户需求合理选择调用上述 API 接口，并处理成功/失败提示。
+- 如果页面包含表单，必须包含隐藏字段 teacher 和 task（值为 13815120911 和 模板网页，由后端替换），以及 studentId（可由登录填充或用户输入）。
+- 所有 API 调用应使用 fetch，并处理好 loading 状态和错误反馈。
+- **特别注意**：在调用查询接口 `/api/submissions` 获取记录列表时，必须从响应的 `data.submissions` 中提取数组（而非直接假设 data 本身是数组）。示例：
+  ```javascript
+  const response = await fetch(`/api/submissions?teacher=...`);
+  const data = await response.json();
+  if (data.success && Array.isArray(data.submissions)) {
+    const records = data.submissions;
+    // 渲染表格
+  } else {
+    console.error('获取失败', data.message);
+  }
+
+直接返回完整的 HTML 代码，不要包含任何解释或其他文本。
+
+用户需求：
+生成一个课堂签到页面。包含一个输入框用于输入学号，一个按钮“签到”。点击后通过 /api/submit 发送签到信息（包含 teacher=13815120911, activity_id=模板网页, student_id, timestamp）。页面需显示当前签到人数（通过轮询 /api/submissions?activity_id=模板网页 获取并计数）。
+ 
+如果以下提供了附件内容，则附件可能包含：参考网页、数据文件、图片、文档等。请务必仔细阅读附件内容，并根据附件中的信息，根据用户的需求进行数据分析、或者修改、或者生成网页：
+
+ 若附件为 HTML 代码，请将其作为参考样式或功能基础，必要时可复用或改造。
+- 若附件为 JSON 数据，请基于数据生成相应的展示图表、表格或分析界面。
+- 若附件为图片或其他文件，可在页面中引用或展示（使用提供的 URL）。
+- 若附件为文本或文档，请提取关键信息并融入页面设计或功能中。
+
+生成时，需将附件内容与用户需求紧密结合，使最终网页既能满足用户需求，又能体现附件中的已有信息或设计意图。
+
+附件内容如下：
+无参考文件============================================================
+🤖 最终发送给 AI 的提示词（前200字符）: 你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Con...🤖 模型配置: model=qwen3.5-flash, base_url=https://dashscope.aliyuncs.com/compatible-mode/v1--- 进入 call_ai_model_for_html ---📤 发送请求至: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions📦 请求体摘要: {"model": "qwen3.5-flash", "messages": [{"role": "system", "content": "你是一个专业的网页生成助手，只返回纯HTML代码，不要包含任何额外解释。"}, {"role": "user", "content": "你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript...📡 AI API响应状态码: 200✅ AI API调用成功📊 token 使用: {'prompt_tokens': 1438, 'completion_tokens': 4089, 'total_tokens': 5527, 'completion_tokens_details': {'reasoning_tokens': 1066, 'text_tokens': 4089}, 'prompt_tokens_details': {'text_tokens': 1438}}💬 AI 原始响应长度: 11217 字符✅ 提取后 HTML 长度: 11205 字符✅ 网页已保存至: D:\测试\exe\templates\13815120911\模板网页\.html🔐 Web登录尝试: username=teach, ip=192.168.22.28📂 加载教师数据: teach, 目录: D:\测试\exe\data\teacher_teach✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 teach 的数据到内存✅ Web登录成功: teach (角色: teacher)🔐 Web登录尝试: username=teach, ip=192.168.22.28✅ Web登录成功: teach (角色: teacher)🔐 Web登录尝试: username=13815120911, ip=192.168.22.28✅ Web登录成功: 13815120911 (角色: admin)🔐 Web登录尝试: username=13815120911, ip=192.168.22.28✅ Web登录成功: 13815120911 (角色: admin)🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (教师) - 学科: 语文  - njzx1 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔐 Web登录尝试: username=13815120911, ip=192.168.22.28📂 加载教师数据: 13815120911, 目录: D:\测试\exe\data\teacher_13815120911✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 13815120911 的数据到内存✅ Web登录成功: 13815120911 (角色: admin)
+=== 进入 /ai/generate-page ===📥 收到请求: prompt='生成一个小组互评页面。假设当前小组有4名成员（姓名可预设或从登录获取），每个成员对应一个评分滑条（1...', target_folder='模板网页', file_name='小组互评页面.html'📎 参考文件: []🔑 配额检查: can_use=True, msg=, using_master=False📁 目标目录: D:\测试\exe\templates\13815120911\模板网页📄 参考文件内容长度: 5 字符📄 模板内容 (前200字符): '你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。\n\n目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。\n\n数据中台接口规范\n\n1. 提交接口\nURL：/api/submit\n方法：POST\n支持 Con'...
+============================================================【DEBUG】完整提示词内容：你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Content-Type：application/json 或 multipart/form-data（用于文件上传）
+必填字段（所有请求均需包含）：
+  - teacher：教师用户名（例如：13815120911 ），必须提供。
+  - activity_id：活动标识（例如 course_001），必须提供。也可使用字段名 task 作为替代，但建议统一使用 activity_id。
+  - student_id：学生标识，可以是学号或匿名ID。
+其他自定义字段（如题目答案、操作记录等）可任意添加。
+
+文件上传方式（如果需要）
+使用 FormData，将上述必要字段作为独立的表单字段添加，其他数据可放入一个名为 data 的 JSON 字符串中。文件字段名固定为 files，可重复添加多个文件。
+示例（JavaScript）：
+const formData = new FormData();
+formData.append('teacher', '13815120911 ');
+formData.append('activity_id', '模板网页');
+formData.append('student_id', 'S001');
+formData.append('data', JSON.stringify({ answer1: 'A', memo: '备注' }));
+for (let file of fileInput.files) {
+  formData.append('files', file);
+}
+await fetch('/api/submit', { method: 'POST', body: formData });
+
+纯 JSON 提交（无文件）：
+await fetch('/api/submit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    teacher: '13815120911 ',
+    activity_id: '模板网页',
+    student_id: 'S001',
+    answer1: 'A',
+    memo: '备注'
+  })
+});
+
+2. 查询接口
+URL：/api/submissions
+方法：GET
+参数（通过 query string 传递）：
+  - teacher（必选）：教师用户名。
+  - activity_id（可选）：筛选指定活动。
+  - student_id（可选）：筛选指定学生。
+  - limit（可选）：返回条数限制（默认100，最大500）。
+  - offset（可选）：分页偏移量（默认0）。
+响应示例（重要：数据实际存储在 "submissions" 字段中）：
+{
+  "success": true,
+  "total": 200,
+  "offset": 0,
+  "limit": 100,
+  "submissions": [              // ← 记录数组在此字段内
+    {
+      "teacher": "13815120911 ",
+      "activity_id": "'模板网页",
+      "student_id": "S001",
+      "answer1": "A",
+      "memo": "备注",
+      "_server_timestamp": "2025-03-21T14:30:00",
+      "_files": [ /* 文件列表，若无则为空数组 */ ],
+      "_meta": { "filename": "..." }
+    }
+  ]
+}
+解析时，应先检查 response.ok 和 data.success，然后从 data.submissions 中获取数组。
+
+3. 文件访问
+上传的文件可通过 /templates/13815120911/uploads/<filename> 直接访问。在 API 返回的 _files 字段中会包含完整的 url，可直接使用。
+
+生成要求：
+- 页面应美观、响应式，使用现代化 CSS（如 Flexbox、Grid），可引入 Tailwind CSS 或自定义样式。
+- 使用原生 JavaScript（ES6+）实现交互和 API 调用，无需额外框架。
+- 根据用户需求合理选择调用上述 API 接口，并处理成功/失败提示。
+- 如果页面包含表单，必须包含隐藏字段 teacher 和 task（值为 13815120911 和 模板网页，由后端替换），以及 studentId（可由登录填充或用户输入）。
+- 所有 API 调用应使用 fetch，并处理好 loading 状态和错误反馈。
+- **特别注意**：在调用查询接口 `/api/submissions` 获取记录列表时，必须从响应的 `data.submissions` 中提取数组（而非直接假设 data 本身是数组）。示例：
+  ```javascript
+  const response = await fetch(`/api/submissions?teacher=...`);
+  const data = await response.json();
+  if (data.success && Array.isArray(data.submissions)) {
+    const records = data.submissions;
+    // 渲染表格
+  } else {
+    console.error('获取失败', data.message);
+  }
+
+直接返回完整的 HTML 代码，不要包含任何解释或其他文本。
+
+用户需求：
+生成一个小组互评页面。假设当前小组有4名成员（姓名可预设或从登录获取），每个成员对应一个评分滑条（1-10分）和一个评语输入框。提交时通过 /api/submit 发送评分和评语（包含 teacher=13815120911, activity_id=模板网页, evaluator_id, ratings数组）。
+ 
+如果以下提供了附件内容，则附件可能包含：参考网页、数据文件、图片、文档等。请务必仔细阅读附件内容，并根据附件中的信息，根据用户的需求进行数据分析、或者修改、或者生成网页：
+
+ 若附件为 HTML 代码，请将其作为参考样式或功能基础，必要时可复用或改造。
+- 若附件为 JSON 数据，请基于数据生成相应的展示图表、表格或分析界面。
+- 若附件为图片或其他文件，可在页面中引用或展示（使用提供的 URL）。
+- 若附件为文本或文档，请提取关键信息并融入页面设计或功能中。
+
+生成时，需将附件内容与用户需求紧密结合，使最终网页既能满足用户需求，又能体现附件中的已有信息或设计意图。
+
+附件内容如下：
+无参考文件============================================================
+🤖 最终发送给 AI 的提示词（前200字符）: 你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Con...🤖 模型配置: model=qwen3.5-flash, base_url=https://dashscope.aliyuncs.com/compatible-mode/v1--- 进入 call_ai_model_for_html ---📤 发送请求至: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions📦 请求体摘要: {"model": "qwen3.5-flash", "messages": [{"role": "system", "content": "你是一个专业的网页生成助手，只返回纯HTML代码，不要包含任何额外解释。"}, {"role": "user", "content": "你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript...📡 AI API响应状态码: 200✅ AI API调用成功📊 token 使用: {'prompt_tokens': 1437, 'completion_tokens': 5185, 'total_tokens': 6622, 'completion_tokens_details': {'reasoning_tokens': 1179, 'text_tokens': 5185}, 'prompt_tokens_details': {'text_tokens': 1437}}💬 AI 原始响应长度: 15871 字符✅ 提取后 HTML 长度: 15871 字符✅ 网页已保存至: D:\测试\exe\templates\13815120911\模板网页\小组互评页面.html✅ 文本模型已切换为: qwen3.5-flash✅ 文本模型已切换为: qwen3.5-plus
+=== 进入 /ai/generate-page ===📥 收到请求: prompt='生成一个小组互评页面。假设当前小组有4名成员（姓名可预设或从登录获取），每个成员对应一个评分滑条（1...', target_folder='模板网页', file_name='生成一个小组互评页面假设_20260318_212949.html'📎 参考文件: []🔑 配额检查: can_use=True, msg=, using_master=False📁 目标目录: D:\测试\exe\templates\13815120911\模板网页📄 参考文件内容长度: 5 字符📄 模板内容 (前200字符): '你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。\n\n目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。\n\n数据中台接口规范\n\n1. 提交接口\nURL：/api/submit\n方法：POST\n支持 Con'...
+============================================================【DEBUG】完整提示词内容：你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Content-Type：application/json 或 multipart/form-data（用于文件上传）
+必填字段（所有请求均需包含）：
+  - teacher：教师用户名（例如：13815120911 ），必须提供。
+  - activity_id：活动标识（例如 course_001），必须提供。也可使用字段名 task 作为替代，但建议统一使用 activity_id。
+  - student_id：学生标识，可以是学号或匿名ID。
+其他自定义字段（如题目答案、操作记录等）可任意添加。
+
+文件上传方式（如果需要）
+使用 FormData，将上述必要字段作为独立的表单字段添加，其他数据可放入一个名为 data 的 JSON 字符串中。文件字段名固定为 files，可重复添加多个文件。
+示例（JavaScript）：
+const formData = new FormData();
+formData.append('teacher', '13815120911 ');
+formData.append('activity_id', '模板网页');
+formData.append('student_id', 'S001');
+formData.append('data', JSON.stringify({ answer1: 'A', memo: '备注' }));
+for (let file of fileInput.files) {
+  formData.append('files', file);
+}
+await fetch('/api/submit', { method: 'POST', body: formData });
+
+纯 JSON 提交（无文件）：
+await fetch('/api/submit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    teacher: '13815120911 ',
+    activity_id: '模板网页',
+    student_id: 'S001',
+    answer1: 'A',
+    memo: '备注'
+  })
+});
+
+2. 查询接口
+URL：/api/submissions
+方法：GET
+参数（通过 query string 传递）：
+  - teacher（必选）：教师用户名。
+  - activity_id（可选）：筛选指定活动。
+  - student_id（可选）：筛选指定学生。
+  - limit（可选）：返回条数限制（默认100，最大500）。
+  - offset（可选）：分页偏移量（默认0）。
+响应示例（重要：数据实际存储在 "submissions" 字段中）：
+{
+  "success": true,
+  "total": 200,
+  "offset": 0,
+  "limit": 100,
+  "submissions": [              // ← 记录数组在此字段内
+    {
+      "teacher": "13815120911 ",
+      "activity_id": "'模板网页",
+      "student_id": "S001",
+      "answer1": "A",
+      "memo": "备注",
+      "_server_timestamp": "2025-03-21T14:30:00",
+      "_files": [ /* 文件列表，若无则为空数组 */ ],
+      "_meta": { "filename": "..." }
+    }
+  ]
+}
+解析时，应先检查 response.ok 和 data.success，然后从 data.submissions 中获取数组。
+
+3. 文件访问
+上传的文件可通过 /templates/13815120911/uploads/<filename> 直接访问。在 API 返回的 _files 字段中会包含完整的 url，可直接使用。
+
+生成要求：
+- 页面应美观、响应式，使用现代化 CSS（如 Flexbox、Grid），可引入 Tailwind CSS 或自定义样式。
+- 使用原生 JavaScript（ES6+）实现交互和 API 调用，无需额外框架。
+- 根据用户需求合理选择调用上述 API 接口，并处理成功/失败提示。
+- 如果页面包含表单，必须包含隐藏字段 teacher 和 task（值为 13815120911 和 模板网页，由后端替换），以及 studentId（可由登录填充或用户输入）。
+- 所有 API 调用应使用 fetch，并处理好 loading 状态和错误反馈。
+- **特别注意**：在调用查询接口 `/api/submissions` 获取记录列表时，必须从响应的 `data.submissions` 中提取数组（而非直接假设 data 本身是数组）。示例：
+  ```javascript
+  const response = await fetch(`/api/submissions?teacher=...`);
+  const data = await response.json();
+  if (data.success && Array.isArray(data.submissions)) {
+    const records = data.submissions;
+    // 渲染表格
+  } else {
+    console.error('获取失败', data.message);
+  }
+
+直接返回完整的 HTML 代码，不要包含任何解释或其他文本。
+
+用户需求：
+生成一个小组互评页面。假设当前小组有4名成员（姓名可预设或从登录获取），每个成员对应一个评分滑条（1-10分）和一个评语输入框。提交时通过 /api/submit 发送评分和评语（包含 teacher=13815120911, activity_id=模板网页, evaluator_id, ratings数组）。
+ 
+如果以下提供了附件内容，则附件可能包含：参考网页、数据文件、图片、文档等。请务必仔细阅读附件内容，并根据附件中的信息，根据用户的需求进行数据分析、或者修改、或者生成网页：
+
+ 若附件为 HTML 代码，请将其作为参考样式或功能基础，必要时可复用或改造。
+- 若附件为 JSON 数据，请基于数据生成相应的展示图表、表格或分析界面。
+- 若附件为图片或其他文件，可在页面中引用或展示（使用提供的 URL）。
+- 若附件为文本或文档，请提取关键信息并融入页面设计或功能中。
+
+生成时，需将附件内容与用户需求紧密结合，使最终网页既能满足用户需求，又能体现附件中的已有信息或设计意图。
+
+附件内容如下：
+无参考文件============================================================
+🤖 最终发送给 AI 的提示词（前200字符）: 你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Con...🤖 模型配置: model=qwen3.5-plus, base_url=https://dashscope.aliyuncs.com/compatible-mode/v1--- 进入 call_ai_model_for_html ---📤 发送请求至: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions📦 请求体摘要: {"model": "qwen3.5-plus", "messages": [{"role": "system", "content": "你是一个专业的网页生成助手，只返回纯HTML代码，不要包含任何额外解释。"}, {"role": "user", "content": "你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript）...📡 AI API响应状态码: 200✅ AI API调用成功📊 token 使用: {'prompt_tokens': 1437, 'completion_tokens': 4798, 'total_tokens': 6235, 'completion_tokens_details': {'reasoning_tokens': 794, 'text_tokens': 4798}, 'prompt_tokens_details': {'text_tokens': 1437}}💬 AI 原始响应长度: 14432 字符✅ 提取后 HTML 长度: 14432 字符✅ 网页已保存至: D:\测试\exe\templates\13815120911\模板网页\生成一个小组互评页面假设_20260318_212949.html✅ 文本模型已切换为: deepseek-v3.2
+=== 进入 /ai/generate-page ===📥 收到请求: prompt='生成一个物理实验数据记录页面。模拟“探究弹簧伸长与拉力的关系”实验。页面展示一个可拖动的滑块代表拉力...', target_folder='模板网页', file_name='生成一个物理实验数据记录_20260318_213313.html'📎 参考文件: []🔑 配额检查: can_use=True, msg=, using_master=False📁 目标目录: D:\测试\exe\templates\13815120911\模板网页📄 参考文件内容长度: 5 字符📄 模板内容 (前200字符): '你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。\n\n目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。\n\n数据中台接口规范\n\n1. 提交接口\nURL：/api/submit\n方法：POST\n支持 Con'...
+============================================================【DEBUG】完整提示词内容：你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Content-Type：application/json 或 multipart/form-data（用于文件上传）
+必填字段（所有请求均需包含）：
+  - teacher：教师用户名（例如：13815120911 ），必须提供。
+  - activity_id：活动标识（例如 course_001），必须提供。也可使用字段名 task 作为替代，但建议统一使用 activity_id。
+  - student_id：学生标识，可以是学号或匿名ID。
+其他自定义字段（如题目答案、操作记录等）可任意添加。
+
+文件上传方式（如果需要）
+使用 FormData，将上述必要字段作为独立的表单字段添加，其他数据可放入一个名为 data 的 JSON 字符串中。文件字段名固定为 files，可重复添加多个文件。
+示例（JavaScript）：
+const formData = new FormData();
+formData.append('teacher', '13815120911 ');
+formData.append('activity_id', '模板网页');
+formData.append('student_id', 'S001');
+formData.append('data', JSON.stringify({ answer1: 'A', memo: '备注' }));
+for (let file of fileInput.files) {
+  formData.append('files', file);
+}
+await fetch('/api/submit', { method: 'POST', body: formData });
+
+纯 JSON 提交（无文件）：
+await fetch('/api/submit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    teacher: '13815120911 ',
+    activity_id: '模板网页',
+    student_id: 'S001',
+    answer1: 'A',
+    memo: '备注'
+  })
+});
+
+2. 查询接口
+URL：/api/submissions
+方法：GET
+参数（通过 query string 传递）：
+  - teacher（必选）：教师用户名。
+  - activity_id（可选）：筛选指定活动。
+  - student_id（可选）：筛选指定学生。
+  - limit（可选）：返回条数限制（默认100，最大500）。
+  - offset（可选）：分页偏移量（默认0）。
+响应示例（重要：数据实际存储在 "submissions" 字段中）：
+{
+  "success": true,
+  "total": 200,
+  "offset": 0,
+  "limit": 100,
+  "submissions": [              // ← 记录数组在此字段内
+    {
+      "teacher": "13815120911 ",
+      "activity_id": "'模板网页",
+      "student_id": "S001",
+      "answer1": "A",
+      "memo": "备注",
+      "_server_timestamp": "2025-03-21T14:30:00",
+      "_files": [ /* 文件列表，若无则为空数组 */ ],
+      "_meta": { "filename": "..." }
+    }
+  ]
+}
+解析时，应先检查 response.ok 和 data.success，然后从 data.submissions 中获取数组。
+
+3. 文件访问
+上传的文件可通过 /templates/13815120911/uploads/<filename> 直接访问。在 API 返回的 _files 字段中会包含完整的 url，可直接使用。
+
+生成要求：
+- 页面应美观、响应式，使用现代化 CSS（如 Flexbox、Grid），可引入 Tailwind CSS 或自定义样式。
+- 使用原生 JavaScript（ES6+）实现交互和 API 调用，无需额外框架。
+- 根据用户需求合理选择调用上述 API 接口，并处理成功/失败提示。
+- 如果页面包含表单，必须包含隐藏字段 teacher 和 task（值为 13815120911 和 模板网页，由后端替换），以及 studentId（可由登录填充或用户输入）。
+- 所有 API 调用应使用 fetch，并处理好 loading 状态和错误反馈。
+- **特别注意**：在调用查询接口 `/api/submissions` 获取记录列表时，必须从响应的 `data.submissions` 中提取数组（而非直接假设 data 本身是数组）。示例：
+  ```javascript
+  const response = await fetch(`/api/submissions?teacher=...`);
+  const data = await response.json();
+  if (data.success && Array.isArray(data.submissions)) {
+    const records = data.submissions;
+    // 渲染表格
+  } else {
+    console.error('获取失败', data.message);
+  }
+
+直接返回完整的 HTML 代码，不要包含任何解释或其他文本。
+
+用户需求：
+生成一个物理实验数据记录页面。模拟“探究弹簧伸长与拉力的关系”实验。页面展示一个可拖动的滑块代表拉力（0-5N），一个动态的弹簧图示，实时显示伸长量。学生记录5组数据后，点击提交，将数据数组通过 /api/submit 发送（包含 teacher=13815120911, activity_id=模板网页, student_id, data）。页面需有重置按钮。
+ 
+如果以下提供了附件内容，则附件可能包含：参考网页、数据文件、图片、文档等。请务必仔细阅读附件内容，并根据附件中的信息，根据用户的需求进行数据分析、或者修改、或者生成网页：
+
+ 若附件为 HTML 代码，请将其作为参考样式或功能基础，必要时可复用或改造。
+- 若附件为 JSON 数据，请基于数据生成相应的展示图表、表格或分析界面。
+- 若附件为图片或其他文件，可在页面中引用或展示（使用提供的 URL）。
+- 若附件为文本或文档，请提取关键信息并融入页面设计或功能中。
+
+生成时，需将附件内容与用户需求紧密结合，使最终网页既能满足用户需求，又能体现附件中的已有信息或设计意图。
+
+附件内容如下：
+无参考文件============================================================
+🤖 最终发送给 AI 的提示词（前200字符）: 你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Con...🤖 模型配置: model=deepseek-v3.2, base_url=https://dashscope.aliyuncs.com/compatible-mode/v1--- 进入 call_ai_model_for_html ---📤 发送请求至: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions📦 请求体摘要: {"model": "deepseek-v3.2", "messages": [{"role": "system", "content": "你是一个专业的网页生成助手，只返回纯HTML代码，不要包含任何额外解释。"}, {"role": "user", "content": "你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript...📡 AI API响应状态码: 200✅ AI API调用成功📊 token 使用: {'prompt_tokens': 1314, 'completion_tokens': 4000, 'total_tokens': 5314, 'prompt_tokens_details': {'cached_tokens': 0}}💬 AI 原始响应长度: 15526 字符✅ 提取后 HTML 长度: 15526 字符🔥 生成网页异常: [Errno 2] No such file or directory: 'D:\\测试\\exe\\templates\\13815120911\\模板网页\\生成一个物理实验数据记录_20260318_213313.html'Traceback (most recent call last):
+  File "D:\测试\exe\ai_services.py", line 845, in ai_generate_page
+    with open(file_path, 'w', encoding='utf-8') as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'D:\\测试\\exe\\templates\\13815120911\\模板网页\\生成一个物理实验数据记录_20260318_213313.html'
+🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (教师) - 学科: 语文  - njzx1 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔐 Web登录尝试: username=13815120911, ip=192.168.22.28📂 加载教师数据: 13815120911, 目录: D:\测试\exe\data\teacher_13815120911✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 13815120911 的数据到内存✅ Web登录成功: 13815120911 (角色: admin)🔐 Web登录尝试: username=teach, ip=192.168.22.28📂 加载教师数据: teach, 目录: D:\测试\exe\data\teacher_teach✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 teach 的数据到内存✅ Web登录成功: teach (角色: teacher)🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (教师) - 学科: 语文  - njzx1 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80✅ 文本模型已切换为: qwen3.5-flash📂 加载教师数据: 13815120911, 目录: D:\测试\exe\data\teacher_13815120911✅ 创建新的教师数据目录: D:\测试\exe\data\teacher_13815120911✅ 成功加载教师 13815120911 的数据到内存🔐 Web登录尝试: username=teach, ip=192.168.22.28📂 加载教师数据: teach, 目录: D:\测试\exe\data\teacher_teach✅ 创建新的教师数据目录: D:\测试\exe\data\teacher_teach✅ 成功加载教师 teach 的数据到内存✅ Web登录成功: teach (角色: teacher)❌ 保存任务元数据失败：任务文件夹 D:\测试\exe\templates\teach\英语单词听写 不存在

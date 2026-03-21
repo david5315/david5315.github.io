@@ -1,0 +1,33 @@
+{
+  "timestamp": "2026-03-19T00:38:19.036211",
+  "teacher": "teach",
+  "activity_id": "test_activity_1773851892",
+  "summary": {
+    "total": 16,
+    "submitted": 0,
+    "failed": 16,
+    "submission_rate": "0.0%"
+  },
+  "results": {
+    "submitted": [],
+    "failed": [
+      "regular_001",
+      "regular_002",
+      "regular_003",
+      "regular_004",
+      "regular_005",
+      "regular_006",
+      "regular_007",
+      "interactive_001",
+      "interactive_004",
+      "interactive_006",
+      "interactive_009",
+      "interactive_013",
+      "data_013",
+      "data_016",
+      "data_020",
+      "data_034"
+    ],
+    "query_available": false
+  }
+}

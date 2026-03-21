@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线问卷调查</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 0 30px rgba(0,0,0,0.1); overflow: hidden; }
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center; }
+        h1 { font-size: 2rem; margin-bottom: 10px; }
+        .description { opacity: 0.9; font-size: 1.1rem; }
+        form { padding: 30px; }
+        .section { margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px solid #e9ecef; }
+        .section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .section-title { font-size: 1.3rem; font-weight: bold; color: #2d3748; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .form-group { margin-bottom: 25px; }
+        label { display: block; font-weight: 600; color: #4a5568; margin-bottom: 8px; font-size: 1rem; }
+        input[type="text"], input[type="email"], textarea, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #fff;
+        }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        textarea { min-height: 100px; resize: vertical; font-family: inherit; }
+        .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 12px; }
+        .radio-item, .checkbox-item { display: flex; align-items: center; gap: 10px; padding: 12px 15px; border-radius: 8px; background: #f8fafc; cursor: pointer; transition: all 0.2s; }
+        .radio-item:hover, .checkbox-item:hover { background: #edf2f7; }
+        input[type="radio"], input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
+        .rating-stars { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+        .star-btn {
+            background: none;
+            border: none;
+            font-size: 2.5rem;
+            cursor: pointer;
+            color: #cbd5e0;
+            transition: all 0.2s;
+        }
+        .star-btn.active, .star-btn:hover { color: #fbbf24; transform: scale(1.1); }
+        .progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 4px; background: #e2e8f0; z-index: 1000; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); width: 0%; transition: width 0.3s; }
+        .submit-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px 50px; font-size: 1.1rem; border-radius: 50px; cursor: pointer; transition: all 0.3s; display: block; margin: 30px auto 0; font-weight: 600; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(102,126,234,0.4); }
+        .success-message { background: #d1fae5; color: #065f46; padding: 20px; border-radius: 10px; text-align: center; margin-top: 20px; display: none; }
+        .success-message.show { display: block; animation: slideDown 0.3s; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 20px; color: #718096; font-size: 0.9rem; }
+        @media (max-width: 600px) { h1 { font-size: 1.5rem; } .submit-btn { width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    
+    <div class="container">
+        <header>
+            <h1>📝 课程学习反馈调查</h1>
+            <p class="description">您的意见对我们非常重要！请花费 2 分钟填写这份匿名问卷。</p>
+        </header>
+
+        <form id="feedbackForm">
+            <input type="hidden" id="teacher" value="{{teacher}}">
+            <input type="hidden" id="activityId" value="{{task}}">
+            
+            <div class="section">
+                <div class="section-title">👤 基本信息</div>
+                
+                <div class="form-group">
+                    <label for="studentName">姓名（选填）</label>
+                    <input type="text" id="studentName" placeholder="请输入您的姓名">
+                </div>
+                
+                <div class="form-group">
+                    <label for="studentClass">班级</label>
+                    <select id="studentClass" required>
+                        <option value="">请选择班级</option>
+                        <option value="高一 (1) 班">高一 (1) 班</option>
+                        <option value="高一 (2) 班">高一 (2) 班</option>
+                        <option value="高一 (3) 班">高一 (3) 班</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">⭐ 课程评价</div>
+                
+                <div class="form-group">
+                    <label>课程内容是否清晰易懂？</label>
+                    <div class="radio-group">
+                        <label class="radio-item">
+                            <input type="radio" name="clarity" value="5"> ⭐⭐⭐⭐⭐ 非常清晰
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="clarity" value="4"> ⭐⭐⭐⭐ 比较清晰
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="clarity" value="3"> ⭐⭐⭐ 一般
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="clarity" value="2"> ⭐⭐ 不太清晰
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="clarity" value="1"> ⭐ 非常困惑
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>课程难度如何？</label>
+                    <div class="radio-group">
+                        <label class="radio-item">
+                            <input type="radio" name="difficulty" value="easy"> 太简单
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="difficulty" value="appropriate"> 难度适中
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="difficulty" value="hard"> 有点难
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="difficulty" value="too_hard"> 太难了
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">💡 改进建议</div>
+                
+                <div class="form-group">
+                    <label for="improvements">您觉得哪些地方可以改进？</label>
+                    <textarea id="improvements" placeholder="请告诉我们您的建议..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="likes">最喜欢课程的哪个部分？</label>
+                    <textarea id="likes" placeholder="例如：实验环节、讨论时间、案例分析..."></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">📤 提交问卷</button>
+        </form>
+
+        <div class="success-message" id="successMsg">
+            <h3 style="margin-bottom:10px;">✅ 感谢您的反馈！</h3>
+            <p>您的意见我们已经收到，会认真考虑并努力改进。</p>
+        </div>
+
+        <footer><p>© 2026 QuickForge 课堂教学系统 | 数据实时同步至教师端</p></footer>
+    </div>
+
+    <script>
+        const teacher = document.getElementById('teacher').value;
+        const activityId = document.getElementById('activityId').value;
+
+        // 更新进度条
+        function updateProgress() {
+            const totalSections = document.querySelectorAll('.section').length;
+            const filledSections = Array.from(document.querySelectorAll('.section')).filter(s => {
+                const inputs = s.querySelectorAll('input[required], textarea');
+                return Array.from(inputs).some(i => i.value.trim());
+            }).length;
+            
+            const percentage = Math.round((filledSections / totalSections) * 100);
+            document.getElementById('progressFill').style.width = `${percentage}%`;
+        }
+
+        // 添加输入监听
+        document.querySelectorAll('input, textarea, select').forEach(el => {
+            el.addEventListener('input', updateProgress);
+        });
+
+        document.getElementById('feedbackForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = e.target.querySelector('.submit-btn');
+            btn.disabled = true;
+            btn.textContent = '⏳ 提交中...';
+
+            try {
+                const formData = new FormData();
+                formData.append('teacher', teacher);
+                formData.append('activity_id', activityId);
+                
+                // 收集表单数据
+                const data = {};
+                document.querySelectorAll('#feedbackForm input, #feedbackForm select, #feedbackForm textarea').forEach(el => {
+                    if (el.name && el.value) {
+                        data[el.name] = el.value;
+                    }
+                });
+                
+                formData.append('data', JSON.stringify(data));
+                formData.append('student_id', window.studentId || 'S001');
+
+                const response = await fetch('/api/submit', { method: 'POST', body: formData });
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    document.getElementById('feedbackForm').style.display = 'none';
+                    document.getElementById('successMsg').classList.add('show');
+                    
+                    // 可选：发送成功通知到后台
+                    console.log('问卷提交成功:', result);
+                } else {
+                    alert('❌ 提交失败：' + (result.message || '未知错误'));
+                }
+            } catch (error) {
+                console.error('提交错误:', error);
+                alert('❌ 网络错误：' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '📤 提交问卷';
+            }
+        });
+    </script>
+</body>
+</html>

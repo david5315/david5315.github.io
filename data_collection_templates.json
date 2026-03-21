@@ -1,0 +1,102 @@
+[
+  {
+    "id": "student_info_collection",
+    "name": "学生信息收集表",
+    "description": "收集学生基本信息用于教学管理",
+    "code": "<!-- HTML template code -->",
+    "type": "data_collection",
+    "subject": "通用",
+    "creator": "admin",
+    "createdAt": "2026-03-18T00:00:00"
+  },
+  {
+    "id": "class_survey_voting",
+    "name": "课堂问卷投票",
+    "description": "课堂实时投票和问卷调查系统",
+    "code": "<!-- HTML template code -->",
+    "type": "data_collection",
+    "subject": "通用",
+    "creator": "admin",
+    "createdAt": "2026-03-18T00:00:00"
+  },
+  {
+    "id": "homework_submission",
+    "name": "作业提交系统",
+    "description": "学生在线提交作业（支持文本和附件）",
+    "code": "<!-- HTML template code -->",
+    "type": "data_collection",
+    "subject": "通用",
+    "creator": "admin",
+    "createdAt": "2026-03-18T00:00:00"
+  },
+  {
+    "id": "learning_feedback_survey",
+    "name": "学习反馈调查",
+    "description": "收集学生对课程的学习感受和意见建议",
+    "code": "<!-- HTML template code -->",
+    "type": "data_collection",
+    "subject": "通用",
+    "creator": "admin",
+    "createdAt": "2026-03-18T00:00:00"
+  },
+  {
+    "id": "experiment_report",
+    "name": "实验报告提交",
+    "description": "科学实验课程的报告提交与批注",
+    "code": "<!-- HTML template code -->",
+    "type": "data_collection",
+    "subject": "理科",
+    "creator": "admin",
+    "createdAt": "2026-03-18T00:00:00"
+  },
+  {
+    "id": "pre_class_quiz",
+    "name": "课前预习检测",
+    "description": "课前知识水平摸底测验",
+    "code": "<!-- HTML template code -->",
+    "type": "data_collection",
+    "subject": "通用",
+    "creator": "admin",
+    "createdAt": "2026-03-18T00:00:00"
+  },
+  {
+    "id": "post_class_test",
+    "name": "课后复习测验",
+    "description": "巩固课堂知识的练习测验",
+    "code": "<!-- HTML template code -->",
+    "type": "data_collection",
+    "subject": "通用",
+    "creator": "admin",
+    "createdAt": "2026-03-18T00:00:00"
+  },
+  {
+    "id": "project_progress_report",
+    "name": "项目进度汇报",
+    "description": "小组项目各阶段进度更新和管理",
+    "code": "<!-- HTML template code -->",
+    "type": "data_collection",
+    "subject": "通用",
+    "creator": "admin",
+    "createdAt": "2026-03-18T00:00:00"
+  },
+  {
+    "id": "peer_review_system",
+    "name": "同伴互评系统",
+    "description": "学生之间互相评价作品和表现",
+    "code": "<!-- HTML template code -->",
+    "type": "data_collection",
+    "subject": "通用",
+    "creator": "admin",
+    "createdAt": "2026-03-18T00:00:00"
+  },
+  {
+    "id": "goal_setting_tracker",
+    "name": "学习目标设定与追踪",
+    "description": "学期目标设定和完成情况追踪",
+    "code": "<!-- HTML template code -->",
+    "type": "data_collection",
+    "subject": "通用",
+    "creator": "admin",
+    "createdAt": "2026-03-18T00:00:00"
+  }
+]

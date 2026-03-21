@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课堂互动教学评测系统 - 登录</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+        }
+        
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border: none;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .card-header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 1.5rem;
+        }
+        
+        .login-card {
+            max-width: 400px;
+            margin: auto;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 12px 20px;
+            font-weight: 500;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 50px;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .form-control {
+            border-radius: 50px;
+            padding: 12px 20px;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        }
+        
+        .info-box {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        .info-box h5 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .info-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .info-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 1rem;
+        }
+        
+        .info-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .info-list i {
+            color: var(--success-color);
+            margin-right: 10px;
+        }
+        
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .login-options a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+        
+        .login-options a:hover {
+            text-decoration: underline;
+        }
+        
+        .system-info {
+            background: rgba(52, 152, 219, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .brand-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .brand-subtitle {
+            color: #f0f0f0;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+        
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+        
+        .toast {
+            min-width: 300px;
+            border-radius: 10px;
+        }
+        
+        .login-logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .register-link {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        /* 新增验证码样式 */
+        .captcha-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .captcha-image {
+            height: 46px;
+            width: 160px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid #dee2e6;
+        }
+        .sms-code-container {
+            display: flex;
+            gap: 10px;
+        }
+        .countdown-timer {
+            color: var(--danger-color);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="text-center mb-5">
+                    <div class="brand-title">南菁高中智慧教学平台</div>
+                    <div class="brand-subtitle">多模态AI赋能的互动教学评测系统</div>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="info-box h-100">
+                            <h5><i class="fas fa-star me-2"></i>AI赋能 · 智慧教学</h5>
+                            <ul class="info-list">
+                                <li><i class="fas fa-check-circle"></i> AI生成互动网页，无需编程</li>
+                                <li><i class="fas fa-check-circle"></i> 一键发布数据采集，自动统计</li>
+                                <li><i class="fas fa-check-circle"></i> 智能作业评测，实时反馈</li>
+                                <li><i class="fas fa-check-circle"></i> 内置丰富模板，快速上手</li>
+                                <li><i class="fas fa-check-circle"></i> 私有化部署，数据安全</li>
+                            </ul>
+                            <div class="mt-4 p-3 bg-white rounded">
+                                <p class="small text-muted mb-2">
+                                    <i class="fas fa-info-circle me-1"></i> 游客可直接访问公开资源，体验互动网页。
+                                </p>
+                                <a href="public.html" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-globe me-1"></i> 游客入口
+                                </a>
+                            </div>
+                            <div class="system-info">
+                                <h6><i class="fas fa-info-circle me-2"></i>当前版本：    <a href="quickforge.html" class="btn btn-outline-primary w-50">
+                                    校园版 · 使用说明
+                                </a></h6>  
+                                <p class="small mb-0">© 南菁智慧教育 | 技术支持：AI教学研究小组</p>         
+
+                            </div>   
+           
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card login-card">
+                            <div class="card-header text-center">
+                                <h4 class="mb-0"><i class="fas fa-sign-in-alt me-2"></i>教师登录</h4>
+                            </div>
+                            <div class="card-body p-4">
+                                <form id="login-form">
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">
+                                            <i class="fas fa-user me-1"></i> 用户名
+                                        </label>
+                                        <input type="text" class="form-control" id="username" 
+                                               placeholder="请输入用户名" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">
+                                            <i class="fas fa-lock me-1"></i> 密码
+                                        </label>
+                                        <input type="password" class="form-control" id="password" 
+                                               placeholder="请输入密码" required>
+                                    </div>
+                                    <!-- 新增验证码区域 -->
+                                    <div class="mb-3">
+                                        <label class="form-label"><i class="fas fa-shield-alt me-1"></i> 验证码</label>
+                                        <div class="captcha-container">
+                                            <input type="text" class="form-control" id="captcha" 
+                                                   placeholder="请输入验证码" maxlength="4" required>
+                                            <img id="captcha-image" class="captcha-image" 
+                                                 src="" alt="验证码" title="点击刷新">
+                                        </div>
+                                        <input type="hidden" id="captcha-token">
+                                        <div class="form-text" id="captcha-error" style="color: #e74c3c;"></div>
+                                    </div>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="remember-me">
+                                        <label class="form-check-label" for="remember-me">记住登录状态</label>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-sign-in-alt me-1"></i> 登录系统
+                                    </button>
+                                </form>
+                                
+                                <div class="login-options">
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">
+                                        <i class="fas fa-key me-1"></i> 忘记密码
+                                    </a>
+                                    <!-- 注册链接，根据版本控制显示/隐藏 -->
+                                    <a href="register.html" id="register-link">
+                                        <i class="fas fa-user-plus me-1"></i> 教师注册
+                                    </a>
+                                    <a href="student.html">
+                                        <i class="fas fa-user-graduate me-1"></i> 学生登录
+                                    </a>
+                                </div>
+
+                                <div class="text-center mt-4">
+                                    <div class="login-logo">
+                                        <i class="fas fa-chalkboard-teacher"></i>
+                                    </div>
+                                    <h5>智慧教学 精准评估</h5>
+                                    <p class="text-muted small">为教师提供全方位的AI教学支持</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 忘记密码模态框（保持不变） -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-key me-2"></i>短信找回密码</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">用户名</label>
+                        <input type="text" class="form-control" id="forgot-username" placeholder="请输入您的用户名">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">手机号码</label>
+                        <input type="tel" class="form-control" id="forgot-phone" placeholder="请输入绑定的手机号">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">短信验证码</label>
+                        <div class="sms-code-container">
+                            <input type="text" class="form-control" id="sms-code" placeholder="6位验证码" maxlength="6">
+                            <button type="button" class="btn btn-outline-primary" id="send-sms-btn">
+                                发送验证码
+                            </button>
+                        </div>
+                        <div class="form-text">
+                            <span id="countdown" class="countdown-timer"></span>
+                            验证码有效期为5分钟
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">新密码</label>
+                        <input type="password" class="form-control" id="new-password" placeholder="请输入新密码">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">确认新密码</label>
+                        <input type="password" class="form-control" id="confirm-password" placeholder="请再次输入新密码">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="reset-password-btn">重置密码</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 消息提示容器 -->
+    <div class="toast-container">
+        <div id="message-toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toast-message">操作成功</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        // API基础URL
+        const API_BASE = window.location.origin + '/api';
+        
+        // 全局变量
+        let smsTimer = null;
+        let countdownSeconds = 0;
+        let currentCaptchaToken = '';
+
+        // ==================== 工具函数 ====================
+
+        function showMessage(type, message) {
+            const toast = document.getElementById('message-toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            const colors = {
+                success: 'bg-success',
+                error: 'bg-danger',
+                warning: 'bg-warning',
+                info: 'bg-info'
+            };
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+            
+            toast.className = `toast align-items-center text-white ${colors[type] || 'bg-success'} border-0`;
+            toastMessage.innerHTML = `${icons[type] || ''} ${message}`;
+            
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
+
+        // 加载验证码
+        async function loadCaptcha() {
+            try {
+                const response = await fetch(`${API_BASE}/captcha`);
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('captcha-image').src = data.image;
+                    document.getElementById('captcha-token').value = data.token;
+                    currentCaptchaToken = data.token;
+                } else {
+                    console.error('加载验证码失败:', data.message);
+                }
+            } catch (error) {
+                console.error('加载验证码出错:', error);
+            }
+        }
+
+        // 加载站点配置，根据 quickforge_version 控制注册链接显示
+        async function loadSiteVersion() {
+            try {
+                const response = await fetch(`${API_BASE}/site-setup`);
+                const data = await response.json();
+                if (data.success && data.site_setup) {
+                    const version = data.site_setup.quickforge_version;
+                    const registerLink = document.getElementById('register-link');
+                    // 如果版本不是 "quickforge"，则隐藏注册链接
+                    if (version !== 'quickforge') {
+                        registerLink.style.display = 'none';
+                    } else {
+                        registerLink.style.display = 'inline'; // 恢复显示（如果之前隐藏）
+                    }
+                } else {
+                    // 获取失败，默认隐藏注册链接（保守）
+                    document.getElementById('register-link').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('获取站点配置失败:', error);
+                // 出错时隐藏注册链接
+                document.getElementById('register-link').style.display = 'none';
+            }
+        }
+
+        // ==================== 登录状态管理 ====================
+
+        function clearAllLoginState() {
+            console.log("🧹 清除所有登录状态...");
+            localStorage.removeItem('teacherToken');
+            localStorage.removeItem('teacherUser');
+            sessionStorage.clear();
+            
+            // 清除cookie
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i];
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+            }
+            
+            console.log("✅ 登录状态已清除");
+        }
+
+        function saveLoginState(user) {
+            localStorage.setItem('teacherToken', 'logged_in');
+            localStorage.setItem('teacherUser', JSON.stringify(user));
+            console.log("✅ 登录状态已保存", user.username);
+        }
+
+        // ==================== API调用函数 ====================
+        
+        async function apiCall(endpoint, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    credentials: 'include',
+                    ...options
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP错误! 状态: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('API调用失败:', error);
+                showMessage('error', '网络连接失败，请检查网络');
+                throw error;
+            }
+        }
+        
+        // ==================== 登录功能 ====================
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const captcha = document.getElementById('captcha').value.trim();
+            const captchaToken = document.getElementById('captcha-token').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+            
+            if (!username || !password) {
+                showMessage('error', '请输入用户名和密码');
+                return;
+            }
+            if (!captcha || !captchaToken) {
+                showMessage('error', '请输入验证码');
+                return;
+            }
+            
+            // 显示加载状态
+            const submitBtn = document.querySelector('#login-form button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> 登录中...';
+            submitBtn.disabled = true;
+            
+            try {
+                const result = await apiCall('/login/teacher', {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        username: username.trim(), 
+                        password: password,
+                        captcha_token: captchaToken,
+                        captcha_code: captcha
+                    })
+                });
+                
+                if (result.success) {
+                    saveLoginState(result.user);
+                    
+                    if (rememberMe) {
+                        localStorage.setItem('rememberMe', 'true');
+                        localStorage.setItem('savedUsername', username);
+                    }
+                    
+                    showMessage('success', '登录成功！正在跳转...');
+                    
+                    // 登录成功后直接跳转到教师工作台
+                    setTimeout(() => {
+                        window.location.href = 'teacher.html';
+                    }, 1000);
+                    
+                } else {
+                    showMessage('error', result.message || '登录失败，请检查用户名和密码');
+                    document.getElementById('password').value = '';
+                    document.getElementById('captcha').value = '';
+                    loadCaptcha();  // 刷新验证码
+                }
+            } catch (error) {
+                console.error('登录失败:', error);
+                showMessage('error', '登录失败，请检查网络连接');
+                document.getElementById('password').value = '';
+                document.getElementById('captcha').value = '';
+                loadCaptcha();
+            } finally {
+                // 恢复按钮状态
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // ==================== 短信找回密码功能 ====================
+
+        async function sendSmsCode() {
+            const username = document.getElementById('forgot-username').value.trim();
+            const phone = document.getElementById('forgot-phone').value.trim();
+            
+            if (!username) {
+                showMessage('error', '请输入用户名');
+                return;
+            }
+            
+            if (!phone) {
+                showMessage('error', '请输入手机号码');
+                return;
+            }
+            
+            if (!/^1[3-9]\d{9}$/.test(phone)) {
+                showMessage('error', '请输入有效的手机号');
+                return;
+            }
+            
+            // 禁用发送按钮，防止重复发送
+            const sendBtn = document.getElementById('send-sms-btn');
+            const originalText = sendBtn.innerHTML;
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> 发送中...';
+            sendBtn.disabled = true;
+            
+            try {
+                const response = await apiCall('/account/sms/send-code', {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        username: username, 
+                        phone: phone
+                    })
+                });
+                
+                if (response.success) {
+                    showMessage('success', response.message || '短信验证码已发送');
+                    
+                    // 如果是模拟模式，显示验证码
+                    if (response.simulation && response.code) {
+                        showMessage('info', `测试模式：验证码为 ${response.code}`);
+                    }
+                    
+                    startCountdown(300); // 5分钟倒计时
+                } else {
+                    showMessage('error', response.message || '发送失败');
+                }
+            } catch (error) {
+                console.error('发送短信验证码失败:', error);
+                showMessage('error', '发送失败，请稍后重试');
+            } finally {
+                // 恢复按钮状态
+                sendBtn.innerHTML = originalText;
+                sendBtn.disabled = false;
+            }
+        }
+
+        function startCountdown(seconds) {
+            const sendBtn = document.getElementById('send-sms-btn');
+            const countdownEl = document.getElementById('countdown');
+            
+            sendBtn.disabled = true;
+            countdownSeconds = seconds;
+            
+            function updateCountdown() {
+                const minutes = Math.floor(countdownSeconds / 60);
+                const seconds = countdownSeconds % 60;
+                countdownEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (countdownSeconds <= 0) {
+                    clearInterval(smsTimer);
+                    sendBtn.disabled = false;
+                    sendBtn.textContent = '重新发送';
+                    countdownEl.textContent = '';
+                } else {
+                    countdownSeconds--;
+                }
+            }
+            
+            updateCountdown();
+            smsTimer = setInterval(updateCountdown, 1000);
+        }
+
+        async function resetPassword() {
+            const username = document.getElementById('forgot-username').value;
+            const phone = document.getElementById('forgot-phone').value;
+            const code = document.getElementById('sms-code').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (!username || !phone || !code || !newPassword || !confirmPassword) {
+                showMessage('error', '请填写所有信息');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showMessage('error', '两次输入的密码不一致');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showMessage('error', '密码长度至少为6位');
+                return;
+            }
+            
+            // 显示加载状态
+            const resetBtn = document.getElementById('reset-password-btn');
+            const originalText = resetBtn.innerHTML;
+            resetBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> 处理中...';
+            resetBtn.disabled = true;
+            
+            try {
+                // 先验证验证码
+                const verifyResponse = await apiCall('/account/sms/verify-code', {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        username: username.trim(), 
+                        phone: phone.trim(), 
+                        code: code.trim() 
+                    })
+                });
+                
+                if (!verifyResponse.success) {
+                    showMessage('error', verifyResponse.message);
+                    return;
+                }
+                
+                // 重置密码
+                const resetResponse = await apiCall('/account/sms/reset-password', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        username: username.trim(),
+                        phone: phone.trim(),
+                        new_password: newPassword,
+                        reset_token: verifyResponse.reset_token
+                    })
+                });
+                
+                if (resetResponse.success) {
+                    showMessage('success', resetResponse.message);
+                    
+                    // 关闭模态框并清空表单
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal'));
+                    modal.hide();
+                    
+                    // 清空表单
+                    document.getElementById('forgot-username').value = '';
+                    document.getElementById('forgot-phone').value = '';
+                    document.getElementById('sms-code').value = '';
+                    document.getElementById('new-password').value = '';
+                    document.getElementById('confirm-password').value = '';
+                    
+                    // 显示成功提示
+                    setTimeout(() => {
+                        showMessage('success', '密码重置成功，请使用新密码登录');
+                    }, 500);
+                    
+                } else {
+                    showMessage('error', resetResponse.message);
+                }
+            } catch (error) {
+                console.error('重置密码失败:', error);
+                showMessage('error', '重置密码失败，请稍后重试');
+            } finally {
+                // 恢复按钮状态
+                resetBtn.innerHTML = originalText;
+                resetBtn.disabled = false;
+                
+                // 重置按钮状态
+                const sendBtn = document.getElementById('send-sms-btn');
+                sendBtn.disabled = false;
+                sendBtn.textContent = '发送验证码';
+                
+                // 清除倒计时
+                if (smsTimer) {
+                    clearInterval(smsTimer);
+                    document.getElementById('countdown').textContent = '';
+                }
+            }
+        }
+
+        // ==================== 初始化函数 ====================
+
+        function initPage() {
+            console.log("🚀 初始化登录页面...");
+            
+            // 清空之前的登录状态，强制重新登录
+            clearAllLoginState();
+            
+            // 检查是否有记住的用户名
+            const savedUsername = localStorage.getItem('savedUsername');
+            if (savedUsername) {
+                document.getElementById('username').value = savedUsername;
+                document.getElementById('remember-me').checked = true;
+            }
+            
+            // 加载验证码
+            loadCaptcha();
+            // 点击图片刷新验证码
+            document.getElementById('captcha-image').addEventListener('click', loadCaptcha);
+            
+            // 加载站点版本，控制注册链接显示
+            loadSiteVersion();
+            
+            // 登录表单提交
+            const loginForm = document.getElementById('login-form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+            }
+            
+            // 短信找回密码功能
+            const sendSmsBtn = document.getElementById('send-sms-btn');
+            if (sendSmsBtn) {
+                sendSmsBtn.addEventListener('click', sendSmsCode);
+            }
+            
+            const resetPasswordBtn = document.getElementById('reset-password-btn');
+            if (resetPasswordBtn) {
+                resetPasswordBtn.addEventListener('click', resetPassword);
+            }
+            
+            // 模态框关闭时清理状态
+            const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+            if (forgotPasswordModal) {
+                forgotPasswordModal.addEventListener('hidden.bs.modal', function() {
+                    if (smsTimer) {
+                        clearInterval(smsTimer);
+                        const sendBtn = document.getElementById('send-sms-btn');
+                        if (sendBtn) {
+                            sendBtn.disabled = false;
+                            sendBtn.textContent = '发送验证码';
+                        }
+                        const countdownEl = document.getElementById('countdown');
+                        if (countdownEl) {
+                            countdownEl.textContent = '';
+                        }
+                    }
+                });
+            }
+            
+            // 监听回车键提交表单
+            document.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const activeElement = document.activeElement;
+                    if (activeElement && activeElement.form && activeElement.form.id === 'login-form') {
+                        if (!activeElement.form.checkValidity()) {
+                            return;
+                        }
+                        handleLogin(e);
+                    }
+                }
+            });
+            
+            console.log("✅ 登录页面初始化完成");
+        }
+
+        // 页面加载完成后初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPage);
+        } else {
+            initPage();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "activity_id": "quadratic_practice_001",
+  "student_id": "S001",
+  "a": -1.5,
+  "b": 0,
+  "c": -1,
+  "q1_answer": "down",
+  "q1_correct": true,
+  "q2_answer": "0.4",
+  "q2_correct": false,
+  "q3_answer": "-0.3",
+  "q3_correct": false,
+  "_server_timestamp": "2026-02-26T00:19:19.610155",
+  "_server_received": "2026-02-26T00:19:19.610168"
+}

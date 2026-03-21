@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MQTT通信机制模拟</title>
+    <style>
+        /* 保持原有样式不变 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+            color: #333;
+            position: relative;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        
+        .description {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #7f8c8d;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .clients-area {
+            background-color: #ecf0f1;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .clients-title {
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        
+        .clients-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        
+        .client {
+            width: 100px;
+            height: 100px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px;
+            cursor: move;
+            font-weight: bold;
+            user-select: none;
+        }
+        
+        .mqtt-area {
+            display: flex;
+            justify-content: space-between;
+            height: 550px;
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .publisher-area, .subscriber-area {
+            width: 350px;
+            background-color: #e8f4fc;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .subscriber-area {
+            background-color: #e8fcf5;
+        }
+        
+        .publisher-title, .subscriber-title {
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        
+        .publisher-content, .subscriber-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 10px;
+        }
+        
+        .publisher-slot, .subscriber-slot {
+            height: 150px;
+            background-color: #d6eaf8;
+            border: 2px dashed #85c1e9;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            padding: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .subscriber-slot {
+            background-color: #d6f5ea;
+            border-color: #85e9b5;
+        }
+        
+        .publisher-slot.active, .subscriber-slot.active {
+            border-style: solid;
+        }
+        
+        .publisher-slot.active {
+            background-color: #d1e9f7;
+        }
+        
+        .subscriber-slot.active {
+            background-color: #d1f5e5;
+        }
+        
+        .slot-client {
+            font-size: 1em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        
+        .slot-client.publisher {
+            color: #e74c3c;
+        }
+        
+        .slot-client.subscriber {
+            color: #27ae60;
+        }
+        
+        .server-area {
+            flex: 1;
+            background-color: #2c3e50;
+            border-radius: 8px;
+            margin: 0 20px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            color: white;
+        }
+        
+        .server-title {
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .server-content {
+            flex: 1;
+            background-color: #34495e;
+            border-radius: 6px;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .topic {
+            background-color: #1a252f;
+            border-radius: 6px;
+            padding: 10px;
+            position: relative;
+        }
+        
+        .topic-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #3498db;
+            padding-bottom: 5px;
+        }
+        
+        .topic-title {
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .topic-publisher {
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+        
+        .topic-messages {
+            max-height: 120px;
+            overflow-y: auto;
+            padding: 5px;
+            background-color: #2c3e50;
+            border-radius: 4px;
+        }
+        
+        .message {
+            background-color: #3498db;
+            padding: 5px;
+            margin: 3px 0;
+            border-radius: 3px;
+            font-size: 0.9em;
+            color: white;
+        }
+        
+        .publisher-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 100%;
+            flex: 1;
+        }
+        
+        .topic-controls, .publish-controls {
+            display: flex;
+            gap: 5px;
+            width: 100%;
+        }
+        
+        input, select {
+            padding: 4px 5px;
+            border-radius: 4px;
+            border: 1px solid #bdc3c7;
+            font-size: 0.8em;
+            flex: 1;
+        }
+        
+        button {
+            padding: 4px 6px;
+            border-radius: 4px;
+            border: none;
+            font-size: 0.8em;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .subscribe-btn {
+            width: 30px;
+            padding: 5px 0;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            font-size: 0.8em;
+            white-space: nowrap;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .modal-title {
+            margin-bottom: 15px;
+            text-align: center;
+            color: #2c3e50;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        
+        .modal-input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #bdc3c7;
+        }
+        
+        .subscriber-messages {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            background-color: #2c3e50;
+            border-radius: 4px;
+            padding: 5px;
+        }
+        
+        .received-message {
+            background-color: #3498db;
+            padding: 5px;
+            margin: 3px 0;
+            border-radius: 3px;
+            font-size: 0.9em;
+            color: white;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .subscriber-controls {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            gap: 6px;
+            flex: 1;
+        }
+        
+        .subscribe-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        
+        .messages-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .message-bubble {
+            position: absolute;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background-color: #e74c3c;
+            color: white;
+            font-size: 0.8em;
+            white-space: nowrap;
+            z-index: 10;
+            pointer-events: none;
+            opacity: 0;
+        }
+        
+        /* 操作成功提示样式 */
+        .toast {
+            position: absolute;
+            padding: 5px 10px;
+            border-radius: 4px;
+            background-color: rgba(46, 204, 113, 0.8);
+            color: white;
+            font-size: 0.8em;
+            z-index: 50;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+        }
+        
+        /* 测试题区域样式 */
+        .exercises-area {
+            background-color: #ecf0f1;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .exercises-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-size: 1.5em;
+        }
+        
+        .exercise-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .exercise-item {
+            background-color: white;
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .exercise-question {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #34495e;
+        }
+        
+        .exercise-options {
+            margin-left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .exercise-option {
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .exercise-option input {
+            width: auto;
+            flex: none;
+        }
+        
+        .exercise-result {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #bdc3c7;
+            display: none;
+        }
+        
+        .result-correct {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .result-incorrect {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .exercise-answer {
+            margin-top: 5px;
+            color: #3498db;
+        }
+        
+        .submit-container {
+            text-align: center;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        #submitBtn, #resetBtn {
+            padding: 8px 16px;
+            font-size: 1em;
+            background-color: #3498db;
+        }
+        
+        #resetBtn {
+            background-color: #95a5a6;
+        }
+        
+        #testResult {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .score-pass {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+        }
+        
+        .score-fail {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        /* 统一提交状态提示样式 */
+        .quickform-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 6px;
+            color: white;
+            font-size: 0.9em;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-width: 300px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .quickform-status.success {
+            background-color: #27ae60;
+            opacity: 1;
+        }
+        
+        .quickform-status.error {
+            background-color: #e74c3c;
+            opacity: 1;
+        }
+        
+        .quickform-status.info {
+            background-color: #3498db;
+            opacity: 1;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+            <!-- QUICKFORGE FIX -->
+            <input type="hidden" id="qf_teacher" value="{{teacher}}">
+            <input type="hidden" id="qf_activity_id" value="{{task}}">
+            <input type="hidden" id="qf_student_id" name="student_id" value="">
+            <!-- END FIX -->
+<body>
+    <div class="container">
+        <h1>MQTT通信机制模拟</h1>
+        <p class="description">
+            本页面模拟MQTT通信机制。将客户端拖拽到发布者或订阅者区域的槽位中，每个客户端在发布者和订阅者区域只能各出现一次。
+            添加主题后服务器会立即显示主题及对应的发布者客户端，发布消息后订阅者可接收。同一客户端可同时作为发布者和订阅者。
+        </p>
+        
+        <div class="clients-area">
+            <div class="clients-title">客户端区域</div>
+            <div class="clients-container">
+                <div class="client" data-id="1">客户端1</div>
+                <div class="client" data-id="2">客户端2</div>
+                <div class="client" data-id="3">客户端3</div>
+                <div class="client" data-id="4">客户端4</div>
+                <div class="client" data-id="5">客户端5</div>
+            </div>
+        </div>
+        
+        <div class="mqtt-area">
+            <div class="publisher-area">
+                <div class="publisher-title">发布者区域</div>
+                <div class="publisher-content">
+                    <div class="publisher-slot" data-slot="1"></div>
+                    <div class="publisher-slot" data-slot="2"></div>
+                    <div class="publisher-slot" data-slot="3"></div>
+                </div>
+            </div>
+            
+            <div class="server-area">
+                <div class="server-title">MQTT服务器</div>
+                <div class="server-content">
+                    <!-- 主题将动态添加 -->
+                </div>
+            </div>
+            
+            <div class="subscriber-area">
+                <div class="subscriber-title">订阅者区域</div>
+                <div class="subscriber-content">
+                    <div class="subscriber-slot" data-slot="1"></div>
+                    <div class="subscriber-slot" data-slot="2"></div>
+                    <div class="subscriber-slot" data-slot="3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 测试题区域 -->
+        <div class="exercises-area">
+            <h2 class="exercises-title">MQTT通信机制测试题</h2>
+            <div class="exercise-list">
+                <div class="exercise-item" data-question="1" data-correct="A">
+                    <div class="exercise-question">1. 在MQTT通信机制中，负责发布消息的是（ ）</div>
+                    <div class="exercise-options">
+                        <div class="exercise-option">
+                            <input type="radio" name="q1" value="A">A. 发布者
+                        </div>
+                        <div class="exercise-option">
+                            <input type="radio" name="q1" value="B">B. 订阅者
+                        </div>
+                        <div class="exercise-option">
+                            <input type="radio" name="q1" value="C">C. 服务器
+                        </div>
+                        <div class="exercise-option">
+                            <input type="radio" name="q1" value="D">D. 客户端
+                        </div>
+                    </div>
+                    <div class="exercise-result">
+                        <div class="result-correct" style="display:none;">回答正确！</div>
+                        <div class="result-incorrect" style="display:none;">回答错误</div>
+                        <div class="exercise-answer">正确答案：A</div>
+                    </div>
+                </div>
+                
+                <div class="exercise-item" data-question="2" data-correct="B">
+                    <div class="exercise-question">2. 订阅者在MQTT通信中的作用是（ ）</div>
+                    <div class="exercise-options">
+                        <div class="exercise-option">
+                            <input type="radio" name="q2" value="A">A. 发布消息
+                        </div>
+                        <div class="exercise-option">
+                            <input type="radio" name="q2" value="B">B. 接收服务器推送的已订阅主题的消息
+                        </div>
+                        <div class="exercise-option">
+                            <input type="radio" name="q2" value="C">C. 管理主题
+                        </div>
+                        <div class="exercise-option">
+                            <input type="radio" name="q2" value="D">D. 存储消息
+                        </div>
+                    </div>
+                    <div class="exercise-result">
+                        <div class="result-correct" style="display:none;">回答正确！</div>
+                        <div class="result-incorrect" style="display:none;">回答错误</div>
+                        <div class="exercise-answer">正确答案：B</div>
+                    </div>
+                </div>
+                
+                <div class="exercise-item" data-question="3" data-correct="B">
+                    <div class="exercise-question">3. MQTT协议中，服务器推送消息给订阅者是基于（ ）</div>
+                    <div class="exercise-options">
+                        <div class="exercise-option">
+                            <input type="radio" name="q3" value="A">A. 发布者的要求
+                        </div>
+                        <div class="exercise-option">
+                            <input type="radio" name="q3" value="B">B. 订阅的主题
+                        </div>
+                        <div class="exercise-option">
+                            <input type="radio" name="q3" value="C">C. 全部推送
+                        </div>
+                        <div class="exercise-option">
+                            <input type="radio" name="q3" value="D">D. 随机推送
+                        </div>
+                    </div>
+                    <div class="exercise-result">
+                        <div class="result-correct" style="display:none;">回答正确！</div>
+                        <div class="result-incorrect" style="display:none;">回答错误</div>
+                        <div class="exercise-answer">正确答案：B</div>
+                    </div>
+                </div>
+                
+                <div class="exercise-item" data-question="4" data-correct="D">
+                    <div class="exercise-question">4. MQTT服务器在通信中的角色类似于（ ）</div>
+                    <div class="exercise-options">
+                        <div class="exercise-option">
+                            <input type="radio" name="q4" value="A">A. 邮递员
+                        </div>
+                        <div class="exercise-option">
+                            <input type="radio" name="q4" value="B">B. 报社
+                        </div>
+                        <div class="exercise-option">
+                            <input type="radio" name="q4" value="C">C. 订报人
+                        </div>
+                        <div class="exercise-option">
+                            <input type="radio" name="q4" value="D">D. 邮局
+                        </div>
+                    </div>
+                    <div class="exercise-result">
+                        <div class="result-correct" style="display:none;">回答正确！</div>
+                        <div class="result-incorrect" style="display:none;">回答错误</div>
+                        <div class="exercise-answer">正确答案：D</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="submit-container">
+                <button id="submitBtn">提交答案</button>
+                <button id="resetBtn">重新作答</button>
+            </div>
+            
+            <div id="testResult" class="score-pass">
+                <h3>测试结果：</h3>
+                <p>您的得分：<span id="score">0</span>/4</p>
+                <p id="resultText"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加主题弹窗 -->
+    <div class="modal" id="topicModal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modalTitle">添加主题</h3>
+            <input type="text" id="topicInput" class="modal-input" placeholder="输入主题名称">
+            <div class="modal-buttons">
+                <button id="cancelBtn">取消</button>
+                <button id="confirmBtn">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 订阅主题弹窗 -->
+    <div class="modal" id="subscribeModal">
+        <div class="modal-content">
+            <h3 class="modal-title">订阅主题</h3>
+            <select id="subscribeTopicSelect" class="modal-input">
+                <option value="">选择主题</option>
+            </select>
+            <div class="modal-buttons">
+                <button id="subscribeCancelBtn">取消</button>
+                <button id="subscribeConfirmBtn">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 统一提交状态提示 -->
+    <div id="quickformStatus" class="quickform-status"></div>
+
+    <script>
+    (function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            // ==================== 统一数据采集配置 ====================
+            const SUBMIT_URL = '/api/submit';
+            const ACTIVITY_ID = 'mqtt_simulation';
+
+            // 生成匿名学生ID
+            const generateAnonymousId = function() {
+                const timestamp = Date.now().toString(36);
+                const random = Math.random().toString(36).substring(2, 8);
+                return `anon_${timestamp}_${random}`;
+            };
+
+            // 显示状态提示
+            const showStatus = function(message, type) {
+                const statusEl = document.getElementById('quickformStatus');
+                if (statusEl) {
+                    statusEl.textContent = message;
+                    statusEl.className = `quickform-status ${type}`;
+                    
+                    if (type === 'success' || type === 'error') {
+                        setTimeout(() => {
+                            statusEl.style.opacity = '0';
+                        }, 5000);
+                    }
+                }
+            };
+
+            // 发送数据到统一接口
+            const sendDataToServer = function(data) {
+                showStatus('数据提交中...', 'info');
+                
+                fetch(SUBMIT_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                })
+                .then(async response => {
+                    const text = await response.text();
+                    let result = {};
+                    try {
+                        result = JSON.parse(text);
+                    } catch(e) {
+                        result = {"raw": text};
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(result.error || result.message || `HTTP ${response.status}`);
+                    }
+                    return result;
+                })
+                .then(result => {
+                    showStatus('学习数据已成功提交', 'success');
+                    console.log('数据提交成功:', result);
+                })
+                .catch(error => {
+                    showStatus('数据提交失败: ' + error.message, 'error');
+                    console.error('数据提交失败:', error);
+                });
+            };
+
+            // 收集模拟操作数据
+            const collectSimulationData = function() {
+                const data = {
+                    operations: [],
+                    operation_counts: {},
+                    topics_created: allTopics.length,
+                    messages_published: 0,
+                    subscriptions: 0
+                };
+
+                for (const clientId in clientStates) {
+                    const state = clientStates[clientId];
+                    
+                    if (state.publisher) {
+                        data.operations.push({
+                            action: 'set_publisher',
+                            client_id: clientId,
+                            slot: state.publisherSlot,
+                            topics: state.topics
+                        });
+                    }
+                    
+                    if (state.subscriber) {
+                        data.operations.push({
+                            action: 'set_subscriber',
+                            client_id: clientId,
+                            slots: state.subscriberSlots,
+                            subscriptions: state.subscriptions
+                        });
+                        data.subscriptions += state.subscriptions.length;
+                    }
+
+                    if (state.topics.length > 0) {
+                        state.topics.forEach(topic => {
+                            if (topicMessages[topic]) {
+                                data.messages_published += topicMessages[topic].length;
+                            }
+                        });
+                    }
+                }
+
+                data.operation_counts = {
+                    publisher_clients: Object.values(clientStates).filter(s => s.publisher).length,
+                    subscriber_clients: Object.values(clientStates).filter(s => s.subscriber).length,
+                    total_topics: allTopics.length,
+                    total_messages: data.messages_published,
+                    total_subscriptions: data.subscriptions
+                };
+
+                return data;
+            };
+
+            // 收集测验数据
+            const collectQuizData = function() {
+                const quizData = {
+                    answers: [],
+                    score: 0,
+                    total_questions: 4,
+                    accuracy: 0
+                };
+
+                document.querySelectorAll('.exercise-item').forEach(item => {
+                    const questionNumber = item.getAttribute('data-question');
+                    const correctAnswer = item.getAttribute('data-correct');
+                    const selectedOption = item.querySelector(`input[name="q${questionNumber}"]:checked`);
+                    
+                    const answerData = {
+                        question_id: `q${questionNumber}`,
+                        correct_answer: correctAnswer,
+                        is_correct: false
+                    };
+
+                    if (selectedOption) {
+                        answerData.answer = selectedOption.value;
+                        answerData.is_correct = (selectedOption.value === correctAnswer);
+                        if (answerData.is_correct) {
+                            quizData.score++;
+                        }
+                    } else {
+                        answerData.answer = null;
+                    }
+
+                    quizData.answers.push(answerData);
+                });
+
+                quizData.accuracy = quizData.score / quizData.total_questions;
+                return quizData;
+            };
+
+            // 收集完整数据并提交
+            const collectAndSubmitData = function() {
+                const startTime = quickformDataCollection.startTime;
+                const endTime = new Date().toISOString();
+                const duration = Math.floor((Date.now() - quickformDataCollection.startTimeTimestamp) / 1000);
+
+                const completeData = {
+                    activity_id: ACTIVITY_ID,
+                    student_id: quickformDataCollection.studentId,
+                    payload: {
+                        start_time: startTime,
+                        end_time: endTime,
+                        duration: duration,
+                        simulation_data: collectSimulationData(),
+                        quiz_data: collectQuizData()
+                    },
+                    submit_time: endTime
+                };
+
+                sendDataToServer(completeData);
+            };
+
+            // 数据收集管理
+            const quickformDataCollection = {
+                studentId: generateAnonymousId(),
+                startTime: new Date().toISOString(),
+                startTimeTimestamp: Date.now(),
+                hasSubmitted: false
+            };
+
+            // ==================== 原始MQTT模拟功能（保持不变） ====================
+            const clients = document.querySelectorAll('.client');
+            const publisherSlots = document.querySelectorAll('.publisher-slot');
+            const subscriberSlots = document.querySelectorAll('.subscriber-slot');
+            const serverContent = document.querySelector('.server-content');
+            const topicModal = document.getElementById('topicModal');
+            const topicInput = document.getElementById('topicInput');
+            const modalTitle = document.getElementById('modalTitle');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const subscribeModal = document.getElementById('subscribeModal');
+            const subscribeTopicSelect = document.getElementById('subscribeTopicSelect');
+            const subscribeCancelBtn = document.getElementById('subscribeCancelBtn');
+            const subscribeConfirmBtn = document.getElementById('subscribeConfirmBtn');
+            const mqttArea = document.querySelector('.mqtt-area');
+            const submitBtn = document.getElementById('submitBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const testResult = document.getElementById('testResult');
+            const scoreElement = document.getElementById('score');
+            const resultText = document.getElementById('resultText');
+            
+            const clientStates = {};
+            clients.forEach(client => {
+                const id = client.getAttribute('data-id');
+                clientStates[id] = {
+                    publisher: false,
+                    subscriber: false,
+                    publisherSlot: null,
+                    subscriberSlots: [],
+                    topics: [], 
+                    subscriptions: []
+                };
+            });
+            
+            const topicInfo = {};
+            const topicMessages = {};
+            const topicSubscriptions = {};
+            const allTopics = [];
+            
+            let modalState = {
+                type: null,
+                clientId: null,
+                slot: null
+            };
+            
+            const showToast = function(message, element) {
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = message;
+                
+                document.body.appendChild(toast);
+                
+                const rect = element.getBoundingClientRect();
+                const bodyRect = document.body.getBoundingClientRect();
+                const top = rect.top - bodyRect.top - 30;
+                const left = rect.left - bodyRect.left + rect.width / 2 - toast.offsetWidth / 2;
+                
+                toast.style.top = `${top}px`;
+                toast.style.left = `${left}px`;
+                
+                setTimeout(() => {
+                    toast.style.opacity = '1';
+                }, 10);
+                
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => {
+                        document.body.removeChild(toast);
+                    }, 300);
+                }, 3000);
+            };
+            
+            clients.forEach(client => {
+                client.setAttribute('draggable', 'true');
+                
+                client.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', client.getAttribute('data-id'));
+                });
+            });
+            
+            publisherSlots.forEach(slot => {
+                slot.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    slot.classList.add('drag-over');
+                });
+                
+                slot.addEventListener('dragleave', function() {
+                    slot.classList.remove('drag-over');
+                });
+                
+                slot.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    slot.classList.remove('drag-over');
+                    
+                    const clientId = e.dataTransfer.getData('text/plain');
+                    const client = document.querySelector(`.client[data-id="${clientId}"]`);
+                    
+                    if (clientStates[clientId].publisher) {
+                        alert('该客户端已在发布者区域，不能重复添加');
+                        return;
+                    }
+                    
+                    if (slot.querySelector('.slot-client')) {
+                        const existingClient = slot.querySelector('.slot-client');
+                        const existingClientId = existingClient.getAttribute('data-id');
+                        clientStates[existingClientId].publisher = false;
+                        clientStates[existingClientId].publisherSlot = null;
+                        clientStates[existingClientId].topics.forEach(topic => {
+                            if (topicInfo[topic]?.creator === existingClientId) {
+                                const topicEl = document.querySelector(`.topic[data-topic="${topic}"] .topic-publisher`);
+                                if (topicEl) topicEl.textContent = '发布者: 已移除';
+                            }
+                        });
+                        existingClient.remove();
+                        slot.innerHTML = '';
+                        slot.classList.remove('active');
+                        updateClientAppearance(existingClientId);
+                    }
+                    
+                    const clientTitle = document.createElement('div');
+                    clientTitle.className = 'slot-client publisher';
+                    clientTitle.textContent = client.textContent;
+                    clientTitle.setAttribute('data-id', clientId);
+                    
+                    const controls = document.createElement('div');
+                    controls.className = 'publisher-controls';
+                    
+                    const topicControls = document.createElement('div');
+                    topicControls.className = 'topic-controls';
+                    
+                    const addTopicBtn = document.createElement('button');
+                    addTopicBtn.textContent = '添加主题';
+                    addTopicBtn.addEventListener('click', function() {
+                        modalState.type = 'publish';
+                        modalState.clientId = clientId;
+                        modalState.slot = slot;
+                        modalTitle.textContent = '添加主题';
+                        topicInput.value = '';
+                        topicModal.style.display = 'flex';
+                    });
+                    
+                    topicControls.appendChild(addTopicBtn);
+                    
+                    const publishControls = document.createElement('div');
+                    publishControls.className = 'publish-controls';
+                    
+                    const topicSelect = document.createElement('select');
+                    topicSelect.id = `topicSelect-${clientId}-${slot.getAttribute('data-slot')}`;
+                    updateTopicSelect(clientId, topicSelect);
+                    
+                    const messageInput = document.createElement('input');
+                    messageInput.type = 'text';
+                    messageInput.placeholder = '消息';
+                    
+                    const publishBtn = document.createElement('button');
+                    publishBtn.textContent = '发布';
+                    publishBtn.addEventListener('click', publishHandler.bind(null, clientId, slot, topicSelect, messageInput));
+                    
+                    publishControls.appendChild(topicSelect);
+                    publishControls.appendChild(messageInput);
+                    publishControls.appendChild(publishBtn);
+                    
+                    controls.appendChild(topicControls);
+                    controls.appendChild(publishControls);
+                    
+                    slot.innerHTML = '';
+                    slot.appendChild(clientTitle);
+                    slot.appendChild(controls);
+                    slot.classList.add('active');
+                    
+                    clientStates[clientId].publisher = true;
+                    clientStates[clientId].publisherSlot = slot.getAttribute('data-slot');
+                    updateClientAppearance(clientId);
+                });
+            });
+            
+            subscriberSlots.forEach(slot => {
+                slot.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    slot.classList.add('drag-over');
+                });
+                
+                slot.addEventListener('dragleave', function() {
+                    slot.classList.remove('drag-over');
+                });
+                
+                slot.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    slot.classList.remove('drag-over');
+                    
+                    const clientId = e.dataTransfer.getData('text/plain');
+                    const client = document.querySelector(`.client[data-id="${clientId}"]`);
+                    
+                    if (clientStates[clientId].subscriber) {
+                        alert('该客户端已在订阅者区域，不能重复添加');
+                        return;
+                    }
+                    
+                    if (slot.querySelector('.slot-client')) {
+                        const existingClient = slot.querySelector('.slot-client');
+                        const existingClientId = existingClient.getAttribute('data-id');
+                        const slotIndex = clientStates[existingClientId].subscriberSlots.indexOf(slot.getAttribute('data-slot'));
+                        if (slotIndex > -1) {
+                            clientStates[existingClientId].subscriberSlots.splice(slotIndex, 1);
+                        }
+                        if (clientStates[existingClientId].subscriberSlots.length === 0) {
+                            clientStates[existingClientId].subscriber = false;
+                            clientStates[existingClientId].subscriptions.forEach(topic => {
+                                const index = topicSubscriptions[topic]?.indexOf(existingClientId);
+                                if (index > -1) {
+                                    topicSubscriptions[topic].splice(index, 1);
+                                }
+                            });
+                            clientStates[existingClientId].subscriptions = [];
+                        }
+                        existingClient.remove();
+                        slot.innerHTML = '';
+                        slot.classList.remove('active');
+                        updateClientAppearance(existingClientId);
+                    }
+                    
+                    const clientTitle = document.createElement('div');
+                    clientTitle.className = 'slot-client subscriber';
+                    clientTitle.textContent = client.textContent;
+                    clientTitle.setAttribute('data-id', clientId);
+                    
+                    const subscriberControls = document.createElement('div');
+                    subscriberControls.className = 'subscriber-controls';
+                    
+                    const subscribeButtons = document.createElement('div');
+                    subscribeButtons.className = 'subscribe-buttons';
+                    
+                    const subscribeBtn = document.createElement('button');
+                    subscribeBtn.className = 'subscribe-btn';
+                    subscribeBtn.textContent = '订阅主题';
+                    subscribeBtn.addEventListener('click', function() {
+                        modalState.type = 'subscribe';
+                        modalState.clientId = clientId;
+                        modalState.slot = slot;
+                        updateSubscribeTopicSelect();
+                        subscribeModal.style.display = 'flex';
+                    });
+                    
+                    subscribeButtons.appendChild(subscribeBtn);
+                    
+                    const messagesContainer = document.createElement('div');
+                    messagesContainer.className = 'messages-container';
+                    
+                    const messageArea = document.createElement('div');
+                    messageArea.className = 'subscriber-messages';
+                    messageArea.id = `subscriber-messages-${clientId}-${slot.getAttribute('data-slot')}`;
+                    
+                    messagesContainer.appendChild(messageArea);
+                    
+                    subscriberControls.appendChild(subscribeButtons);
+                    subscriberControls.appendChild(messagesContainer);
+                    
+                    slot.innerHTML = '';
+                    slot.appendChild(clientTitle);
+                    slot.appendChild(subscriberControls);
+                    slot.classList.add('active');
+                    
+                    if (!clientStates[clientId].subscriberSlots.includes(slot.getAttribute('data-slot'))) {
+                        clientStates[clientId].subscriberSlots.push(slot.getAttribute('data-slot'));
+                    }
+                    clientStates[clientId].subscriber = true;
+                    updateClientAppearance(clientId);
+                });
+            });
+            
+            const publishHandler = function(clientId, publisherSlot, topicSelect, messageInput) {
+                const topic = topicSelect.value;
+                const message = messageInput.value;
+                
+                if (!topic) {
+                    alert('请先添加并选择主题');
+                    return;
+                }
+                
+                if (message.trim() !== '') {
+                    const rect = publisherSlot.getBoundingClientRect();
+                    const mqttAreaRect = mqttArea.getBoundingClientRect();
+                    
+                    createPublishAnimation(
+                        rect.left + rect.width / 2 - mqttAreaRect.left,
+                        rect.top + rect.height / 2 - mqttAreaRect.top,
+                        clientId, 
+                        topic, 
+                        message
+                    );
+                    
+                    messageInput.value = '';
+                }
+            };
+            
+            const createPublishAnimation = function(startX, startY, clientId, topic, message) {
+                const bubble = document.createElement('div');
+                bubble.className = 'message-bubble';
+                bubble.textContent = message;
+                bubble.style.left = `${startX}px`;
+                bubble.style.top = `${startY}px`;
+                bubble.style.backgroundColor = '#e74c3c';
+                mqttArea.appendChild(bubble);
+                
+                const serverRect = document.querySelector('.server-area').getBoundingClientRect();
+                const mqttAreaRect = mqttArea.getBoundingClientRect();
+                const serverCenterX = serverRect.left + serverRect.width / 2 - mqttAreaRect.left;
+                
+                const animationDuration = 1000;
+                bubble.style.transition = `transform ${animationDuration}ms ease-in-out, opacity ${animationDuration}ms ease-in-out`;
+                bubble.style.opacity = '1';
+                
+                setTimeout(() => {
+                    bubble.style.transform = `translateX(${serverCenterX - startX}px)`;
+                }, 10);
+                
+                setTimeout(() => {
+                    mqttArea.removeChild(bubble);
+                    publishMessage(clientId, topic, message, serverCenterX, startY);
+                }, animationDuration);
+            };
+            
+            const createDeliveryAnimation = function(serverX, serverY, subscriberSlot, message, topic) {
+                const bubble = document.createElement('div');
+                bubble.className = 'message-bubble';
+                bubble.textContent = message;
+                bubble.style.left = `${serverX}px`;
+                bubble.style.top = `${serverY}px`;
+                bubble.style.backgroundColor = '#27ae60';
+                mqttArea.appendChild(bubble);
+                
+                const subscriberRect = subscriberSlot.getBoundingClientRect();
+                const mqttAreaRect = mqttArea.getBoundingClientRect();
+                const subscriberCenterX = subscriberRect.left + subscriberRect.width / 2 - mqttAreaRect.left;
+                const subscriberCenterY = subscriberRect.top + subscriberRect.height / 2 - mqttAreaRect.top;
+                
+                const animationDuration = 1000;
+                bubble.style.transition = `transform ${animationDuration}ms ease-in-out, opacity ${animationDuration}ms ease-in-out`;
+                bubble.style.opacity = '1';
+                
+                setTimeout(() => {
+                    bubble.style.transform = `translate(${subscriberCenterX - serverX}px, ${subscriberCenterY - serverY}px)`;
+                }, 10);
+                
+                setTimeout(() => {
+                    mqttArea.removeChild(bubble);
+                }, animationDuration);
+            };
+            
+            cancelBtn.addEventListener('click', () => topicModal.style.display = 'none');
+            confirmBtn.addEventListener('click', function() {
+                const topic = topicInput.value.trim();
+                if (!topic) {
+                    alert('请输入主题名称');
+                    return;
+                }
+                
+                if (modalState.type === 'publish' && !clientStates[modalState.clientId].topics.includes(topic)) {
+                    const clientId = modalState.clientId;
+                    clientStates[clientId].topics.push(topic);
+                    
+                    const slotId = modalState.slot.getAttribute('data-slot');
+                    const topicSelect = document.getElementById(`topicSelect-${clientId}-${slotId}`);
+                    updateTopicSelect(clientId, topicSelect);
+                    
+                    if (!allTopics.includes(topic)) {
+                        allTopics.push(topic);
+                        topicInfo[topic] = {
+                            creator: clientId,
+                            createdAt: new Date()
+                        };
+                        createTopicElement(topic, clientId);
+                    }
+                    
+                    showToast('添加成功', modalState.slot);
+                    
+                    topicModal.style.display = 'none';
+                } else if (clientStates[modalState.clientId].topics.includes(topic)) {
+                    alert('该主题已存在');
+                }
+            });
+            
+            subscribeCancelBtn.addEventListener('click', () => subscribeModal.style.display = 'none');
+            subscribeConfirmBtn.addEventListener('click', function() {
+                const topic = subscribeTopicSelect.value;
+                if (!topic) {
+                    alert('请选择主题');
+                    return;
+                }
+                
+                const clientId = modalState.clientId;
+                if (!clientStates[clientId].subscriptions.includes(topic)) {
+                    clientStates[clientId].subscriptions.push(topic);
+                    if (!topicSubscriptions[topic]) topicSubscriptions[topic] = [];
+                    topicSubscriptions[topic].push(clientId);
+                    
+                    showToast('订阅成功', modalState.slot);
+                    
+                    subscribeModal.style.display = 'none';
+                } else {
+                    alert('已经订阅了该主题');
+                }
+            });
+            
+            const updateTopicSelect = function(clientId, selectElement) {
+                selectElement.innerHTML = '<option value="">选择主题</option>';
+                clientStates[clientId].topics.forEach(topic => {
+                    const option = document.createElement('option');
+                    option.value = topic;
+                    option.textContent = topic;
+                    selectElement.appendChild(option);
+                });
+            };
+            
+            const updateSubscribeTopicSelect = function() {
+                subscribeTopicSelect.innerHTML = '<option value="">选择主题</option>';
+                allTopics.forEach(topic => {
+                    const option = document.createElement('option');
+                    option.value = topic;
+                    option.textContent = topic;
+                    subscribeTopicSelect.appendChild(option);
+                });
+            };
+            
+            const publishMessage = function(clientId, topic, message, serverX, serverY) {
+                if (!topicMessages[topic]) {
+                    topicMessages[topic] = [];
+                }
+                
+                const topicElement = document.querySelector(`.topic[data-topic="${topic}"] .topic-messages`);
+                
+                if (topicMessages[topic].length === 0) {
+                    topicElement.textContent = '';
+                }
+                
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message';
+                messageElement.textContent = message;
+                topicElement.appendChild(messageElement);
+                
+                topicElement.scrollTop = topicElement.scrollHeight;
+                
+                topicMessages[topic].push(message);
+                
+                (topicSubscriptions[topic] || []).forEach(subscriberId => {
+                    clientStates[subscriberId].subscriberSlots.forEach(slotId => {
+                        const subscriberSlot = document.querySelector(`.subscriber-slot[data-slot="${slotId}"]`);
+                        const messageArea = document.getElementById(`subscriber-messages-${subscriberId}-${slotId}`);
+                        
+                        if (messageArea && subscriberSlot) {
+                            createDeliveryAnimation(serverX, serverY, subscriberSlot, message, topic);
+                            
+                            setTimeout(() => {
+                                const receivedMessage = document.createElement('div');
+                                receivedMessage.className = 'received-message';
+                                receivedMessage.textContent = `[${topic}] ${message}`;
+                                messageArea.appendChild(receivedMessage);
+                                messageArea.scrollTop = messageArea.scrollHeight;
+                            }, 1000);
+                        }
+                    });
+                });
+            };
+            
+            const createTopicElement = function(topic, creatorId) {
+                if (document.querySelector(`.topic[data-topic="${topic}"]`)) {
+                    return;
+                }
+                
+                const topicElement = document.createElement('div');
+                topicElement.className = 'topic';
+                topicElement.setAttribute('data-topic', topic);
+                
+                const topicHeader = document.createElement('div');
+                topicHeader.className = 'topic-header';
+                
+                const topicTitle = document.createElement('div');
+                topicTitle.className = 'topic-title';
+                topicTitle.textContent = `主题: ${topic}`;
+                
+                const topicPublisher = document.createElement('div');
+                topicPublisher.className = 'topic-publisher';
+                topicPublisher.textContent = `发布者: 客户端${creatorId}`;
+                
+                topicHeader.appendChild(topicTitle);
+                topicHeader.appendChild(topicPublisher);
+                
+                const topicMessagesDiv = document.createElement('div');
+                topicMessagesDiv.className = 'topic-messages';
+                topicMessagesDiv.textContent = '暂无消息';
+                
+                topicElement.appendChild(topicHeader);
+                topicElement.appendChild(topicMessagesDiv);
+                
+                serverContent.appendChild(topicElement);
+            };
+            
+            const updateClientAppearance = function(clientId) {
+                const state = clientStates[clientId];
+                if (state.publisherSlot) {
+                    const clientEl = document.querySelector(`.publisher-slot[data-slot="${state.publisherSlot}"] .slot-client[data-id="${clientId}"]`);
+                    if (clientEl) {
+                        clientEl.className = 'slot-client publisher';
+                    }
+                }
+                state.subscriberSlots.forEach(slotId => {
+                    const clientEl = document.querySelector(`.subscriber-slot[data-slot="${slotId}"] .slot-client[data-id="${clientId}"]`);
+                    if (clientEl) {
+                        clientEl.className = 'slot-client subscriber';
+                    }
+                });
+            };
+            
+            submitBtn.addEventListener('click', function() {
+                let score = 0;
+                const totalQuestions = document.querySelectorAll('.exercise-item').length;
+                
+                document.querySelectorAll('.exercise-item').forEach(item => {
+                    const questionNumber = item.getAttribute('data-question');
+                    const correctAnswer = item.getAttribute('data-correct');
+                    const selectedOption = item.querySelector(`input[name="q${questionNumber}"]:checked`);
+                    const resultArea = item.querySelector('.exercise-result');
+                    const correctMsg = item.querySelector('.result-correct');
+                    const incorrectMsg = item.querySelector('.result-incorrect');
+                    
+                    resultArea.style.display = 'block';
+                    
+                    if (selectedOption) {
+                        if (selectedOption.value === correctAnswer) {
+                            correctMsg.style.display = 'block';
+                            incorrectMsg.style.display = 'none';
+                            score++;
+                        } else {
+                            correctMsg.style.display = 'none';
+                            incorrectMsg.style.display = 'block';
+                        }
+                    } else {
+                        correctMsg.style.display = 'none';
+                        incorrectMsg.style.display = 'block';
+                        incorrectMsg.textContent = '未选择答案';
+                    }
+                });
+                
+                scoreElement.textContent = score;
+                testResult.style.display = 'block';
+                
+                if (score === totalQuestions) {
+                    resultText.textContent = '恭喜您，全部回答正确！';
+                    testResult.className = 'score-pass';
+                } else if (score > 0) {
+                    resultText.textContent = '继续努力，还有提升空间！';
+                    testResult.className = 'score-pass';
+                } else {
+                    resultText.textContent = '请再仔细学习一下MQTT相关知识吧！';
+                    testResult.className = 'score-fail';
+                }
+                
+                testResult.scrollIntoView({ behavior: 'smooth' });
+
+                // ==================== 提交数据到统一接口 ====================
+                if (!quickformDataCollection.hasSubmitted) {
+                    collectAndSubmitData();
+                    quickformDataCollection.hasSubmitted = true;
+                }
+            });
+            
+            resetBtn.addEventListener('click', function() {
+                document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.checked = false;
+                });
+                
+                document.querySelectorAll('.exercise-result').forEach(result => {
+                    result.style.display = 'none';
+                });
+                
+                testResult.style.display = 'none';
+                
+                scoreElement.textContent = '0';
+                
+                document.querySelector('.exercises-title').scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    })();
+    </script>
+</body>
+</html>

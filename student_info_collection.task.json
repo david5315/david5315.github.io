@@ -1,0 +1,8 @@
+{
+  "public": true,
+  "allowOtherTeachers": true,
+  "allowPrivateStudents": false,
+  "allowGlobalStudents": false,
+  "templateType": "data_collection",
+  "templateId": "student_info_collection"
+}

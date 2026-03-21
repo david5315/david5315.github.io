@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的网站群 - 课堂互动教学</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+        
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #eaeaea;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .admin-badge {
+            background-color: #e74c3c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-left: 8px;
+        }
+        
+        .user-profile-link {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .user-profile-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            text-decoration: underline;
+        }
+        
+        .user-profile-link .admin-badge {
+            margin-left: 5px;
+            font-size: 0.65rem;
+            vertical-align: middle;
+        }
+
+        /* 目录浏览表格样式 */
+        .file-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .file-table th, .file-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .file-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        .dir-icon {
+            color: #f39c12;
+            margin-right: 8px;
+        }
+        .file-icon {
+            color: #3498db;
+            margin-right: 8px;
+        }
+        .checkbox-col {
+            width: 30px;
+        }
+        .actions-col {
+            width: 280px; /* 增加宽度以适应新按钮 */
+        }
+        .public-badge {
+            background-color: #28a745;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        .shared-badge {
+            background-color: #17a2b8;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        .private-badge {
+            background-color: #6c757d;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        .private-student-badge {
+            background-color: #fd7e14;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        .global-student-badge {
+            background-color: #20c997;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin: 2px;
+        }
+
+        /* 教师选择器样式 */
+        #teacher-selector {
+            color: #fff;
+            background-color: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            padding: 4px 8px;
+            margin-right: 10px;
+        }
+        #teacher-selector option {
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        /* 文件夹卡片样式 */
+        .folder-card {
+            transition: transform 0.3s;
+            height: 100%;
+            position: relative;
+        }
+        .folder-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+        .folder-icon {
+            font-size: 2.5rem;
+            color: #f39c12;
+        }
+        .folder-checkbox {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+        }
+
+        /* 分页控件 */
+        .pagination-info {
+            line-height: 2rem;
+        }
+
+        /* 区域分隔 */
+        .area-card {
+            margin-bottom: 30px;
+        }
+        .area-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .area-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        .area-toolbar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* 属性两列显示 */
+        .attr-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .attr-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        /* 名称超链接 */
+        .name-link {
+            color: #007bff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .name-link:hover {
+            text-decoration: underline;
+        }
+        .name-link .fas {
+            margin-right: 5px;
+        }
+
+        /* 生成按钮组间距 */
+        .generate-btn-group {
+            gap: 1.5rem !important;
+        }
+
+        /* 面包屑链接样式 */
+        .breadcrumb-link {
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .breadcrumb-link:hover {
+            text-decoration: underline;
+        }
+        .breadcrumb-separator {
+            margin: 0 5px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div id="teacher-dashboard">
+        <!-- ==================== 导航栏 ==================== -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#" id="help-trigger">
+                    <i class="fas fa-chalkboard-teacher me-2"></i>
+                    互动教学发布系统说明
+                </a>
+                
+                <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+                    <!-- 页面切换按钮 -->
+                    <a class="btn btn-outline-light btn-sm me-2 active" href="teacher.html">
+                        <i class="fas fa-folder-open me-1"></i> 我的网站群
+                    </a>
+                    <a class="btn btn-outline-light btn-sm me-2" href="pubshare.html">
+                        <i class="fas fa-globe me-1"></i> 公开资源
+                    </a>
+
+                    <select id="teacher-selector" class="form-select form-select-sm me-2" style="display: none; width: auto;">
+                        <option value="">加载中...</option>
+                    </select>
+
+                    <a class="btn btn-outline-light btn-sm me-2" href="private_students.html" id="private-students-link" style="display: none;">
+                        <i class="fas fa-user-graduate me-1"></i> 学生管理
+                    </a>
+                    <a class="btn btn-outline-light btn-sm me-2" href="admin_management.html" id="admin-link" style="display: none;">
+                        <i class="fas fa-user-shield me-1"></i> 全局管理
+                    </a>
+                    
+                    <!-- 数据管理入口 -->
+                    <a class="btn btn-outline-light btn-sm me-2" href="data_viewer.html">
+                        <i class="fas fa-database me-1"></i> 数据管理
+                    </a>
+                    <!-- 新增模板管理按钮 -->
+                    <a class="btn btn-outline-light btn-sm me-2" href="ai_prompt_templates.html">
+                        <i class="fas fa-file-code me-1"></i> 模板管理
+                    </a>
+
+                    <span class="navbar-text me-3">
+                        <i class="fas fa-user me-1"></i>
+                        <span id="current-user-display" class="user-profile-link">教师用户</span>
+                    </span>
+                    
+                    <button id="logout-btn" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-sign-out-alt me-1"></i> 退出
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mt-4">
+            <!-- 提示词输入与生成按钮（全局） -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="global-prompt" placeholder="输入需求，例如：生成一个学生信息收集表单...">
+                        <button class="btn btn-success" id="global-generate-image"><i class="fas fa-image me-1"></i>生成图片</button>
+                        <button class="btn btn-warning ms-3" id="global-generate-video"><i class="fas fa-video me-1"></i>生成视频</button>
+                        <button class="btn btn-success ms-3" id="global-generate-page"><i class="fas fa-magic me-1"></i>一键生成网页</button>
+                        <!-- DeepSeek 生成网页链接：始终显示 -->
+                        <a class="btn btn-outline-info ms-3" id="deepseek-help-link" href="deepseek.html">
+                            <i class="fas fa-robot me-1"></i> DeepSeek生成网页
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 我的教学资源区域 -->
+            <div class="card area-card" id="my-area">
+                <div class="area-header">
+                    <h5 class="area-title"><i class="fas fa-folder-open text-warning me-2"></i>我的教学资源</h5>
+                    <div class="area-toolbar">
+                        <button class="btn btn-sm btn-outline-secondary" id="my-go-up-btn" disabled><i class="fas fa-level-up-alt"></i> 上级</button>
+                        <button class="btn btn-sm btn-outline-primary" id="my-new-folder-btn"><i class="fas fa-folder-plus"></i> 新建</button>
+                        <button class="btn btn-sm btn-outline-primary" id="my-upload-file-btn"><i class="fas fa-upload"></i> 上传</button>
+                        <button class="btn btn-sm btn-outline-warning" id="my-cut-btn" disabled><i class="fas fa-cut"></i> 剪切</button>
+                        <button class="btn btn-sm btn-outline-warning" id="my-copy-btn" disabled><i class="fas fa-copy"></i> 复制</button>
+                        <button class="btn btn-sm btn-outline-warning" id="my-paste-btn" disabled><i class="fas fa-paste"></i> 粘贴</button>
+                        <button class="btn btn-sm btn-outline-danger" id="my-batch-delete-btn" disabled><i class="fas fa-trash-alt"></i> 批量删除</button>
+                        <button class="btn btn-sm btn-outline-success" id="my-download-zip-btn" disabled><i class="fas fa-file-archive"></i> 下载ZIP</button>
+                        <div class="input-group input-group-sm" style="width: 200px;">
+                            <input type="text" class="form-control" id="my-search-input" placeholder="搜索...">
+                            <button class="btn btn-outline-primary" id="my-search-btn"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- 面包屑导航容器 -->
+                    <div id="my-breadcrumb" class="mb-2 small text-muted"></div>
+                    <table class="file-table">
+                        <thead>
+                            <tr>
+                                <th class="checkbox-col"><input type="checkbox" id="my-select-all"></th>
+                                <th>名称</th>
+                                <th>大小</th>
+                                <th>修改时间</th>
+                                <th>属性</th>
+                                <th class="actions-col">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="my-file-list-body"></tbody>
+                    </table>
+                    <div id="my-empty-folder" class="text-center text-muted py-4" style="display: none;">此文件夹为空</div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <button class="btn btn-sm btn-outline-secondary" id="my-prev-page" disabled><i class="fas fa-chevron-left"></i> 上一页</button>
+                        <span id="my-page-info">第 1 页 / 共 1 页</span>
+                        <button class="btn btn-sm btn-outline-secondary" id="my-next-page" disabled>下一页 <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 使用说明模态框 -->
+    <div class="modal fade" id="helpModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-question-circle me-2 text-primary"></i>我的网站群使用说明</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <p class="mb-2">管理您的教学资源文件夹，上传文件，AI生成网页/图片/视频。</p>
+                    </div>
+                    <ol class="list-group list-group-numbered mb-3">
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>浏览文件夹</strong><br>点击文件夹名称进入子目录，面包屑导航可返回上级。上方工具栏按钮可执行各种操作。</div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>新建/上传</strong><br>点击“新建”创建任务文件夹，可填写描述和模板；点击“上传”选择文件上传到当前目录。</div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>剪切/复制/粘贴</strong><br>选中文件或文件夹，点击剪切或复制，然后进入目标目录点击粘贴，实现移动或复制。</div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>设置文件夹属性</strong><br>在根目录或二级目录下，点击文件夹后的齿轮图标可设置访问权限（公开、共享、学生可见）。</div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>AI生成功能</strong><br>使用上方输入框输入需求，点击“生成图片/视频/网页”按钮，默认保存路径为当前目录，可修改。生成网页时可选择参考文件（通过复选框选中）。</div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>下载/删除/预览/重命名</strong><br>选中文件后可批量下载ZIP或批量删除；单个文件可预览（支持常见格式）或下载；点击铅笔图标可重命名文件或文件夹。</div>
+                        </li>
+                    </ol>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 新建文件夹模态框 -->
+    <div class="modal fade" id="newFolderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">新建任务文件夹</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">文件夹名称</label>
+                        <input type="text" class="form-control" id="new-folder-name" placeholder="请输入文件夹名称" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">模板（可选）</label>
+                        <select class="form-select" id="folder-template">
+                            <option value="">无模板</option>
+                            <option value="data_collection">数据采集</option>
+                            <option value="statistics">统计分析</option>
+                            <option value="qa">互动问答</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">任务描述（可选）</label>
+                        <textarea class="form-control" id="folder-description" rows="2" placeholder="简单描述该任务的目的"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="create-folder-btn">创建</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 上传文件模态框 -->
+    <div class="modal fade" id="uploadFileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">上传文件</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">选择文件</label>
+                        <input type="file" class="form-control" id="upload-file-input" multiple>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="upload-file-btn-confirm">上传</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI生成图片模态框 -->
+    <div class="modal fade" id="generateImageModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-image me-2 text-success"></i>AI生成图片</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">AI提示词 <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="generate-image-prompt" rows="4" placeholder="例如：一只可爱的猫咪，水墨风格"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">保存路径（相对于您的根目录） <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="generate-image-folder" placeholder="例如：数学/二次函数（留空表示根目录）">
+                        <div class="form-text">生成的图片将保存在此路径下，多级路径用 / 分隔。</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">文件名 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="generate-image-filename" placeholder="例如：image（可不带扩展名，系统自动添加 .png）">
+                    </div>
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>仅使用输入的提示词生成，不参考任何素材文件。
+                    </div>
+                    <div id="generate-image-result" style="display: none;" class="text-center mt-3">
+                        <img id="generated-image-preview" src="" alt="生成的图片" style="max-width: 100%; max-height: 300px;">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-success" id="confirm-generate-image-btn">
+                        <i class="fas fa-image me-2"></i>生成图片
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI生成视频模态框 -->
+    <div class="modal fade" id="generateVideoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-video me-2 text-warning"></i>AI生成视频</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">AI提示词 <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="generate-video-prompt" rows="4" placeholder="例如：课堂实验操作演示动画..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">保存路径（相对于您的根目录） <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="generate-video-folder" placeholder="例如：物理/牛顿第二定律（留空表示根目录）">
+                        <div class="form-text">生成的视频将保存在此路径下，多级路径用 / 分隔。</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">文件名 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="generate-video-filename" placeholder="例如：video（可不带扩展名，系统自动添加 .mp4）">
+                    </div>
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>仅使用输入的提示词生成，不参考任何素材文件。当前为模拟模式，实际将创建一个包含提示词信息的文本文件（后缀.mp4），以便预览。
+                    </div>
+                    <div id="generate-video-result" style="display: none;" class="text-center mt-3">
+                        <video id="generated-video-preview" controls style="max-width: 100%; max-height: 300px;">
+                            <source src="" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-warning" id="confirm-generate-video-btn">
+                        <i class="fas fa-video me-2"></i>生成视频
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI生成网页模态框 -->
+    <div class="modal fade" id="generatePageModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-magic me-2 text-success"></i>AI生成互动网页</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">保存路径（当前目录）</label>
+                        <input type="text" class="form-control bg-light" id="generate-page-folder" readonly placeholder="自动使用当前目录">
+                        <div class="form-text">基于您在“我的教学资源”中所在的目录。</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">文件名</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="generate-page-filename" placeholder="文件名（可修改）">
+                            <button class="btn btn-outline-secondary" type="button" id="smart-name-btn">智能命名</button>
+                        </div>
+                        <div class="form-text" id="filename-warning" style="color: #856404; background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 4px; padding: 5px; margin-top: 5px; display: none;">
+                            <i class="fas fa-exclamation-triangle me-1"></i> 文件名包含空格或特殊字符，后端可能会自动转换，建议使用字母、数字、下划线和中横线。
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">AI提示词（可选）</label>
+                        <textarea class="form-control" id="generate-page-prompt" rows="4" placeholder="请输入您的需求（手动填写或分析文件里的提示词等内容）"></textarea>
+                    </div>
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        确认后，AI将根据提示词生成网页，并自动保存在当前目录。文件名使用输入框中的名称，若为空则自动生成时间戳。
+                    </div>
+                    <div class="alert alert-secondary" role="alert" id="selected-ref-files-info">
+                        正在检查选中的参考文件...
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-success" id="confirm-generate-page-btn">
+                        <i class="fas fa-magic me-2"></i>确认生成
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 预览模态框 -->
+    <div class="modal fade" id="previewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">文件预览</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center" id="preview-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑文件夹属性模态框 -->
+    <div class="modal fade" id="editFolderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">设置文件夹属性</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit-folder-path">
+                    <div class="mb-3">
+                        <label class="form-label">文件夹名称</label>
+                        <input type="text" class="form-control" id="edit-folder-name" readonly>
+                    </div>
+                    <div class="mb-3 form-check" id="public-checkbox-container" style="display: none;">
+                        <input type="checkbox" class="form-check-input" id="edit-folder-public">
+                        <label class="form-check-label" for="edit-folder-public">允许游客访问（公开）</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="edit-folder-allow-other">
+                        <label class="form-check-label" for="edit-folder-allow-other">允许其他教师访问（共享）</label>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">学生访问权限</label>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="edit-folder-allow-private">
+                            <label class="form-check-label" for="edit-folder-allow-private">允许教师自设学生访问（私有）</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="edit-folder-allow-global">
+                            <label class="form-check-label" for="edit-folder-allow-global">允许教师任教跨班学生访问（全局）</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="save-folder-attr">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 重命名模态框 (新增) -->
+    <div class="modal fade" id="renameModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">重命名</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="rename-path">
+                    <input type="hidden" id="rename-is-dir">
+                    <div class="mb-3">
+                        <label class="form-label">当前名称</label>
+                        <input type="text" class="form-control" id="rename-current-name" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">新名称</label>
+                        <input type="text" class="form-control" id="rename-new-name" placeholder="输入新名称">
+                    </div>
+                    <div class="alert alert-warning" id="rename-folder-warning" style="display: none;">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        修改文件夹名称将影响该任务的数据关联（例如已提交的数据将无法再通过新名称访问）。如有必要，请重新生成数据提交和分析页面。
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="confirm-rename-btn">确认重命名</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 消息提示容器 -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ==================== 全局变量 ====================
+        const API_BASE = window.location.origin + '/api';
+        let currentUser = null;
+        let isAdmin = false;
+        let selectedTeacher = '';
+
+        let myArea = {
+            currentPath: '',
+            items: [],
+            currentPage: 1,
+            pageSize: 10,
+            clipboard: { paths: [], operation: null, teacher: null }
+        };
+
+        window.siteSetup = {};
+
+        // ==================== 登录状态管理 ====================
+        function checkLoginState() {
+            const token = localStorage.getItem('teacherToken');
+            const userStr = localStorage.getItem('teacherUser');
+            if (!token || !userStr) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            try {
+                return JSON.parse(userStr);
+            } catch (e) {
+                window.location.href = 'login.html';
+                return null;
+            }
+        }
+
+        function clearAllLoginState() {
+            localStorage.removeItem('teacherToken');
+            localStorage.removeItem('teacherUser');
+            sessionStorage.clear();
+            const cookies = document.cookie.split(";");
+            for (let cookie of cookies) {
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+            }
+        }
+
+        // ==================== 获取完整用户资料（包含 user_key）====================
+        async function fetchUserProfile() {
+            try {
+                const res = await apiCall('/account/profile');
+                if (res.success && res.profile) {
+                    currentUser.user_key = res.profile.user_key;
+                    currentUser.name = res.profile.name;
+                    currentUser.subject = res.profile.subject;
+                    currentUser.phone = res.profile.phone;
+                    currentUser.email = res.profile.email;
+                    // 有效期和剩余额度不再显示，但仍保留在user对象中以便后续使用（如支付判断）
+                    currentUser.expiry_date = res.profile.expiry_date;
+                    currentUser.remaining_uses = res.profile.remaining_uses;
+                    localStorage.setItem('teacherUser', JSON.stringify(currentUser));
+                    // 移除额度显示调用
+                }
+            } catch (error) {
+                console.warn('获取用户资料失败', error);
+            }
+        }
+
+        // ==================== 新增：根据版本控制管理员 UI ====================
+        function applyAdminUI() {
+            const version = window.siteSetup?.quickforge_version;
+            const isAdmin = window.currentIsAdmin; // 由 updateUserDisplay 设置
+
+            const adminLink = document.getElementById('admin-link');
+            const selector = document.getElementById('teacher-selector');
+
+            if (isAdmin && version !== 'personal' && version !== 'basic') {
+                // 管理员且版本允许，显示全局管理并加载教师选择器
+                if (adminLink) adminLink.style.display = 'block';
+                loadTeacherSelector(); // 内部会判断版本并决定是否显示
+            } else {
+                // 隐藏管理员相关 UI
+                if (adminLink) adminLink.style.display = 'none';
+                if (selector) selector.style.display = 'none';
+                // 强制使用当前用户自己的目录
+                selectedTeacher = currentUser.username;
+            }
+        }
+
+        // ==================== 更新用户显示 ====================
+        function updateUserDisplay(user) {
+            const userDisplay = document.getElementById('current-user-display');
+            if (userDisplay) {
+                let displayText = user.username;
+                if (user.isAdmin) {
+                    displayText += ' <span class="admin-badge">管理员</span>';
+                    isAdmin = true;
+                }
+                userDisplay.innerHTML = displayText;
+                userDisplay.style.cursor = 'pointer';
+                userDisplay.title = '点击查看个人资料';
+                userDisplay.addEventListener('click', function() {
+                    window.location.href = 'profile.html';
+                });
+            }
+            
+            const adminLink = document.getElementById('admin-link');
+            const privateStudentsLink = document.getElementById('private-students-link');
+
+            // 私有学生管理按钮：仅非管理员显示
+            if (privateStudentsLink) {
+                privateStudentsLink.style.display = user.isAdmin ? 'none' : 'block';
+            }
+
+            // 保存管理员状态到全局，供 applyAdminUI 使用
+            window.currentIsAdmin = user.isAdmin || false;
+
+            // 应用管理员 UI（版本控制）
+            applyAdminUI();
+
+            // 移除额度显示调用
+        }
+
+        // ==================== 加载教师选择器（管理员用）====================
+        async function loadTeacherSelector() {
+            const version = window.siteSetup?.quickforge_version;
+            // 版本为 personal 或 basic 时不显示教师选择器
+            if (version === 'personal' || version === 'basic') {
+                document.getElementById('teacher-selector').style.display = 'none';
+                return;
+            }
+
+            try {
+                const teachersRes = await apiCall('/admin/teachers');
+                if (teachersRes.success && teachersRes.teachers) {
+                    const selector = document.getElementById('teacher-selector');
+                    selector.innerHTML = '';
+                    const rootOption = document.createElement('option');
+                    rootOption.value = '';
+                    rootOption.textContent = '根目录 (templates)';
+                    selector.appendChild(rootOption);
+                    teachersRes.teachers.forEach(t => {
+                        const option = document.createElement('option');
+                        option.value = t.username;
+                        option.textContent = `${t.name || t.username} (${t.username})`;
+                        selector.appendChild(option);
+                    });
+                    selector.style.display = 'inline-block'; // 显示选择器
+                    selector.value = selectedTeacher;
+                    selector.addEventListener('change', (e) => {
+                        selectedTeacher = e.target.value;
+                        myArea.currentPath = '';
+                        updateMyBreadcrumb();
+                        loadMyResourceFolder(myArea.currentPath);
+                    });
+                }
+            } catch (error) {
+                console.error('加载教师列表失败', error);
+            }
+        }
+
+        // ==================== 改进后的 API 调用（自动处理对象转 JSON）====================
+        async function apiCall(endpoint, options = {}) {
+            try {
+                // 如果 body 是对象，自动转为 JSON 字符串并设置 Content-Type
+                if (options.body && typeof options.body === 'object') {
+                    options.body = JSON.stringify(options.body);
+                    options.headers = options.headers || {};
+                    options.headers['Content-Type'] = 'application/json';
+                }
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    headers: { 'Content-Type': 'application/json', ...options.headers },
+                    credentials: 'include',
+                    ...options
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('API调用失败:', error);
+                throw error;
+            }
+        }
+
+        async function apiCallFormData(endpoint, formData, method = 'POST') {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    method: method,
+                    body: formData,
+                    credentials: 'include'
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('API调用失败:', error);
+                throw error;
+            }
+        }
+
+        // ==================== 加载站点配置 ====================
+        async function loadSiteSetup() {
+            try {
+                const res = await apiCall('/site-setup');
+                if (res.success) {
+                    window.siteSetup = res.site_setup || {};
+                }
+            } catch (e) {
+                console.error('加载站点配置失败', e);
+            } finally {
+                // 无论成功或失败，都重新应用一次管理员 UI（失败时版本可能为 undefined）
+                applyAdminUI();
+            }
+        }
+
+        // ==================== 工具函数 ====================
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+            if (bytes < 1024*1024*1024) return (bytes/1024/1024).toFixed(1) + ' MB';
+            return (bytes/1024/1024/1024).toFixed(1) + ' GB';
+        }
+
+        function formatDate(timestamp) {
+            const date = new Date(timestamp * 1000);
+            return date.toLocaleString('zh-CN', { hour12: false });
+        }
+
+        function getFileIconClass(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const iconMap = {
+                'html': 'fa-file-code text-primary',
+                'htm': 'fa-file-code text-primary',
+                'css': 'fa-file-code text-info',
+                'js': 'fa-file-code text-warning',
+                'png': 'fa-file-image text-success',
+                'jpg': 'fa-file-image text-success',
+                'jpeg': 'fa-file-image text-success',
+                'gif': 'fa-file-image text-success',
+                'pdf': 'fa-file-pdf text-danger',
+                'txt': 'fa-file-alt text-secondary',
+                'zip': 'fa-file-archive text-secondary',
+                'doc': 'fa-file-word text-primary',
+                'docx': 'fa-file-word text-primary',
+                'xls': 'fa-file-excel text-success',
+                'xlsx': 'fa-file-excel text-success',
+                'mp4': 'fa-video text-info',
+                'webm': 'fa-video text-info',
+                'mov': 'fa-video text-info'
+            };
+            return iconMap[ext] || 'fa-file text-muted';
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe.replace(/[&<>"]/g, function(m) {
+                if(m === '&') return '&amp;';
+                if(m === '<') return '&lt;';
+                if(m === '>') return '&gt;';
+                if(m === '"') return '&quot;';
+                return m;
+            });
+        }
+
+        function showToast(type, message) {
+            const container = document.querySelector('.toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0 show`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function getTeacherAttrBadge(item) {
+            if (item.public) {
+                return '<span class="public-badge">游客公开</span>';
+            } else if (item.allowOtherTeachers) {
+                return '<span class="shared-badge">教师共享</span>';
+            } else {
+                return '<span class="private-badge">私有</span>';
+            }
+        }
+
+        function getStudentAttrBadges(item) {
+            let badges = [];
+            if (item.allowPrivateStudents) {
+                badges.push('<span class="private-student-badge">私有学生可见</span>');
+            }
+            if (item.allowGlobalStudents) {
+                badges.push('<span class="global-student-badge">全局学生可见</span>');
+            }
+            return badges.join(' ');
+        }
+
+        // ==================== 面包屑函数（我的教学资源）====================
+        function updateMyBreadcrumb() {
+            const container = document.getElementById('my-breadcrumb');
+            if (!container) return;
+            const path = myArea.currentPath;
+            let html = '<a class="breadcrumb-link" onclick="navigateToPath(\'\')">我的教学资源</a>';
+            if (path) {
+                const parts = path.split('/');
+                let accumulated = '';
+                for (let i = 0; i < parts.length; i++) {
+                    accumulated += (i === 0 ? parts[i] : '/' + parts[i]);
+                    html += ` <span class="breadcrumb-separator">/</span> <a class="breadcrumb-link" onclick="navigateToPath('${accumulated}')">${parts[i]}</a>`;
+                }
+            }
+            container.innerHTML = html;
+        }
+
+        window.navigateToPath = function(path) {
+            myArea.currentPath = path;
+            loadMyResourceFolder(path);
+        };
+
+        // ==================== 我的资源区域函数 ====================
+        async function loadMyResourceFolder(path) {
+            const tbody = document.getElementById('my-file-list-body');
+            const emptyMsg = document.getElementById('my-empty-folder');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4"><i class="fas fa-spinner fa-spin me-2"></i>加载中...</td></tr>';
+            emptyMsg.style.display = 'none';
+
+            try {
+                const teacher = selectedTeacher || currentUser.username;
+                const response = await apiCall(`/teacher/files?path=${encodeURIComponent(path)}&teacher=${encodeURIComponent(teacher)}`);
+                if (!response.success) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">${response.message}</td></tr>`;
+                    return;
+                }
+                myArea.items = (response.items || []).map(item => {
+                    if (item.type === 'dir' || item.type === 'file') {
+                        item.fullPath = teacher + '/' + item.path;
+                    }
+                    return item;
+                });
+                myArea.currentPage = 1;
+                renderMyFileList();
+                updateMyBreadcrumb();
+                document.getElementById('my-go-up-btn').disabled = (path === '' && !teacher);
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">加载失败: ${err.message}</td></tr>`;
+            }
+        }
+
+        function renderMyFileList() {
+            const tbody = document.getElementById('my-file-list-body');
+            const emptyMsg = document.getElementById('my-empty-folder');
+            const start = (myArea.currentPage - 1) * myArea.pageSize;
+            const end = start + myArea.pageSize;
+            const pageItems = myArea.items.slice(start, end);
+            const totalPages = Math.ceil(myArea.items.length / myArea.pageSize) || 1;
+
+            if (myArea.items.length === 0) {
+                tbody.innerHTML = '';
+                emptyMsg.style.display = 'block';
+                document.getElementById('my-prev-page').disabled = true;
+                document.getElementById('my-next-page').disabled = true;
+                document.getElementById('my-page-info').innerText = '第 1 页 / 共 1 页';
+                return;
+            }
+
+            emptyMsg.style.display = 'none';
+            let html = '';
+            pageItems.forEach(item => {
+                const isDir = item.type === 'dir';
+                const iconClass = isDir ? 'fa-folder text-warning' : getFileIconClass(item.name);
+                const size = isDir ? '-' : formatFileSize(item.size);
+                const modified = formatDate(item.modified);
+                const teacherAttr = getTeacherAttrBadge(item);
+                const studentAttr = getStudentAttrBadges(item);
+                
+                let nameHtml = '';
+                if (isDir) {
+                    nameHtml = `<a class="name-link" onclick="enterMySubdir('${item.path}')"><i class="fas ${iconClass} me-2"></i>${item.name}</a>`;
+                } else {
+                    const ext = item.name.split('.').pop().toLowerCase();
+                    const fullUrl = `/templates/${selectedTeacher || currentUser.username}/${item.path}`;
+                    if (ext === 'html' || ext === 'htm') {
+                        nameHtml = `<a href="${fullUrl}" target="_blank" class="name-link"><i class="fas ${iconClass} me-2"></i>${item.name}</a>`;
+                    } else if (['png','jpg','jpeg','gif','pdf','txt','css','js','json','md','mp4','webm','mov'].includes(ext)) {
+                        nameHtml = `<a class="name-link" onclick="previewMyFile('${item.path}')"><i class="fas ${iconClass} me-2"></i>${item.name}</a>`;
+                    } else {
+                        nameHtml = `<a href="${fullUrl}" download class="name-link"><i class="fas ${iconClass} me-2"></i>${item.name}</a>`;
+                    }
+                }
+
+                let actionBtns = '';
+                if (isDir) {
+                    actionBtns += `<button class="btn btn-sm btn-outline-secondary" onclick="enterMySubdir('${item.path}')"><i class="fas fa-folder-open"></i></button> `;
+                    actionBtns += `<button class="btn btn-sm btn-outline-primary" onclick="downloadMyZip('${item.path}')"><i class="fas fa-download"></i></button> `;
+                    // 重命名按钮
+                    actionBtns += `<button class="btn btn-sm btn-outline-warning" onclick="openRenameModal('${item.path}', '${item.name}', true)" title="重命名"><i class="fas fa-pencil-alt"></i></button> `;
+                    if (myArea.currentPath === '') {
+                        actionBtns += `<button class="btn btn-sm btn-outline-warning" onclick="openEditFolderModal('${item.path}', '${item.name}')"><i class="fas fa-cog"></i></button> `;
+                    } else {
+                        actionBtns += `<button class="btn btn-sm btn-outline-warning" disabled title="子文件夹无法设置属性"><i class="fas fa-cog"></i></button> `;
+                    }
+                    actionBtns += `<button class="btn btn-sm btn-outline-danger" onclick="deleteMyItem('${item.path}', true)"><i class="fas fa-trash"></i></button>`;
+                } else {
+                    const ext = item.name.split('.').pop().toLowerCase();
+                    if (['png','jpg','jpeg','gif','pdf','txt','html','htm','css','js','json','md','mp4','webm','mov'].includes(ext)) {
+                        actionBtns += `<button class="btn btn-sm btn-outline-info" onclick="previewMyFile('${item.path}')"><i class="fas fa-eye"></i></button> `;
+                    }
+                    actionBtns += `<a href="/templates/${selectedTeacher || currentUser.username}/${item.path}" class="btn btn-sm btn-outline-primary" target="_blank" download><i class="fas fa-download"></i></a> `;
+                    // 如果是 HTML 文件，添加复制到其他任务按钮
+                    if (ext === 'html' || ext === 'htm') {
+                        actionBtns += `<button class="btn btn-sm btn-outline-info" onclick="copyPageToTask('${item.path}')" title="复制到其他任务"><i class="fas fa-copy"></i></button> `;
+                    }
+                    // 重命名按钮
+                    actionBtns += `<button class="btn btn-sm btn-outline-warning" onclick="openRenameModal('${item.path}', '${item.name}', false)" title="重命名"><i class="fas fa-pencil-alt"></i></button> `;
+                    if (ext === 'zip') {
+                        actionBtns += `<button class="btn btn-sm btn-outline-success" onclick="extractMyZip('${item.path}')"><i class="fas fa-file-archive"></i></button> `;
+                    }
+                    actionBtns += `<button class="btn btn-sm btn-outline-danger" onclick="deleteMyItem('${item.path}', false)"><i class="fas fa-trash"></i></button>`;
+                }
+
+                html += `<tr>
+                    <td><input type="checkbox" class="my-file-checkbox" data-path="${item.fullPath}" ${isDir ? 'data-isdir="true"' : ''}></td>
+                    <td>${nameHtml}</td>
+                    <td>${size}</td>
+                    <td>${modified}</td>
+                    <td><div class="attr-cell attr-row">${teacherAttr} ${studentAttr}</div></td>
+                    <td>${actionBtns}</td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+
+            document.getElementById('my-page-info').innerText = `第 ${myArea.currentPage} 页 / 共 ${totalPages} 页`;
+            document.getElementById('my-prev-page').disabled = myArea.currentPage === 1;
+            document.getElementById('my-next-page').disabled = myArea.currentPage === totalPages;
+
+            updateMyBatchButtons();
+        }
+
+        function updateMyBatchButtons() {
+            const checkboxes = document.querySelectorAll('.my-file-checkbox:checked');
+            const count = checkboxes.length;
+            document.getElementById('my-cut-btn').disabled = count === 0;
+            document.getElementById('my-copy-btn').disabled = count === 0;
+            document.getElementById('my-batch-delete-btn').disabled = count === 0;
+            document.getElementById('my-download-zip-btn').disabled = count === 0;
+        }
+
+        window.enterMySubdir = function(path) {
+            myArea.currentPath = path;
+            loadMyResourceFolder(path);
+        };
+        window.previewMyFile = function(path) {
+            const fileUrl = `/templates/${selectedTeacher || currentUser.username}/${path}`;
+            showPreviewModal(fileUrl, path.split('.').pop());
+        };
+        window.downloadMyZip = async function(path) {
+            const teacher = selectedTeacher || currentUser.username;
+            const response = await fetch(`${API_BASE}/teacher/download-zip`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paths: [path], teacher: teacher }),
+                credentials: 'include'
+            });
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = path.split('/').pop() + '.zip';
+                a.click();
+            } else {
+                showToast('error', '下载失败');
+            }
+        };
+        window.extractMyZip = async function(path) {
+            if (!confirm(`确定要解压 ${path} 到当前目录吗？`)) return;
+            const teacher = selectedTeacher || currentUser.username;
+            const result = await apiCall('/teacher/extract', {
+                method: 'POST',
+                body: { zipPath: path, teacher: teacher }
+            });
+            if (result.success) {
+                showToast('success', '解压成功');
+                loadMyResourceFolder(myArea.currentPath);
+            } else {
+                showToast('error', result.message || '解压失败');
+            }
+        };
+        window.deleteMyItem = async function(path, isDir) {
+            if (!confirm(`确定要删除 ${path} 吗？`)) return;
+            const teacher = selectedTeacher || currentUser.username;
+            const result = await apiCall('/teacher/files', {
+                method: 'DELETE',
+                body: { path: path, confirm: true, teacher: teacher }
+            });
+            if (result.success) {
+                showToast('success', '删除成功');
+                loadMyResourceFolder(myArea.currentPath);
+            } else {
+                showToast('error', result.message || '删除失败');
+            }
+        };
+
+        document.getElementById('my-go-up-btn').addEventListener('click', () => {
+            const parts = myArea.currentPath.split('/');
+            parts.pop();
+            myArea.currentPath = parts.join('/');
+            loadMyResourceFolder(myArea.currentPath);
+        });
+
+        document.getElementById('my-prev-page').addEventListener('click', () => {
+            if (myArea.currentPage > 1) {
+                myArea.currentPage--;
+                renderMyFileList();
+            }
+        });
+        document.getElementById('my-next-page').addEventListener('click', () => {
+            const totalPages = Math.ceil(myArea.items.length / myArea.pageSize);
+            if (myArea.currentPage < totalPages) {
+                myArea.currentPage++;
+                renderMyFileList();
+            }
+        });
+
+        document.getElementById('my-select-all').addEventListener('change', (e) => {
+            document.querySelectorAll('.my-file-checkbox').forEach(cb => cb.checked = e.target.checked);
+            updateMyBatchButtons();
+        });
+
+        document.addEventListener('change', (e) => {
+            if (e.target.classList.contains('my-file-checkbox')) {
+                updateMyBatchButtons();
+            }
+        });
+
+        // 新建文件夹
+        document.getElementById('my-new-folder-btn').addEventListener('click', () => {
+            new bootstrap.Modal(document.getElementById('newFolderModal')).show();
+        });
+        document.getElementById('create-folder-btn').addEventListener('click', async () => {
+            const folderName = document.getElementById('new-folder-name').value.trim();
+            const template = document.getElementById('folder-template').value;
+            const description = document.getElementById('folder-description').value.trim();
+            if (!folderName) { showToast('error', '请输入文件夹名称'); return; }
+            const teacher = selectedTeacher || currentUser.username;
+            const result = await apiCall('/teacher/folder', {
+                method: 'POST',
+                body: { path: myArea.currentPath, name: folderName, teacher: teacher, template: template, description: description }
+            });
+            if (result.success) {
+                showToast('success', '创建成功');
+                bootstrap.Modal.getInstance(document.getElementById('newFolderModal')).hide();
+                document.getElementById('new-folder-name').value = '';
+                document.getElementById('folder-template').value = '';
+                document.getElementById('folder-description').value = '';
+                loadMyResourceFolder(myArea.currentPath);
+            } else {
+                showToast('error', result.message || '创建失败');
+            }
+        });
+
+        // 上传文件
+        document.getElementById('my-upload-file-btn').addEventListener('click', () => {
+            new bootstrap.Modal(document.getElementById('uploadFileModal')).show();
+        });
+        document.getElementById('upload-file-btn-confirm').addEventListener('click', async () => {
+            const fileInput = document.getElementById('upload-file-input');
+            const files = fileInput.files;
+            if (files.length === 0) { showToast('error', '请选择文件'); return; }
+            const formData = new FormData();
+            formData.append('path', myArea.currentPath);
+            formData.append('teacher', selectedTeacher || currentUser.username);
+            for (let f of files) formData.append('file', f);
+            const result = await apiCallFormData('/teacher/upload', formData);
+            if (result.success) {
+                showToast('success', '上传成功');
+                bootstrap.Modal.getInstance(document.getElementById('uploadFileModal')).hide();
+                fileInput.value = '';
+                loadMyResourceFolder(myArea.currentPath);
+            } else {
+                showToast('error', result.message || '上传失败');
+            }
+        });
+
+        // 下载ZIP
+        document.getElementById('my-download-zip-btn').addEventListener('click', async () => {
+            const selected = Array.from(document.querySelectorAll('.my-file-checkbox:checked')).map(cb => cb.dataset.path);
+            if (selected.length === 0) return;
+            const teacher = selectedTeacher || currentUser.username;
+            const paths = selected.map(p => p.split('/').slice(1).join('/'));
+            const response = await fetch(`${API_BASE}/teacher/download-zip`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paths: paths, teacher: teacher }),
+                credentials: 'include'
+            });
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'my-selected.zip';
+                a.click();
+            } else {
+                showToast('error', '下载失败');
+            }
+        });
+
+        // 剪切、复制、粘贴
+        document.getElementById('my-cut-btn').addEventListener('click', () => {
+            const selected = Array.from(document.querySelectorAll('.my-file-checkbox:checked')).map(cb => cb.dataset.path);
+            if (selected.length === 0) return;
+            myArea.clipboard = { paths: selected, operation: 'cut', teacher: selectedTeacher || currentUser.username };
+            document.getElementById('my-paste-btn').disabled = false;
+        });
+        document.getElementById('my-copy-btn').addEventListener('click', () => {
+            const selected = Array.from(document.querySelectorAll('.my-file-checkbox:checked')).map(cb => cb.dataset.path);
+            if (selected.length === 0) return;
+            myArea.clipboard = { paths: selected, operation: 'copy', teacher: selectedTeacher || currentUser.username };
+            document.getElementById('my-paste-btn').disabled = false;
+        });
+        document.getElementById('my-paste-btn').addEventListener('click', async () => {
+            if (!myArea.clipboard.paths || myArea.clipboard.paths.length === 0) return;
+            const destPath = myArea.currentPath;
+            const teacher = selectedTeacher || currentUser.username;
+            const paths = myArea.clipboard.paths.map(p => p.split('/').slice(1).join('/'));
+            if (myArea.clipboard.operation === 'cut') {
+                const result = await apiCall('/teacher/move', {
+                    method: 'POST',
+                    body: { sourcePaths: paths, destPath: destPath, teacher: teacher }
+                });
+                if (result.success) {
+                    showToast('success', '移动成功');
+                    myArea.clipboard = { paths: [], operation: null, teacher: null };
+                    document.getElementById('my-paste-btn').disabled = true;
+                    loadMyResourceFolder(destPath);
+                } else {
+                    showToast('error', result.message || '移动失败');
+                }
+            } else if (myArea.clipboard.operation === 'copy') {
+                const result = await apiCall('/teacher/copy', {
+                    method: 'POST',
+                    body: { sourcePaths: paths, destPath: destPath, teacher: teacher }
+                });
+                if (result.success) {
+                    showToast('success', '复制成功');
+                    myArea.clipboard = { paths: [], operation: null, teacher: null };
+                    document.getElementById('my-paste-btn').disabled = true;
+                    loadMyResourceFolder(destPath);
+                } else {
+                    showToast('error', result.message || '复制失败');
+                }
+            }
+        });
+
+        document.getElementById('my-batch-delete-btn').addEventListener('click', async () => {
+            const selected = Array.from(document.querySelectorAll('.my-file-checkbox:checked')).map(cb => cb.dataset.path);
+            if (selected.length === 0) return;
+            if (!confirm(`确定要删除选中的 ${selected.length} 个项目吗？`)) return;
+            const teacher = selectedTeacher || currentUser.username;
+            const paths = selected.map(p => p.split('/').slice(1).join('/'));
+            const result = await apiCall('/teacher/files/batch-delete', {
+                method: 'POST',
+                body: { paths: paths, teacher: teacher }
+            });
+            if (result.success) {
+                showToast('success', `成功删除 ${result.successCount} 个项目`);
+                loadMyResourceFolder(myArea.currentPath);
+            } else {
+                showToast('error', result.message || '删除失败');
+            }
+        });
+
+        document.getElementById('my-search-btn').addEventListener('click', async () => {
+            const keyword = document.getElementById('my-search-input').value.trim();
+            if (!keyword) return;
+            const teacher = selectedTeacher || currentUser.username;
+            const result = await apiCall(`/teacher/search?keyword=${encodeURIComponent(keyword)}&scope=current&path=${encodeURIComponent(myArea.currentPath)}&teacher=${encodeURIComponent(teacher)}`);
+            if (result.success) {
+                alert(`找到 ${result.results.length} 个结果，请查看控制台`);
+                console.log(result.results);
+            } else {
+                showToast('error', result.message || '搜索失败');
+            }
+        });
+
+        // ==================== 编辑文件夹属性 ====================
+        window.openEditFolderModal = async function(path, name) {
+            const depth = path.split('/').length;
+            if (depth > 2) {
+                alert('目录属性设置深度不允许超过二层（即只能设置根目录或二级目录下的文件夹属性）');
+                return;
+            }
+
+            document.getElementById('edit-folder-path').value = path;
+            document.getElementById('edit-folder-name').value = name;
+            
+            const publicContainer = document.getElementById('public-checkbox-container');
+            const showPublic = isAdmin || (window.siteSetup && window.siteSetup.public_file_for_teacher === 'true');
+            publicContainer.style.display = showPublic ? 'block' : 'none';
+            
+            try {
+                const taskName = path.split('/').pop();
+                const teacher = selectedTeacher || currentUser.username;
+                const meta = await apiCall(`/teacher/tasks/${taskName}?teacher=${encodeURIComponent(teacher)}`);
+                if (meta.success) {
+                    document.getElementById('edit-folder-public').checked = meta.meta.public || false;
+                    document.getElementById('edit-folder-allow-other').checked = meta.meta.allowOtherTeachers || false;
+                    document.getElementById('edit-folder-allow-private').checked = meta.meta.allowPrivateStudents || false;
+                    document.getElementById('edit-folder-allow-global').checked = meta.meta.allowGlobalStudents || false;
+                } else {
+                    document.getElementById('edit-folder-public').checked = false;
+                    document.getElementById('edit-folder-allow-other').checked = false;
+                    document.getElementById('edit-folder-allow-private').checked = false;
+                    document.getElementById('edit-folder-allow-global').checked = false;
+                }
+            } catch (error) {
+                console.warn('加载元数据失败，默认为私有');
+                document.getElementById('edit-folder-public').checked = false;
+                document.getElementById('edit-folder-allow-other').checked = false;
+                document.getElementById('edit-folder-allow-private').checked = false;
+                document.getElementById('edit-folder-allow-global').checked = false;
+            }
+            new bootstrap.Modal(document.getElementById('editFolderModal')).show();
+        };
+
+        document.getElementById('save-folder-attr').addEventListener('click', async () => {
+            const path = document.getElementById('edit-folder-path').value;
+            const taskName = path.split('/').pop();
+            const isPublic = document.getElementById('edit-folder-public').checked;
+            const allowOther = document.getElementById('edit-folder-allow-other').checked;
+            const allowPrivate = document.getElementById('edit-folder-allow-private').checked;
+            const allowGlobal = document.getElementById('edit-folder-allow-global').checked;
+            const teacher = selectedTeacher || currentUser.username;
+            const result = await apiCall(`/teacher/tasks/${taskName}?teacher=${encodeURIComponent(teacher)}&path=${encodeURIComponent(path)}`, {
+                method: 'PUT',
+                body: {
+                    public: isPublic,
+                    allowOtherTeachers: allowOther,
+                    allowPrivateStudents: allowPrivate,
+                    allowGlobalStudents: allowGlobal
+                }
+            });
+            if (result.success) {
+                showToast('success', '属性更新成功');
+                bootstrap.Modal.getInstance(document.getElementById('editFolderModal')).hide();
+                loadMyResourceFolder(myArea.currentPath);
+            } else {
+                showToast('error', result.message || '更新失败');
+            }
+        });
+
+        // ==================== 预览模态框 ====================
+        function showPreviewModal(fileUrl, fileType) {
+            const previewContent = document.getElementById('preview-content');
+            const type = fileType.toLowerCase();
+            if (['png','jpg','jpeg','gif','bmp','webp','svg'].includes(type)) {
+                previewContent.innerHTML = `<img src="${fileUrl}" style="max-width:100%; max-height:80vh;">`;
+            } else if (type === 'pdf') {
+                previewContent.innerHTML = `<embed src="${fileUrl}" type="application/pdf" width="100%" height="600px">`;
+            } else if (['mp4','webm','ogg','mov'].includes(type)) {
+                previewContent.innerHTML = `
+                    <video controls style="max-width:100%; max-height:70vh;">
+                        <source src="${fileUrl}" type="video/${type === 'mov' ? 'mp4' : type}">
+                        您的浏览器不支持视频预览。
+                    </video>
+                `;
+            } else {
+                previewContent.innerHTML = '<div class="spinner-border"></div>';
+                fetch(fileUrl)
+                    .then(res => {
+                        if (res.headers.get('content-type')?.includes('text') || ['txt','html','js','css','json','md'].includes(type)) {
+                            return res.text();
+                        } else {
+                            previewContent.innerHTML = `<p>无法预览此文件类型，<a href="${fileUrl}" target="_blank">点击下载</a></p>`;
+                            throw new Error('非文本文件');
+                        }
+                    })
+                    .then(text => {
+                        previewContent.innerHTML = `<pre style="max-height:70vh; overflow:auto;">${escapeHtml(text)}</pre>`;
+                    })
+                    .catch(() => {});
+            }
+            new bootstrap.Modal(document.getElementById('previewModal')).show();
+        }
+
+        // ==================== 辅助函数：获取默认保存路径和文件名 ====================
+        function getDefaultFolderAndName() {
+            const folderCheckboxes = [
+                ...document.querySelectorAll('.my-file-checkbox:checked[data-isdir="true"]'),
+            ];
+            
+            if (folderCheckboxes.length > 0) {
+                const first = folderCheckboxes[0];
+                const fullPath = first.dataset.path;
+                const parts = fullPath.split('/');
+                if (parts.length >= 2) {
+                    const folderPath = parts.slice(1).join('/');
+                    const folderName = parts[parts.length - 1];
+                    return { folderPath, folderName };
+                }
+            }
+            const currentPath = myArea.currentPath;
+            const folderName = currentPath.split('/').pop() || '新文件';
+            return { folderPath: currentPath, folderName };
+        }
+
+        // ==================== 打开各生成模态框并填充默认值 ====================
+        function openGenerateImageModal() {
+            const { folderPath, folderName } = getDefaultFolderAndName();
+            document.getElementById('generate-image-folder').value = folderPath;
+            document.getElementById('generate-image-filename').value = folderName;
+            document.getElementById('generate-image-prompt').value = document.getElementById('global-prompt').value;
+            document.getElementById('generate-image-result').style.display = 'none';
+            new bootstrap.Modal(document.getElementById('generateImageModal')).show();
+        }
+
+        function openGenerateVideoModal() {
+            const { folderPath, folderName } = getDefaultFolderAndName();
+            document.getElementById('generate-video-folder').value = folderPath;
+            document.getElementById('generate-video-filename').value = folderName;
+            document.getElementById('generate-video-prompt').value = document.getElementById('global-prompt').value;
+            document.getElementById('generate-video-result').style.display = 'none';
+            new bootstrap.Modal(document.getElementById('generateVideoModal')).show();
+        }
+
+        // 修改：打开生成网页模态框前检查当前路径是否为空
+        function openGeneratePageModal() {
+            if (!myArea.currentPath) {
+                showToast('warning', '请先进入或创建一个任务文件夹（例如“数学作业”），再生成网页。');
+                return;
+            }
+            document.getElementById('generate-page-folder').value = myArea.currentPath;
+            
+            // 智能命名：文件夹名 + 提取关键词 + 时间戳
+            smartNameForPage();
+            
+            document.getElementById('generate-page-prompt').value = document.getElementById('global-prompt').value;
+            
+            updateSelectedRefInfo();
+            
+            // 隐藏文件名警告
+            document.getElementById('filename-warning').style.display = 'none';
+            
+            new bootstrap.Modal(document.getElementById('generatePageModal')).show();
+        }
+
+        // 新增：智能命名函数（包含文件夹名前缀）
+        function smartNameForPage() {
+            const prompt = document.getElementById('generate-page-prompt').value.trim() || document.getElementById('global-prompt').value.trim();
+            const folderName = myArea.currentPath.split('/').pop() || '任务';
+            const now = new Date();
+            const timestamp = now.getFullYear() +
+                String(now.getMonth() + 1).padStart(2, '0') +
+                String(now.getDate()).padStart(2, '0') + '_' +
+                String(now.getHours()).padStart(2, '0') +
+                String(now.getMinutes()).padStart(2, '0') +
+                String(now.getSeconds()).padStart(2, '0');
+            
+            if (!prompt) {
+                document.getElementById('generate-page-filename').value = `${folderName}_${timestamp}.html`;
+                return;
+            }
+            const words = prompt.match(/[\u4e00-\u9fa5a-zA-Z0-9]+/g) || [];
+            let fullText = words.join('');
+            let baseLen = Math.min(12, Math.max(6, fullText.length));
+            let baseName = fullText.slice(0, baseLen) || '新页面';
+            document.getElementById('generate-page-filename').value = `${folderName}_${baseName}_${timestamp}.html`;
+            checkFilenameWarning();
+        }
+
+        function updateSelectedRefInfo() {
+            const infoDiv = document.getElementById('selected-ref-files-info');
+            const currentTeacher = selectedTeacher || currentUser.username;
+            const selectedFiles = Array.from(document.querySelectorAll('.my-file-checkbox:checked:not([data-isdir="true"])'))
+                .map(cb => cb.dataset.path)
+                .filter(path => path.startsWith(currentTeacher + '/'))
+                .map(fullPath => {
+                    const parts = fullPath.split('/');
+                    return parts.slice(1).join('/');
+                });
+            
+            if (selectedFiles.length === 0) {
+                infoDiv.innerHTML = '<i class="fas fa-info-circle me-2"></i>未选中任何文件作为参考。您可以直接生成网页，或先在资源列表中选中文件。';
+            } else {
+                const fileList = selectedFiles.map(f => '📄 ' + f).join('<br>');
+                infoDiv.innerHTML = `<i class="fas fa-check-circle me-2 text-success"></i>已选中 ${selectedFiles.length} 个文件作为参考：<br>${fileList}`;
+            }
+        }
+
+        document.getElementById('global-generate-image').addEventListener('click', openGenerateImageModal);
+        document.getElementById('global-generate-video').addEventListener('click', openGenerateVideoModal);
+        document.getElementById('global-generate-page').addEventListener('click', openGeneratePageModal);
+
+        // 修改智能命名按钮事件
+        document.getElementById('smart-name-btn').addEventListener('click', smartNameForPage);
+
+        // 文件名输入时检查警告
+        document.getElementById('generate-page-filename').addEventListener('input', checkFilenameWarning);
+
+        function checkFilenameWarning() {
+            const fileName = document.getElementById('generate-page-filename').value;
+            const warningDiv = document.getElementById('filename-warning');
+            // 检查是否包含空格或非安全字符（允许中文、字母、数字、下划线、中横线、点）
+            const safePattern = /^[\u4e00-\u9fa5a-zA-Z0-9_.-]+$/;
+            if (fileName && !safePattern.test(fileName)) {
+                warningDiv.style.display = 'block';
+            } else {
+                warningDiv.style.display = 'none';
+            }
+        }
+
+        // ==================== 确认生成图片 ====================
+        document.getElementById('confirm-generate-image-btn').addEventListener('click', async () => {
+            const prompt = document.getElementById('generate-image-prompt').value.trim();
+            if (!prompt) { alert('请输入提示词'); return; }
+            const targetFolder = document.getElementById('generate-image-folder').value.trim();
+            const fileName = document.getElementById('generate-image-filename').value.trim();
+            if (!fileName) { alert('请输入文件名'); return; }
+
+            const response = await fetch(`${API_BASE}/ai/generate-image`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt, targetFolder, fileName })
+            });
+            const result = await response.json();
+            if (result.success) {
+                showToast('success', `图片生成成功！路径: ${result.imageUrl}`);
+                if (result.imageUrl) {
+                    document.getElementById('generated-image-preview').src = result.imageUrl;
+                    document.getElementById('generate-image-result').style.display = 'block';
+                }
+                loadMyResourceFolder(myArea.currentPath);
+            } else {
+                showToast('error', result.message || '生成失败');
+            }
+        });
+
+        // ==================== 确认生成视频 ====================
+        document.getElementById('confirm-generate-video-btn').addEventListener('click', async () => {
+            const prompt = document.getElementById('generate-video-prompt').value.trim();
+            if (!prompt) { alert('请输入提示词'); return; }
+            const targetFolder = document.getElementById('generate-video-folder').value.trim();
+            const fileName = document.getElementById('generate-video-filename').value.trim();
+            if (!fileName) { alert('请输入文件名'); return; }
+
+            const response = await fetch(`${API_BASE}/ai/generate-video`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt, activityName: targetFolder, fileName })
+            });
+            const result = await response.json();
+            if (result.success) {
+                showToast('success', `视频已保存到 ${result.folder}`);
+                loadMyResourceFolder(myArea.currentPath);
+                bootstrap.Modal.getInstance(document.getElementById('generateVideoModal')).hide();
+            } else {
+                showToast('error', result.message || '生成失败');
+            }
+        });
+
+        // ==================== 确认生成网页（严格使用输入框文件名）====================
+        document.getElementById('confirm-generate-page-btn').addEventListener('click', async function (e) {
+            const btn = e.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>生成中...';
+
+            try {
+                let prompt = document.getElementById('generate-page-prompt').value.trim();
+                if (!prompt) prompt = document.getElementById('global-prompt').value.trim();
+                if (!prompt) {
+                    showToast('error', '请输入提示词');
+                    return;
+                }
+
+                let targetFolder = document.getElementById('generate-page-folder').value.trim();
+                if (targetFolder === '根目录') targetFolder = '';
+                
+                // 严格使用输入框中的文件名
+                let fileName = document.getElementById('generate-page-filename').value.trim();
+                if (!fileName) {
+                    showToast('error', '文件名无效');
+                    return;
+                }
+                
+                console.log('【生成网页】使用的文件名：', fileName);
+
+                const currentTeacher = selectedTeacher || currentUser.username;
+                const selectedFiles = [
+                    ...Array.from(document.querySelectorAll('.my-file-checkbox:checked:not([data-isdir="true"])'))
+                        .map(cb => cb.dataset.path)
+                        .filter(path => path.startsWith(currentTeacher + '/'))
+                ];
+                const referenceFiles = selectedFiles.map(fullPath => {
+                    const parts = fullPath.split('/');
+                    return parts.slice(1).join('/');
+                });
+
+                const response = await fetch(`${API_BASE}/ai/generate-page`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt, targetFolder, fileName, referenceFiles })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showToast('success', `网页已保存到 ${result.fileUrl}`);
+                    await loadMyResourceFolder(myArea.currentPath);
+                    bootstrap.Modal.getInstance(document.getElementById('generatePageModal')).hide();
+                } else {
+                    showToast('error', result.message || '生成失败，请稍后重试');
+                }
+            } catch (error) {
+                console.error('❌ 生成网页时出错:', error);
+                showToast('error', '网络错误或服务器异常，请检查控制台');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+
+        // ==================== 重命名功能（新增更新活动ID调用）====================
+        window.openRenameModal = function(path, currentName, isDir) {
+            document.getElementById('rename-path').value = path;
+            document.getElementById('rename-current-name').value = currentName;
+            document.getElementById('rename-new-name').value = currentName;
+            document.getElementById('rename-is-dir').value = isDir;
+
+            const warning = document.getElementById('rename-folder-warning');
+            if (isDir) {
+                warning.style.display = 'block';
+            } else {
+                warning.style.display = 'none';
+            }
+
+            new bootstrap.Modal(document.getElementById('renameModal')).show();
+        };
+
+        document.getElementById('confirm-rename-btn').addEventListener('click', async function() {
+            const path = document.getElementById('rename-path').value;
+            const newName = document.getElementById('rename-new-name').value.trim();
+            const isDir = document.getElementById('rename-is-dir').value === 'true';
+            const teacher = selectedTeacher || currentUser.username;
+
+            if (!newName) {
+                showToast('error', '新名称不能为空');
+                return;
+            }
+
+            if (isDir && !confirm('重命名文件夹会影响任务数据关联，确定要继续吗？')) {
+                return;
+            }
+
+            try {
+                const result = await apiCall('/teacher/rename', {
+                    method: 'POST',
+                    body: { path: path, newName: newName, teacher: teacher }
+                });
+
+                if (result.success) {
+                    // 如果是文件夹，则通知后端更新内部HTML的活动ID
+                    if (isDir) {
+                        await apiCall('/teacher/update-activity-id', {
+                            method: 'POST',
+                            body: { oldPath: path, newName: newName, teacher: teacher }
+                        }).catch(e => console.warn('更新活动ID失败', e));
+                    }
+                    showToast('success', '重命名成功');
+                    bootstrap.Modal.getInstance(document.getElementById('renameModal')).hide();
+                    loadMyResourceFolder(myArea.currentPath);
+                } else {
+                    showToast('error', result.message || '重命名失败');
+                }
+            } catch (error) {
+                console.error('重命名失败:', error);
+                showToast('error', '网络错误或服务器异常');
+            }
+        });
+
+        // ==================== 新增：复制页面到其他任务 ====================
+        window.copyPageToTask = async function(filePath) {
+            // 弹出提示框让用户输入目标任务文件夹路径
+            const targetFolder = prompt('请输入目标任务文件夹路径（例如：数学/方程）：', '');
+            if (!targetFolder) return;
+            
+            const teacher = selectedTeacher || currentUser.username;
+            try {
+                const result = await apiCall('/teacher/copy-page-adapt', {
+                    method: 'POST',
+                    body: {
+                        sourcePath: filePath,
+                        targetFolder: targetFolder,
+                        teacher: teacher
+                    }
+                });
+                if (result.success) {
+                    showToast('success', '复制并适配成功');
+                    loadMyResourceFolder(myArea.currentPath);
+                } else {
+                    showToast('error', result.message || '复制失败');
+                }
+            } catch (error) {
+                console.error('复制页面失败:', error);
+                showToast('error', '网络错误');
+            }
+        };
+
+        // ==================== 品牌点击打开帮助 ====================
+        document.getElementById('help-trigger').addEventListener('click', (e) => {
+            e.preventDefault();
+            new bootstrap.Modal(document.getElementById('helpModal')).show();
+        });
+
+        // ==================== 初始化 ====================
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = checkLoginState();
+            if (!user) return;
+            currentUser = user;
+            isAdmin = user.isAdmin || false;
+            updateUserDisplay(user);
+
+            await fetchUserProfile();
+
+            try {
+                const testResponse = await apiCall('/current');
+                if (!testResponse || !testResponse.success) {
+                    alert('登录状态已过期，请重新登录');
+                    clearAllLoginState();
+                    window.location.href = 'login.html';
+                    return;
+                }
+            } catch (error) {
+                alert('网络连接失败，请检查网络');
+                return;
+            }
+
+            await loadSiteSetup();
+
+            if (!selectedTeacher) {
+                selectedTeacher = user.username;
+            }
+            myArea.currentPath = '';
+            await loadMyResourceFolder('');
+
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                clearAllLoginState();
+                window.location.href = 'login.html';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "teacher": "teach",
+  "activity_id": "test_1773852176",
+  "student_id": "TEST_STU_001",
+  "_server_timestamp": "2026-03-19T00:43:25.451842",
+  "_files": [],
+  "data": {
+    "name": "张三",
+    "class": "高一 (1) 班",
+    "time": "2026-03-19T00:42:56.118127"
+  }
+}

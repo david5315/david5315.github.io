@@ -1,0 +1,252 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电路组装练习</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: white; min-height: 100vh; padding: 20px; }
+        .app-container { max-width: 1400px; margin: 0 auto; display: flex; gap: 20px; height: calc(100vh - 40px); }
+        
+        .components-panel { width: 280px; background: linear-gradient(135deg, #16213e 0%, #0f3460 100%); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; }
+        .panel-header { font-size: 1.3rem; font-weight: bold; margin-bottom: 20px; color: #e94560; text-align: center; }
+        
+        .component-list { flex: 1; overflow-y: auto; padding-right: 10px; }
+        .component-card { 
+            background: rgba(255,255,255,0.1); 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 12px; 
+            cursor: grab; 
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .component-card:hover { transform: translateX(5px); background: rgba(255,255,255,0.2); }
+        .component-icon { font-size: 2rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.15); border-radius: 8px; }
+        .component-info { flex: 1; }
+        .component-name { font-weight: bold; font-size: 0.95rem; margin-bottom: 3px; }
+        .component-desc { font-size: 0.8rem; opacity: 0.7; }
+        
+        .canvas-area { flex: 1; position: relative; background: #0f0f23; border-radius: 12px; overflow: hidden; }
+        .canvas-grid { 
+            position: absolute; 
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        
+        .circuit-node {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 5px 20px rgba(233,69,96,0.4);
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        .circuit-node:hover { transform: scale(1.1); }
+        .circuit-node.dragging { opacity: 0.7; }
+        .node-icon { font-size: 1.8rem; }
+        
+        .connection-line {
+            position: absolute;
+            height: 3px;
+            background: #4ecca3;
+            transform-origin: 0 50%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .connections-help {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .controls { padding-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .btn { 
+            padding: 12px 20px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .btn-check { background: #4ecca3; color: #1a1a2e; }
+        .btn-check:hover { background: #3db892; transform: translateY(-2px); }
+        .btn-clear { background: #e94560; color: white; }
+        .btn-clear:hover { background: #d63d58; }
+        .btn-submit { background: #ffd700; color: #1a1a2e; margin-top: auto; }
+        .btn-submit:hover { background: #ffb700; }
+        
+        .message { 
+            position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            padding: 15px 25px; 
+            border-radius: 8px; 
+            color: white; 
+            z-index: 1000; 
+            display: none; 
+            animation: slideIn 0.3s;
+        }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        .message.success { background: #4ecca3; }
+        .message.error { background: #e94560; }
+        
+        .result-modal {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            color: #1a1a2e;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            z-index: 1000;
+            text-align: center;
+            display: none;
+            max-width: 500px;
+        }
+        .result-modal.show { display: block; animation: popIn 0.3s; }
+        @keyframes popIn { from { opacity: 0; transform: translate(-50%, -45%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+        
+        .score-ring {
+            width: 150px; height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(#4ecca3 var(--progress), #e9ecef 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            position: relative;
+        }
+        .score-ring::before {
+            content: '';
+            position: absolute;
+            width: 120px; height: 120px;
+            background: white;
+            border-radius: 50%;
+        }
+        .score-text {
+            position: relative;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1a1a2e;
+        }
+        
+        footer { text-align: center; margin-top: 20px; color: #95a5a6; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="components-panel">
+            <div class="panel-header">🔧 元件库</div>
+            
+            <div class="component-list">
+                <div class="component-card" draggable="true" data-type="battery" data-symbol="⚡">
+                    <div class="component-icon">⚡</div>
+                    <div class="component-info">
+                        <div class="component-name">电池</div>
+                        <div class="component-desc">电源供电</div>
+                    </div>
+                </div>
+                
+                <div class="component-card" draggable="true" data-type="switch" data-symbol="💡">
+                    <div class="component-icon">💡</div>
+                    <div class="component-info">
+                        <div class="component-name">灯泡</div>
+                        <div class="component-desc">发光负载</div>
+                    </div>
+                </div>
+                
+                <div class="component-card" draggable="true" data-type="resistor" data-symbol="〰">
+                    <div class="component-icon">〰</div>
+                    <div class="component-info">
+                        <div class="component-name">电阻</div>
+                        <div class="component-desc">限流保护</div>
+                    </div>
+                </div>
+                
+                <div class="component-card" draggable="true" data-type="wire" data-symbol="—">
+                    <div class="component-icon">—</div>
+                    <div class="component-info">
+                        <div class="component-name">导线</div>
+                        <div class="component-desc">连接电路</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button onclick="clearCanvas()" class="btn btn-clear">🗑️ 清空电路</button>
+                <button onclick="checkCircuit()" class="btn btn-check">✅ 检查电路</button>
+                <button onclick="submitCircuit()" class="btn btn-submit">💾 提交作品</button>
+            </div>
+        </div>
+        
+        <div class="canvas-area" id="canvas">
+            <div class="canvas-grid"></div>
+            <div class="connections-help">
+                🎯 任务：将电池、开关和灯泡正确连接到电路中<br>
+                💡 提示：形成闭合回路才能点亮灯泡
+            </div>
+        </div>
+    </div>
+    
+    <form id="submitForm" style="display:none;">
+        </form>
+    
+    <div id="message" class="message"></div>
+    
+    <div id="resultModal" class="result-modal">
+        <h2>🔌 电路检查结果</h2>
+        <div class="score-ring" id="scoreRing">
+            <span class="score-text" id="scoreText">0%</span>
+        </div>
+        <p id="feedbackText"></p>
+        <button onclick="closeResult()" class="btn btn-check" style="margin-top:20px;width:100%;">关闭</button>
+    </div>
+    
+    <footer><p>© 2026 QuickForge 课堂教学系统 | 拖拽元件到画布开始搭建电路</p></footer>
+
+        <script>
+        document.getElementById("mainForm")?.addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            let valid = true;
+            this.querySelectorAll("[required]").forEach(input => {
+                if (!input.value.trim()) {
+                    valid = false;
+                    input.style.borderColor = "#ef4444";
+                } else {
+                    input.style.borderColor = "#e2e8f0";
+                }
+            });
+            
+            if (!valid) {
+                alert("璇峰～鍐欐墍鏈夊繀濉」锛?);
+                return;
+            }
+            
+            alert("鉁?鎻愪氦鎴愬姛锛佹劅璋㈡偍鐨勫弬涓?);
+            this.reset();
+        });
+    </script>
+</body>
+</html>

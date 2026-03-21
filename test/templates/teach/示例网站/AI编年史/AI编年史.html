@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<!-- saved from url=(0012)about:srcdoc -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI编年史 - 探索人工智能发展之旅</title>
+  
+  <script src="https://cdn.tailwindcss.com/"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1A243C',
+            secondary: '#175FFF',
+            accent: '#67F844',
+            pink: '#F901F7'
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      overflow: hidden;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    
+    .presentation-container {
+      width: 100vw;
+      height: 56.25vw;
+      max-height: 100vh;
+      max-width: 177.78vh;
+      position: relative;
+      background: #000;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
+    }
+    
+    .page {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    
+    .page.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .page-overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+    }
+    
+    .page-content {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      padding-bottom: 6rem;
+    }
+    
+    .nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      width: 60px;
+      height: 60px;
+      background: rgba(103, 248, 68, 0.9);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #000;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 30px rgba(103, 248, 68, 0.5);
+    }
+    
+    .nav-btn:hover {
+      background: #67F844;
+      transform: translateY(-50%) scale(1.1);
+      box-shadow: 0 0 40px rgba(103, 248, 68, 0.8);
+    }
+    
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    
+    .nav-btn:disabled:hover {
+      transform: translateY(-50%) scale(1);
+    }
+    
+    .nav-btn.prev {
+      left: 2rem;
+    }
+    
+    .nav-btn.next {
+      right: 2rem;
+    }
+    
+    .page-indicator {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      gap: 12px;
+      background: rgba(26, 36, 60, 0.9);
+      padding: 12px 24px;
+      border-radius: 24px;
+      box-shadow: 0 0 30px rgba(23, 95, 255, 0.5);
+      border: 2px solid #175FFF;
+    }
+    
+    .page-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .page-dot.active {
+      background: #67F844;
+      transform: scale(1.3);
+      box-shadow: 0 0 15px #67F844;
+    }
+    
+    .page-dot:hover {
+      transform: scale(1.2);
+      background: rgba(103, 248, 68, 0.6);
+    }
+    
+    .content-card {
+      background: rgba(26, 36, 60, 0.95);
+      border-radius: 24px;
+      padding: 2rem;
+      max-width: 1000px;
+      width: 100%;
+      box-shadow: 0 0 40px rgba(23, 95, 255, 0.4), 0 20px 60px rgba(0, 0, 0, 0.5);
+      border: 2px solid #175FFF;
+      animation: fadeInUp 0.8s ease;
+      margin: auto;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .title-main {
+      font-size: 3.5rem;
+      font-weight: bold;
+      color: #67F844;
+      text-align: center;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 30px #67F844;
+    }
+    
+    .title-sub {
+      font-size: 1.5rem;
+      color: #E4E4E4;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #67F844;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      text-shadow: 0 0 20px #67F844;
+    }
+    
+    .event-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .event-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #E8EEF7;
+    }
+    
+    .event-icon {
+      font-size: 3rem;
+      filter: drop-shadow(0 0 10px currentColor);
+    }
+    
+    .event-title {
+      flex: 1;
+    }
+    
+    .event-title h3 {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #175FFF;
+      margin-bottom: 0.3rem;
+    }
+    
+    .event-title p {
+      font-size: 1rem;
+      color: #888;
+    }
+    
+    .event-content {
+      font-size: 1.2rem;
+      color: #1a1a2e;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+    
+    .event-impact {
+      background: linear-gradient(135deg, #E8F4FF, #F0F8FF);
+      border-left: 4px solid #175FFF;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    
+    .event-impact h4 {
+      color: #175FFF;
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    
+    .event-impact p {
+      color: #1a1a2e;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #67F844, #9FFF77);
+      color: #000;
+      border: none;
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 30px rgba(103, 248, 68, 0.4);
+    }
+    
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 0 40px rgba(103, 248, 68, 0.6);
+    }
+    
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: linear-gradient(135deg, #555, #777);
+    }
+    
+    .quiz-card {
+      background: linear-gradient(135deg, #FFF3E6, #FFE8D6);
+      border: 2px solid #F901F7;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      display: none;
+      max-height: none;
+    }
+    
+    .quiz-card.show {
+      display: block;
+      animation: slideInDown 0.5s ease;
+    }
+    
+    @keyframes slideInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .start-quiz-btn {
+      background: linear-gradient(135deg, #F901F7, #FF4DFF);
+      color: white;
+      border: 2px solid #F901F7;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 30px rgba(249, 1, 247, 0.4);
+      display: inline-block;
+    }
+    
+    .start-quiz-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 0 40px rgba(249, 1, 247, 0.6);
+    }
+    
+    .start-quiz-btn.hidden {
+      display: none;
+    }
+    
+    .quiz-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #1a1a2e;
+      margin-bottom: 1rem;
+    }
+    
+    .quiz-options {
+      display: grid;
+      gap: 0.8rem;
+    }
+    
+    .quiz-option {
+      background: white;
+      border: 2px solid #E8EEF7;
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+      color: #1a1a2e;
+    }
+    
+    .quiz-option:hover {
+      border-color: #175FFF;
+      transform: translateX(5px);
+    }
+    
+    .quiz-option.selected {
+      border-color: #175FFF;
+      background: #E8F4FF;
+    }
+    
+    .quiz-option.correct {
+      border-color: #67F844;
+      background: #E8FFE8;
+    }
+    
+    .quiz-option.wrong {
+      border-color: #FF4444;
+      background: #FFE8E8;
+    }
+    
+    .quiz-feedback {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-align: center;
+    }
+    
+    .quiz-feedback.correct {
+      background: #E8FFE8;
+      color: #2D7A2D;
+      border: 2px solid #67F844;
+    }
+    
+    .quiz-feedback.wrong {
+      background: #FFE8E8;
+      color: #AA2222;
+      border: 2px solid #FF4444;
+    }
+    
+    #fireworksCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    
+    .shake {
+      animation: shake 0.3s ease;
+    }
+    
+    .hero-cover {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    
+    .hero-title-epic {
+      font-size: 4.5rem;
+      font-weight: 900;
+      color: #67F844;
+      text-shadow: 0 0 40px #67F844, 0 0 80px #67F844;
+      margin-bottom: 1rem;
+      letter-spacing: 0.1em;
+      animation: glow 2s ease-in-out infinite;
+    }
+    
+    @keyframes glow {
+      0%, 100% { text-shadow: 0 0 40px #67F844; }
+      50% { text-shadow: 0 0 60px #67F844, 0 0 100px #67F844; }
+    }
+    
+    .hero-subtitle-epic {
+      font-size: 1.8rem;
+      color: #E4E4E4;
+      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
+      margin-bottom: 3rem;
+      line-height: 1.6;
+    }
+    
+    .hero-start-btn {
+      background: linear-gradient(135deg, #175FFF, #4D8FFF);
+      color: white;
+      border: 2px solid #67F844;
+      padding: 1.2rem 3rem;
+      border-radius: 50px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 40px rgba(23, 95, 255, 0.5);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    .hero-start-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 0 60px rgba(23, 95, 255, 0.8);
+      animation: none;
+    }
+    
+    .bg-decoration {
+      position: absolute;
+      opacity: 0.1;
+      pointer-events: none;
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+    
+    .scanline {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #67F844, transparent);
+      animation: scan 3s linear infinite;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    
+    @keyframes scan {
+      from { transform: translateY(0); }
+      to { transform: translateY(100vh); }
+    }
+    
+    .progress-indicator {
+      background: rgba(26, 36, 60, 0.9);
+      border: 2px solid #F901F7;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 0 30px rgba(249, 1, 247, 0.5);
+    }
+    
+    .progress-text {
+      font-size: 1rem;
+      color: #E4E4E4;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #175FFF, #F901F7);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+      box-shadow: 0 0 15px #F901F7;
+    }
+    
+    .mindmap-container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .mindmap-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    
+    .mindmap-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #175FFF;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .mindmap-toggle {
+      font-size: 1.5rem;
+      color: #175FFF;
+      transition: transform 0.3s ease;
+    }
+    
+    .mindmap-toggle.collapsed {
+      transform: rotate(-90deg);
+    }
+    
+    .mindmap-content {
+      width: 100%;
+      height: 400px;
+      display: none;
+    }
+    
+    .mindmap-content.show {
+      display: block;
+    }
+    
+    @media (max-width: 768px) {
+      html {
+        font-size: 14px;
+      }
+      
+      .title-main {
+        font-size: 2.5rem;
+      }
+      
+      .content-card {
+        padding: 2rem;
+      }
+      
+      .nav-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+      }
+      
+      .nav-btn.prev {
+        left: 1rem;
+      }
+      
+      .nav-btn.next {
+        right: 1rem;
+      }
+      
+      .hero-title-epic {
+        font-size: 3rem;
+      }
+      
+      .hero-subtitle-epic {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}</style></head>
+<body>
+  
+  <!-- 烟花画布 -->
+  <canvas id="fireworksCanvas"></canvas>
+  
+  <div class="presentation-container">
+    <!-- 扫描线效果 -->
+    <div class="scanline"></div>
+    
+    <!-- 导航按钮 -->
+    <button class="nav-btn prev" id="prevBtn" disabled="">◀</button>
+    <button class="nav-btn next" id="nextBtn">▶</button>
+    
+    <!-- 页面指示器 -->
+    <div class="page-indicator" id="pageIndicator"><div class="page-dot active"></div><div class="page-dot"></div><div class="page-dot"></div><div class="page-dot"></div><div class="page-dot"></div><div class="page-dot"></div><div class="page-dot"></div><div class="page-dot"></div><div class="page-dot"></div><div class="page-dot"></div><div class="page-dot"></div></div>
+    
+    <!-- 第1页：封面 -->
+    <div class="page active" id="page1" style="background: radial-gradient(circle at 50% 50%, #1A243C 0%, #000000 100%);">
+      <div class="page-content">
+        <img src="https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/H5VFo6wo8WXVrdTSjEP4wN.jpg" class="bg-decoration" style="width: 400px; top: 10%; right: 5%;">
+        <div class="hero-cover">
+          <h1 class="hero-title-epic">🤖 AI编年史</h1>
+          <p class="hero-subtitle-epic">
+            探索人工智能发展的史诗之旅<br>
+            从图灵的梦想到ChatGPT的革命<br>
+            见证AI如何改变世界
+          </p>
+          <button class="hero-start-btn" onclick="nextPage()">开始探索 →</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 第2页：游戏介绍 -->
+    <div class="page" id="page2" style="background: radial-gradient(circle at 50% 50%, #1A243C 0%, #000000 100%);">
+      <div class="page-content">
+        <img src="https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/Faxk9T62n2XRDnJw8JJEEg.jpg" class="bg-decoration" style="width: 350px; top: 15%; left: 5%;">
+        <div class="content-card" style="opacity: 1; transform: translateY(0px);">
+          <h2 class="section-title">探索之旅指南</h2>
+          <div class="event-card">
+            <p style="font-size: 1.3rem; color: #1a1a2e; line-height: 1.8; margin-bottom: 1rem;">
+              你将踏上一段跨越80年的时光之旅，见证人工智能从理论到现实的完整演进。
+            </p>
+            <p style="font-size: 1.3rem; color: #1a1a2e; line-height: 1.8; margin-bottom: 1rem;">
+              从1950年图灵测试的提出，到2023年ChatGPT的爆发，每一个关键节点都将为你揭示AI发展的奥秘。
+            </p>
+            <div style="background: linear-gradient(135deg, #E8F4FF, #F0F8FF); padding: 1.5rem; border-radius: 12px; border: 2px solid #175FFF; margin-top: 1.5rem;">
+              <p style="font-size: 1.4rem; font-weight: bold; color: #175FFF; text-align: center; margin-bottom: 0.5rem;">
+                🎯 你将探索8个关键时代
+              </p>
+              <p style="font-size: 1.1rem; color: #1a1a2e; text-align: center;">
+                20个改变世界的里程碑事件
+              </p>
+            </div>
+          </div>
+          <div style="text-align: center;">
+            <button class="btn-primary" onclick="nextPage()">开始第一关 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 第3页：第1关 - 萌芽期 -->
+    <div class="page" id="page3" style="background: radial-gradient(circle at 50% 50%, #1A243C 0%, #000000 100%);">
+      <div class="page-content">
+        <img src="https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/Faxk9T62n2XRDnJw8JJEEg.jpg" class="bg-decoration" style="width: 300px; top: 20%; right: 8%;">
+        <div class="content-card" style="max-width: 1200px; opacity: 1; transform: translateY(0px);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 class="section-title" style="margin: 0;">第1关：萌芽期 (1940s-1956)</h2>
+            <div class="progress-indicator" style="min-width: 180px;">
+              <div class="progress-text">探索进度</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 12.5%"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 思维导图 -->
+          <div class="mindmap-container">
+            <div class="mindmap-header" onclick="toggleMindmap(1)">
+              <div class="mindmap-title">
+                <span>🧠</span>
+                <span>知识导图</span>
+              </div>
+              <div class="mindmap-toggle" id="mindmap-toggle-1">▼</div>
+            </div>
+            <div class="mindmap-content show" id="mindmap-1" _echarts_instance_="ec_1772686688525" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 1084px; height: 400px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="1084" height="400" style="position: absolute; left: 0px; top: 0px; width: 1084px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
+          </div>
+          
+          <div class="event-card">
+            <div class="event-header">
+              <div class="event-icon" style="color: #175FFF;">🧠</div>
+              <div class="event-title">
+                <h3>图灵测试</h3>
+                <p>1950 · 艾伦·图灵</p>
+              </div>
+            </div>
+            <div class="event-content">
+              英国数学家艾伦·图灵提出著名的"图灵测试"：如果一台机器能够在对话中让人类无法分辨它是机器还是人，那么这台机器就可以被认为具有智能。这个大胆的思想实验标志着人工智能概念的雏形。
+            </div>
+            <div class="event-impact">
+              <h4>💡 历史影响</h4>
+              <p>定义了机器智能的标准，为AI研究奠定了理论基础，开启了人类对机器思维的探索之旅。</p>
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <button class="start-quiz-btn" onclick="showQuiz(1)">🎯 开始挑战</button>
+          </div>
+          
+          <div class="quiz-card" id="quiz-card-1">
+            <div class="quiz-title">🎯 过关挑战：图灵测试的核心思想是什么？</div>
+            <div class="quiz-options" id="quiz1-options">
+              <div class="quiz-option" onclick="checkAnswer(1, &#39;A&#39;, false)">A. 测试计算机的运算速度</div>
+              <div class="quiz-option" onclick="checkAnswer(1, &#39;B&#39;, true)">B. 通过对话判断机器是否具有智能</div>
+              <div class="quiz-option" onclick="checkAnswer(1, &#39;C&#39;, false)">C. 测试机器的存储容量</div>
+              <div class="quiz-option" onclick="checkAnswer(1, &#39;D&#39;, false)">D. 检测机器的硬件性能</div>
+            </div>
+            <div id="quiz1-feedback" style="display: none;"></div>
+          </div>
+          
+          <div style="text-align: center;">
+            <button class="btn-primary" id="next-btn-1" onclick="nextPage()" disabled="">继续探索 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 第4页：第2关 - 黄金时代 -->
+    <div class="page" id="page4" style="background: radial-gradient(circle at 50% 50%, #1A243C 0%, #000000 100%);">
+      <div class="page-content">
+        <img src="https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/9ezdgARurYrG4TYwi55tth.jpg" class="bg-decoration" style="width: 300px; top: 20%; left: 8%;">
+        <div class="content-card" style="max-width: 1200px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 class="section-title" style="margin: 0;">第2关：黄金时代 (1956-1974)</h2>
+            <div class="progress-indicator" style="min-width: 180px;">
+              <div class="progress-text">探索进度</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 25%"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 思维导图 -->
+          <div class="mindmap-container">
+            <div class="mindmap-header" onclick="toggleMindmap(2)">
+              <div class="mindmap-title">
+                <span>🧠</span>
+                <span>知识导图</span>
+              </div>
+              <div class="mindmap-toggle" id="mindmap-toggle-2">▼</div>
+            </div>
+            <div class="mindmap-content show" id="mindmap-2" _echarts_instance_="ec_1772686688526" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 1084px; height: 400px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="1084" height="400" style="position: absolute; left: 0px; top: 0px; width: 1084px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
+          </div>
+          
+          <div class="event-card">
+            <div class="event-header">
+              <div class="event-icon" style="color: #F901F7;">🎓</div>
+              <div class="event-title">
+                <h3>达特茅斯会议 - AI诞生</h3>
+                <p>1956 · 约翰·麦卡锡等</p>
+              </div>
+            </div>
+            <div class="event-content">
+              1956年夏天，约翰·麦卡锡、马文·明斯基等科学家在达特茅斯学院召开会议，正式提出"人工智能"（Artificial Intelligence）这一术语，标志着AI作为独立学科的诞生。
+            </div>
+            <div class="event-impact">
+              <h4>💡 历史影响</h4>
+              <p>AI学科正式诞生，开启人工智能研究的新纪元，汇聚了最顶尖的科学家共同探索机器智能。</p>
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <button class="start-quiz-btn" onclick="showQuiz(2)">🎯 开始挑战</button>
+          </div>
+          
+          <div class="quiz-card" id="quiz-card-2">
+            <div class="quiz-title">🎯 过关挑战：1956年达特茅斯会议的最大贡献是什么？</div>
+            <div class="quiz-options" id="quiz2-options">
+              <div class="quiz-option" onclick="checkAnswer(2, &#39;A&#39;, false)">A. 发明了第一台计算机</div>
+              <div class="quiz-option" onclick="checkAnswer(2, &#39;B&#39;, true)">B. 正式提出"人工智能"这一术语</div>
+              <div class="quiz-option" onclick="checkAnswer(2, &#39;C&#39;, false)">C. 创建了第一个神经网络</div>
+              <div class="quiz-option" onclick="checkAnswer(2, &#39;D&#39;, false)">D. 开发了第一个聊天机器人</div>
+            </div>
+            <div id="quiz2-feedback" style="display: none;"></div>
+          </div>
+          
+          <div style="text-align: center;">
+            <button class="btn-primary" id="next-btn-2" onclick="nextPage()" disabled="">继续探索 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 第5页：第3关 - 复苏期 -->
+    <div class="page" id="page5" style="background: radial-gradient(circle at 50% 50%, #1A243C 0%, #000000 100%);">
+      <div class="page-content">
+        <img src="https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/ZEBnUHtoWDd7LNqeJRHNcR.jpg" class="bg-decoration" style="width: 300px; top: 20%; right: 8%;">
+        <div class="content-card" style="max-width: 1200px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 class="section-title" style="margin: 0;">第3关：复苏期 (1980s-2000)</h2>
+            <div class="progress-indicator" style="min-width: 180px;">
+              <div class="progress-text">探索进度</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 37.5%"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 思维导图 -->
+          <div class="mindmap-container">
+            <div class="mindmap-header" onclick="toggleMindmap(3)">
+              <div class="mindmap-title">
+                <span>🧠</span>
+                <span>知识导图</span>
+              </div>
+              <div class="mindmap-toggle" id="mindmap-toggle-3">▼</div>
+            </div>
+            <div class="mindmap-content show" id="mindmap-3" _echarts_instance_="ec_1772686688527" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 1084px; height: 400px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="1084" height="400" style="position: absolute; left: 0px; top: 0px; width: 1084px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
+          </div>
+          
+          <div class="event-card">
+            <div class="event-header">
+              <div class="event-icon" style="color: #67F844;">⚡</div>
+              <div class="event-title">
+                <h3>反向传播算法</h3>
+                <p>1986 · 杰弗里·辛顿等</p>
+              </div>
+            </div>
+            <div class="event-content">
+              杰弗里·辛顿与同事提出反向传播算法（Backpropagation），解决了多层神经网络的训练问题，重新激活了神经网络研究。这一突破为现代深度学习奠定了算法基础。
+            </div>
+            <div class="event-impact">
+              <h4>💡 历史影响</h4>
+              <p>深度学习的关键突破，为现代AI奠定算法基础，使得训练复杂神经网络成为可能。</p>
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <button class="start-quiz-btn" onclick="showQuiz(3)">🎯 开始挑战</button>
+          </div>
+          
+          <div class="quiz-card" id="quiz-card-3">
+            <div class="quiz-title">🎯 过关挑战：反向传播算法解决了什么关键问题？</div>
+            <div class="quiz-options" id="quiz3-options">
+              <div class="quiz-option" onclick="checkAnswer(3, &#39;A&#39;, false)">A. 如何让计算机识别图像</div>
+              <div class="quiz-option" onclick="checkAnswer(3, &#39;B&#39;, true)">B. 如何训练多层神经网络</div>
+              <div class="quiz-option" onclick="checkAnswer(3, &#39;C&#39;, false)">C. 如何让机器人行走</div>
+              <div class="quiz-option" onclick="checkAnswer(3, &#39;D&#39;, false)">D. 如何进行语音识别</div>
+            </div>
+            <div id="quiz3-feedback" style="display: none;"></div>
+          </div>
+          
+          <div style="text-align: center;">
+            <button class="btn-primary" id="next-btn-3" onclick="nextPage()" disabled="">继续探索 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 第6页：第4关 - 大数据时代 -->
+    <div class="page" id="page6" style="background: radial-gradient(circle at 50% 50%, #1A243C 0%, #000000 100%);">
+      <div class="page-content">
+        <img src="https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/fJYgrUwDcYThuPqbFwQCGi.jpg" class="bg-decoration" style="width: 300px; top: 20%; left: 8%;">
+        <div class="content-card" style="max-width: 1200px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 class="section-title" style="margin: 0;">第4关：大数据时代 (2000-2012)</h2>
+            <div class="progress-indicator" style="min-width: 180px;">
+              <div class="progress-text">探索进度</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 50%"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 思维导图 -->
+          <div class="mindmap-container">
+            <div class="mindmap-header" onclick="toggleMindmap(4)">
+              <div class="mindmap-title">
+                <span>🧠</span>
+                <span>知识导图</span>
+              </div>
+              <div class="mindmap-toggle" id="mindmap-toggle-4">▼</div>
+            </div>
+            <div class="mindmap-content show" id="mindmap-4" _echarts_instance_="ec_1772686688528" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 1084px; height: 400px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="1084" height="400" style="position: absolute; left: 0px; top: 0px; width: 1084px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
+          </div>
+          
+          <div class="event-card">
+            <div class="event-header">
+              <div class="event-icon" style="color: #175FFF;">🖼️</div>
+              <div class="event-title">
+                <h3>ImageNet突破</h3>
+                <p>2012 · 杰弗里·辛顿团队</p>
+              </div>
+            </div>
+            <div class="event-content">
+              辛顿团队在ImageNet图像识别比赛中使用深度卷积神经网络（CNN），错误率大幅降低，震惊学术界，标志着深度学习时代的到来。这一突破证明了深度神经网络的强大能力。
+            </div>
+            <div class="event-impact">
+              <h4>💡 历史影响</h4>
+              <p>深度学习全面复兴，开启AI新纪元，证明了深度神经网络在图像识别等领域的革命性能力。</p>
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <button class="start-quiz-btn" onclick="showQuiz(4)">🎯 开始挑战</button>
+          </div>
+          
+          <div class="quiz-card" id="quiz-card-4">
+            <div class="quiz-title">🎯 过关挑战：2012年ImageNet突破标志着什么时代的到来？</div>
+            <div class="quiz-options" id="quiz4-options">
+              <div class="quiz-option" onclick="checkAnswer(4, &#39;A&#39;, false)">A. 专家系统时代</div>
+              <div class="quiz-option" onclick="checkAnswer(4, &#39;B&#39;, false)">B. 符号主义时代</div>
+              <div class="quiz-option" onclick="checkAnswer(4, &#39;C&#39;, true)">C. 深度学习时代</div>
+              <div class="quiz-option" onclick="checkAnswer(4, &#39;D&#39;, false)">D. 量子计算时代</div>
+            </div>
+            <div id="quiz4-feedback" style="display: none;"></div>
+          </div>
+          
+          <div style="text-align: center;">
+            <button class="btn-primary" id="next-btn-4" onclick="nextPage()" disabled="">继续探索 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 第7页：第5关 - 深度学习革命 -->
+    <div class="page" id="page7" style="background: radial-gradient(circle at 50% 50%, #1A243C 0%, #000000 100%);">
+      <div class="page-content">
+        <img src="https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/H5VFo6wo8WXVrdTSjEP4wN.jpg" class="bg-decoration" style="width: 300px; top: 20%; right: 8%;">
+        <div class="content-card" style="max-width: 1200px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 class="section-title" style="margin: 0;">第5关：深度学习革命 (2012-2020)</h2>
+            <div class="progress-indicator" style="min-width: 180px;">
+              <div class="progress-text">探索进度</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 62.5%"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 思维导图 -->
+          <div class="mindmap-container">
+            <div class="mindmap-header" onclick="toggleMindmap(5)">
+              <div class="mindmap-title">
+                <span>🧠</span>
+                <span>知识导图</span>
+              </div>
+              <div class="mindmap-toggle" id="mindmap-toggle-5">▼</div>
+            </div>
+            <div class="mindmap-content show" id="mindmap-5" _echarts_instance_="ec_1772686688529" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 1084px; height: 400px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="1084" height="400" style="position: absolute; left: 0px; top: 0px; width: 1084px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
+          </div>
+          
+          <div class="event-card">
+            <div class="event-header">
+              <div class="event-icon" style="color: #F901F7;">🎮</div>
+              <div class="event-title">
+                <h3>AlphaGo战胜李世石</h3>
+                <p>2016 · DeepMind团队</p>
+              </div>
+            </div>
+            <div class="event-content">
+              DeepMind的AlphaGo在围棋比赛中以4:1战胜世界冠军李世石，围棋被认为是AI最难攻克的领域之一，这一胜利展示了深度强化学习的强大能力。
+            </div>
+            <div class="event-impact">
+              <h4>💡 历史影响</h4>
+              <p>AI在最复杂的博弈游戏中超越人类，证明了深度学习+强化学习的巨大潜力，震撼了全世界。</p>
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <button class="start-quiz-btn" onclick="showQuiz(5)">🎯 开始挑战</button>
+          </div>
+          
+          <div class="quiz-card" id="quiz-card-5">
+            <div class="quiz-title">🎯 过关挑战：AlphaGo战胜李世石证明了什么？</div>
+            <div class="quiz-options" id="quiz5-options">
+              <div class="quiz-option" onclick="checkAnswer(5, &#39;A&#39;, true)">A. AI在复杂博弈中可以超越人类</div>
+              <div class="quiz-option" onclick="checkAnswer(5, &#39;B&#39;, false)">B. 围棋是一个简单的游戏</div>
+              <div class="quiz-option" onclick="checkAnswer(5, &#39;C&#39;, false)">C. 人类不再需要学习围棋</div>
+              <div class="quiz-option" onclick="checkAnswer(5, &#39;D&#39;, false)">D. 计算机只能下围棋</div>
+            </div>
+            <div id="quiz5-feedback" style="display: none;"></div>
+          </div>
+          
+          <div style="text-align: center;">
+            <button class="btn-primary" id="next-btn-5" onclick="nextPage()" disabled="">继续探索 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 第8页：第6关 - 预训练时代 -->
+    <div class="page" id="page8" style="background: radial-gradient(circle at 50% 50%, #1A243C 0%, #000000 100%);">
+      <div class="page-content">
+        <img src="https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/9ezdgARurYrG4TYwi55tth.jpg" class="bg-decoration" style="width: 300px; top: 20%; left: 8%;">
+        <div class="content-card" style="max-width: 1200px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 class="section-title" style="margin: 0;">第6关：预训练时代 (2020)</h2>
+            <div class="progress-indicator" style="min-width: 180px;">
+              <div class="progress-text">探索进度</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 75%"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 思维导图 -->
+          <div class="mindmap-container">
+            <div class="mindmap-header" onclick="toggleMindmap(6)">
+              <div class="mindmap-title">
+                <span>🧠</span>
+                <span>知识导图</span>
+              </div>
+              <div class="mindmap-toggle" id="mindmap-toggle-6">▼</div>
+            </div>
+            <div class="mindmap-content show" id="mindmap-6" _echarts_instance_="ec_1772686688530" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 1084px; height: 400px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="1084" height="400" style="position: absolute; left: 0px; top: 0px; width: 1084px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
+          </div>
+          
+          <div class="event-card">
+            <div class="event-header">
+              <div class="event-icon" style="color: #67F844;">🚀</div>
+              <div class="event-title">
+                <h3>GPT-3发布</h3>
+                <p>2020 · OpenAI</p>
+              </div>
+            </div>
+            <div class="event-content">
+              OpenAI发布GPT-3，拥有1750亿参数，展现出惊人的语言生成和少样本学习能力，让人们看到了通用人工智能的曙光。GPT-3的能力让整个AI界为之震撼。
+            </div>
+            <div class="event-impact">
+              <h4>💡 历史影响</h4>
+              <p>大模型能力的质变，开启生成式AI时代，证明了规模带来的涌现能力，为ChatGPT铺平道路。</p>
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <button class="start-quiz-btn" onclick="showQuiz(6)">🎯 开始挑战</button>
+          </div>
+          
+          <div class="quiz-card" id="quiz-card-6">
+            <div class="quiz-title">🎯 过关挑战：GPT-3的1750亿参数主要体现了什么趋势？</div>
+            <div class="quiz-options" id="quiz6-options">
+              <div class="quiz-option" onclick="checkAnswer(6, &#39;A&#39;, false)">A. 模型越小越好</div>
+              <div class="quiz-option" onclick="checkAnswer(6, &#39;B&#39;, true)">B. 规模带来涌现能力</div>
+              <div class="quiz-option" onclick="checkAnswer(6, &#39;C&#39;, false)">C. 参数数量不重要</div>
+              <div class="quiz-option" onclick="checkAnswer(6, &#39;D&#39;, false)">D. 只有小模型才有用</div>
+            </div>
+            <div id="quiz6-feedback" style="display: none;"></div>
+          </div>
+          
+          <div style="text-align: center;">
+            <button class="btn-primary" id="next-btn-6" onclick="nextPage()" disabled="">继续探索 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 第9页：第7关 - 生成式AI革命 -->
+    <div class="page" id="page9" style="background: radial-gradient(circle at 50% 50%, #1A243C 0%, #000000 100%);">
+      <div class="page-content">
+        <img src="https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/9ezdgARurYrG4TYwi55tth.jpg" class="bg-decoration" style="width: 300px; top: 20%; right: 8%;">
+        <div class="content-card" style="max-width: 1200px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 class="section-title" style="margin: 0;">第7关：生成式AI革命 (2022-2023)</h2>
+            <div class="progress-indicator" style="min-width: 180px;">
+              <div class="progress-text">探索进度</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 87.5%"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 思维导图 -->
+          <div class="mindmap-container">
+            <div class="mindmap-header" onclick="toggleMindmap(7)">
+              <div class="mindmap-title">
+                <span>🧠</span>
+                <span>知识导图</span>
+              </div>
+              <div class="mindmap-toggle" id="mindmap-toggle-7">▼</div>
+            </div>
+            <div class="mindmap-content show" id="mindmap-7" _echarts_instance_="ec_1772686688531" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 1084px; height: 400px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="1084" height="400" style="position: absolute; left: 0px; top: 0px; width: 1084px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
+          </div>
+          
+          <div class="event-card">
+            <div class="event-header">
+              <div class="event-icon" style="color: #175FFF;">💫</div>
+              <div class="event-title">
+                <h3>ChatGPT发布</h3>
+                <p>2022 · OpenAI</p>
+              </div>
+            </div>
+            <div class="event-content">
+              OpenAI发布ChatGPT，通过人类反馈强化学习（RLHF）技术，实现了流畅自然的对话能力，5天内用户突破100万，引发全球AI热潮。ChatGPT让AI真正走向大众。
+            </div>
+            <div class="event-impact">
+              <h4>💡 历史影响</h4>
+              <p>AI走向大众，改变人类与机器的交互方式，开启了AI应用的新时代，每个人都能体验AI的力量。</p>
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <button class="start-quiz-btn" onclick="showQuiz(7)">🎯 开始挑战</button>
+          </div>
+          
+          <div class="quiz-card" id="quiz-card-7">
+            <div class="quiz-title">🎯 过关挑战：ChatGPT使用的RLHF技术是什么意思？</div>
+            <div class="quiz-options" id="quiz7-options">
+              <div class="quiz-option" onclick="checkAnswer(7, &#39;A&#39;, true)">A. 人类反馈强化学习</div>
+              <div class="quiz-option" onclick="checkAnswer(7, &#39;B&#39;, false)">B. 机器自主学习</div>
+              <div class="quiz-option" onclick="checkAnswer(7, &#39;C&#39;, false)">C. 随机学习算法</div>
+              <div class="quiz-option" onclick="checkAnswer(7, &#39;D&#39;, false)">D. 硬件加速技术</div>
+            </div>
+            <div id="quiz7-feedback" style="display: none;"></div>
+          </div>
+          
+          <div style="text-align: center;">
+            <button class="btn-primary" id="next-btn-7" onclick="nextPage()" disabled="">继续探索 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 第10页：第8关 - 未来展望 -->
+    <div class="page" id="page10" style="background: radial-gradient(circle at 50% 50%, #1A243C 0%, #000000 100%);">
+      <div class="page-content">
+        <img src="https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/iCJAZtSnDG9ZSkRXStDCNL.jpg" class="bg-decoration" style="width: 300px; top: 20%; left: 8%;">
+        <div class="content-card" style="max-width: 1200px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 class="section-title" style="margin: 0;">第8关：未来展望</h2>
+            <div class="progress-indicator" style="min-width: 180px;">
+              <div class="progress-text">探索进度</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 100%"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 思维导图 -->
+          <div class="mindmap-container">
+            <div class="mindmap-header" onclick="toggleMindmap(8)">
+              <div class="mindmap-title">
+                <span>🧠</span>
+                <span>知识导图</span>
+              </div>
+              <div class="mindmap-toggle" id="mindmap-toggle-8">▼</div>
+            </div>
+            <div class="mindmap-content show" id="mindmap-8" _echarts_instance_="ec_1772686688532" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 1084px; height: 400px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="1084" height="400" style="position: absolute; left: 0px; top: 0px; width: 1084px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
+          </div>
+          
+          <div class="event-card">
+            <div class="event-header">
+              <div class="event-icon" style="color: #F901F7;">🌟</div>
+              <div class="event-title">
+                <h3>通用人工智能 (AGI)</h3>
+                <p>未来 · 全球研究者</p>
+              </div>
+            </div>
+            <div class="event-content">
+              AGI（Artificial General Intelligence）是指能够像人类一样理解、学习和应用知识的通用智能系统，这是AI研究的终极目标。也许下一个突破就由你创造！
+            </div>
+            <div class="event-impact">
+              <h4>💡 历史影响</h4>
+              <p>人类与AI共同进化的未来，可能彻底改变人类文明的发展轨迹。未来由你书写！</p>
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <button class="start-quiz-btn" onclick="showQuiz(8)">🎯 开始挑战</button>
+          </div>
+          
+          <div class="quiz-card" id="quiz-card-8">
+            <div class="quiz-title">🎯 过关挑战：AGI（通用人工智能）的目标是什么？</div>
+            <div class="quiz-options" id="quiz8-options">
+              <div class="quiz-option" onclick="checkAnswer(8, &#39;A&#39;, false)">A. 只能下围棋的AI</div>
+              <div class="quiz-option" onclick="checkAnswer(8, &#39;B&#39;, false)">B. 只能聊天的AI</div>
+              <div class="quiz-option" onclick="checkAnswer(8, &#39;C&#39;, true)">C. 像人类一样理解和学习的通用智能</div>
+              <div class="quiz-option" onclick="checkAnswer(8, &#39;D&#39;, false)">D. 只能识别图像的AI</div>
+            </div>
+            <div id="quiz8-feedback" style="display: none;"></div>
+          </div>
+          
+          <div style="text-align: center;">
+            <button class="btn-primary" id="next-btn-8" onclick="nextPage()" disabled="">查看总结 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 第11页：探索完成 -->
+    <div class="page" id="page11" style="background: radial-gradient(circle at 50% 50%, #1A243C 0%, #000000 100%);">
+      <div class="page-content">
+        <div style="text-align: center; max-width: 900px;">
+          <div style="background: rgba(26, 36, 60, 0.95); border-radius: 24px; padding: 3rem; box-shadow: 0 0 60px rgba(103, 248, 68, 0.4); border: 2px solid #67F844;">
+            <div style="font-size: 4rem; margin-bottom: 1.5rem;">🏆</div>
+            <h2 style="font-size: 2.8rem; font-weight: bold; color: #67F844; margin-bottom: 2rem; text-shadow: 0 0 30px #67F844;">
+              探索完成！
+            </h2>
+            <div style="background: rgba(255, 255, 255, 0.95); border-radius: 16px; padding: 2rem; margin-bottom: 2rem;">
+              <p style="font-size: 1.4rem; color: #1a1a2e; line-height: 1.9; margin-bottom: 1rem;">
+                你已经成功探索了人工智能发展的完整历程，从图灵测试到ChatGPT，见证了AI如何从理论走向现实，从实验室走向千家万户。
+              </p>
+              <div style="background: linear-gradient(135deg, #E8F4FF, #F0F8FF); padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; border: 2px solid #175FFF;">
+                <p style="font-size: 1.3rem; font-weight: bold; color: #175FFF; margin-bottom: 1rem;">关键里程碑回顾：</p>
+                <div style="text-align: left; color: #1a1a2e; font-size: 1.1rem; line-height: 1.8;">
+                  🧠 1950 - 图灵测试：定义机器智能<br>
+                  🎓 1956 - 达特茅斯会议：AI学科诞生<br>
+                  ⚡ 1986 - 反向传播：深度学习基础<br>
+                  🖼️ 2012 - ImageNet：深度学习复兴<br>
+                  🎮 2016 - AlphaGo：超越人类<br>
+                  🚀 2020 - GPT-3：大模型时代<br>
+                  💫 2022 - ChatGPT：AI走向大众<br>
+                  🌟 未来 - AGI：通用智能探索
+                </div>
+              </div>
+            </div>
+            <p style="font-size: 1.6rem; font-weight: bold; color: #67F844; margin-bottom: 2rem; text-shadow: 0 0 20px #67F844;">
+              AI的未来由你书写！🚀
+            </p>
+            <button class="btn-primary" onclick="restart()">🔄 重新探索</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <script type="module">
+    let currentPage = 1;
+    const totalPages = 11;
+    
+    // 初始化页面指示器
+    function initIndicator() {
+      const indicator = document.getElementById('pageIndicator');
+      for (let i = 1; i <= totalPages; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'page-dot' + (i === 1 ? ' active' : '');
+        dot.onclick = () => goToPage(i);
+        indicator.appendChild(dot);
+      }
+    }
+    
+    // 更新页面显示
+    function updatePage() {
+      document.querySelectorAll('.page').forEach((page, index) => {
+        page.classList.toggle('active', index + 1 === currentPage);
+      });
+      
+      document.querySelectorAll('.page-dot').forEach((dot, index) => {
+        dot.classList.toggle('active', index + 1 === currentPage);
+      });
+      
+      document.getElementById('prevBtn').disabled = currentPage === 1;
+      document.getElementById('nextBtn').disabled = currentPage === totalPages;
+      
+      // 页面切换动画
+      anime({
+        targets: '.page.active .content-card',
+        opacity: [0, 1],
+        translateY: [30, 0],
+        duration: 800,
+        easing: 'easeOutExpo'
+      });
+    }
+    
+    window.goToPage = function(page) {
+      if (page >= 1 && page <= totalPages) {
+        currentPage = page;
+        updatePage();
+      }
+    };
+    
+    window.prevPage = function() {
+      if (currentPage > 1) {
+        currentPage--;
+        updatePage();
+      }
+    };
+    
+    window.nextPage = function() {
+      if (currentPage < totalPages) {
+        currentPage++;
+        updatePage();
+      }
+    };
+    
+    window.restart = function() {
+      currentPage = 1;
+      // 重置所有题目状态
+      for (let i = 1; i <= 8; i++) {
+        const quizCard = document.getElementById(`quiz-card-${i}`);
+        if (quizCard) {
+          quizCard.classList.remove('show');
+        }
+        const options = document.getElementById(`quiz${i}-options`);
+        if (options) {
+          options.querySelectorAll('.quiz-option').forEach(opt => {
+            opt.classList.remove('selected', 'correct', 'wrong');
+            opt.style.pointerEvents = 'auto';
+          });
+        }
+        const feedback = document.getElementById(`quiz${i}-feedback`);
+        if (feedback) {
+          feedback.style.display = 'none';
+        }
+        const nextBtn = document.getElementById(`next-btn-${i}`);
+        if (nextBtn) {
+          nextBtn.disabled = true;
+        }
+      }
+      updatePage();
+    };
+    
+    // 显示题目
+    window.showQuiz = function(quizNum) {
+      const quizCard = document.getElementById(`quiz-card-${quizNum}`);
+      const startBtn = event.target;
+      
+      // 按钮点击动画
+      anime({
+        targets: startBtn,
+        scale: [1, 0.9, 0],
+        opacity: [1, 0],
+        duration: 300,
+        easing: 'easeInBack',
+        complete: function() {
+          startBtn.style.display = 'none';
+        }
+      });
+      
+      // 延迟显示题目卡片
+      setTimeout(() => {
+        quizCard.classList.add('show');
+        // 滚动到题目位置
+        setTimeout(() => {
+          quizCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+      }, 300);
+    };
+    
+    // 烟花效果
+    function launchFireworks() {
+      const canvas = document.getElementById('fireworksCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      canvas.style.display = 'block';
+      
+      const particles = [];
+      const colors = ['#67F844', '#F901F7', '#175FFF', '#FFD700'];
+      
+      class Particle {
+        constructor(x, y, color) {
+          this.x = x;
+          this.y = y;
+          this.color = color;
+          this.velocity = {
+            x: (Math.random() - 0.5) * 8,
+            y: (Math.random() - 0.5) * 8
+          };
+          this.alpha = 1;
+          this.decay = Math.random() * 0.02 + 0.01;
+        }
+        
+        update() {
+          this.velocity.y += 0.1;
+          this.x += this.velocity.x;
+          this.y += this.velocity.y;
+          this.alpha -= this.decay;
+        }
+        
+        draw() {
+          ctx.save();
+          ctx.globalAlpha = this.alpha;
+          ctx.fillStyle = this.color;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+      
+      function createFirework(x, y) {
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        for (let i = 0; i < 50; i++) {
+          particles.push(new Particle(x, y, color));
+        }
+      }
+      
+      // 创建多个烟花
+      const positions = [
+        { x: canvas.width * 0.3, y: canvas.height * 0.3 },
+        { x: canvas.width * 0.7, y: canvas.height * 0.3 },
+        { x: canvas.width * 0.5, y: canvas.height * 0.4 }
+      ];
+      
+      positions.forEach((pos, index) => {
+        setTimeout(() => createFirework(pos.x, pos.y), index * 200);
+      });
+      
+      function animate() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach((particle, index) => {
+          if (particle.alpha <= 0) {
+            particles.splice(index, 1);
+          } else {
+            particle.update();
+            particle.draw();
+          }
+        });
+        
+        if (particles.length > 0) {
+          requestAnimationFrame(animate);
+        } else {
+          canvas.style.display = 'none';
+        }
+      }
+      
+      animate();
+    }
+    
+    // 答题检查函数
+    window.checkAnswer = function(quizNum, selectedOption, isCorrect) {
+      const optionsContainer = document.getElementById(`quiz${quizNum}-options`);
+      const feedbackDiv = document.getElementById(`quiz${quizNum}-feedback`);
+      const nextBtn = document.getElementById(`next-btn-${quizNum}`);
+      
+      // 移除所有选项的选中状态
+      optionsContainer.querySelectorAll('.quiz-option').forEach(opt => {
+        opt.classList.remove('selected', 'correct', 'wrong');
+        opt.style.pointerEvents = 'none';
+      });
+      
+      // 标记选中的选项
+      const selectedElement = Array.from(optionsContainer.querySelectorAll('.quiz-option')).find(
+        opt => opt.textContent.startsWith(selectedOption)
+      );
+      
+      if (isCorrect) {
+        selectedElement.classList.add('correct');
+        feedbackDiv.className = 'quiz-feedback correct';
+        feedbackDiv.innerHTML = '🎉 太棒了！回答正确！';
+        feedbackDiv.style.display = 'block';
+        nextBtn.disabled = false;
+        
+        // 放烟花庆祝
+        launchFireworks();
+        
+        // 正确答案动画
+        anime({
+          targets: selectedElement,
+          scale: [1, 1.05, 1],
+          duration: 500,
+          easing: 'easeOutElastic(1, .8)'
+        });
+        
+        // 反馈文字弹跳动画
+        anime({
+          targets: feedbackDiv,
+          scale: [0.8, 1.1, 1],
+          duration: 600,
+          easing: 'easeOutElastic(1, .8)'
+        });
+      } else {
+        selectedElement.classList.add('wrong');
+        
+        // 随机鼓励文案
+        const encouragements = [
+          '💪 再想想，你一定可以的！',
+          '🤔 别灰心，仔细思考一下！',
+          '✨ 加油！答案就在眼前！',
+          '🌟 不要放弃，再试一次！',
+          '💡 提示：回顾一下刚才的内容！'
+        ];
+        const randomEncouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
+        
+        feedbackDiv.className = 'quiz-feedback wrong';
+        feedbackDiv.textContent = randomEncouragement;
+        feedbackDiv.style.display = 'block';
+        
+        // 抖动动画
+        selectedElement.classList.add('shake');
+        setTimeout(() => selectedElement.classList.remove('shake'), 300);
+        
+        // 2秒后允许重新选择
+        setTimeout(() => {
+          optionsContainer.querySelectorAll('.quiz-option').forEach(opt => {
+            opt.style.pointerEvents = 'auto';
+            opt.classList.remove('wrong');
+          });
+          feedbackDiv.style.display = 'none';
+        }, 2000);
+      }
+    };
+    
+    // 键盘导航
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        prevPage();
+      } else if (e.key === 'ArrowRight') {
+        nextPage();
+      }
+    });
+    
+    document.getElementById('prevBtn').onclick = prevPage;
+    document.getElementById('nextBtn').onclick = nextPage;
+    
+    initIndicator();
+    updatePage();
+    
+    // 思维导图数据
+    const mindmapData = {
+      1: {
+        name: '萌芽期\n(1940s-1956)',
+        children: [
+          {
+            name: '图灵测试',
+            children: [
+              { name: '核心思想\n对话判断智能' },
+              { name: '提出者\n艾伦·图灵' },
+              { name: '历史意义\n定义机器智能标准' }
+            ]
+          },
+          {
+            name: '时代背景',
+            children: [
+              { name: '计算机诞生' },
+              { name: '理论探索阶段' }
+            ]
+          }
+        ]
+      },
+      2: {
+        name: '黄金时代\n(1956-1974)',
+        children: [
+          {
+            name: '达特茅斯会议',
+            children: [
+              { name: '1956年夏天' },
+              { name: 'AI术语诞生' },
+              { name: '学科正式成立' }
+            ]
+          },
+          {
+            name: '关键人物',
+            children: [
+              { name: '约翰·麦卡锡' },
+              { name: '马文·明斯基' }
+            ]
+          },
+          {
+            name: '历史意义',
+            children: [
+              { name: 'AI研究新纪元' },
+              { name: '顶尖科学家汇聚' }
+            ]
+          }
+        ]
+      },
+      3: {
+        name: '复苏期\n(1980s-2000)',
+        children: [
+          {
+            name: '反向传播算法',
+            children: [
+              { name: '1986年提出' },
+              { name: '杰弗里·辛顿' },
+              { name: '训练多层网络' }
+            ]
+          },
+          {
+            name: '技术突破',
+            children: [
+              { name: '神经网络复兴' },
+              { name: '深度学习基础' }
+            ]
+          },
+          {
+            name: '历史意义',
+            children: [
+              { name: '算法基础奠定' },
+              { name: '现代AI起点' }
+            ]
+          }
+        ]
+      },
+      4: {
+        name: '大数据时代\n(2000-2012)',
+        children: [
+          {
+            name: 'ImageNet突破',
+            children: [
+              { name: '2012年' },
+              { name: '深度CNN' },
+              { name: '错误率大降' }
+            ]
+          },
+          {
+            name: '技术特点',
+            children: [
+              { name: '深度神经网络' },
+              { name: '图像识别革命' }
+            ]
+          },
+          {
+            name: '历史意义',
+            children: [
+              { name: '深度学习复兴' },
+              { name: 'AI新纪元开启' }
+            ]
+          }
+        ]
+      },
+      5: {
+        name: '深度学习革命\n(2012-2020)',
+        children: [
+          {
+            name: 'AlphaGo',
+            children: [
+              { name: '2016年' },
+              { name: '战胜李世石' },
+              { name: '4:1获胜' }
+            ]
+          },
+          {
+            name: '技术创新',
+            children: [
+              { name: '深度学习' },
+              { name: '强化学习' },
+              { name: '蒙特卡洛树搜索' }
+            ]
+          },
+          {
+            name: '历史意义',
+            children: [
+              { name: 'AI超越人类' },
+              { name: '复杂博弈突破' }
+            ]
+          }
+        ]
+      },
+      6: {
+        name: '预训练时代\n(2020)',
+        children: [
+          {
+            name: 'GPT-3',
+            children: [
+              { name: '2020年发布' },
+              { name: '1750亿参数' },
+              { name: 'OpenAI' }
+            ]
+          },
+          {
+            name: '核心能力',
+            children: [
+              { name: '语言生成' },
+              { name: '少样本学习' },
+              { name: '涌现能力' }
+            ]
+          },
+          {
+            name: '历史意义',
+            children: [
+              { name: '大模型时代' },
+              { name: '规模带来质变' }
+            ]
+          }
+        ]
+      },
+      7: {
+        name: '生成式AI革命\n(2022-2023)',
+        children: [
+          {
+            name: 'ChatGPT',
+            children: [
+              { name: '2022年11月' },
+              { name: '5天百万用户' },
+              { name: 'RLHF技术' }
+            ]
+          },
+          {
+            name: '核心特点',
+            children: [
+              { name: '自然对话' },
+              { name: '人类反馈' },
+              { name: '易用性强' }
+            ]
+          },
+          {
+            name: '历史意义',
+            children: [
+              { name: 'AI走向大众' },
+              { name: '改变交互方式' }
+            ]
+          }
+        ]
+      },
+      8: {
+        name: '未来展望',
+        children: [
+          {
+            name: 'AGI目标',
+            children: [
+              { name: '通用智能' },
+              { name: '人类级理解' },
+              { name: '自主学习' }
+            ]
+          },
+          {
+            name: '技术方向',
+            children: [
+              { name: '多模态融合' },
+              { name: '推理能力' },
+              { name: '安全对齐' }
+            ]
+          },
+          {
+            name: '未来影响',
+            children: [
+              { name: '人机共生' },
+              { name: '文明变革' }
+            ]
+          }
+        ]
+      }
+    };
+    
+    // 初始化思维导图
+    function initMindmaps() {
+      Object.keys(mindmapData).forEach(key => {
+        const container = document.getElementById(`mindmap-${key}`);
+        if (container) {
+          const chart = echarts.init(container);
+          
+          const option = {
+            tooltip: {
+              trigger: 'item',
+              triggerOn: 'mousemove'
+            },
+            series: [
+              {
+                type: 'tree',
+                data: [mindmapData[key]],
+                top: '10%',
+                left: '10%',
+                bottom: '10%',
+                right: '20%',
+                symbolSize: 12,
+                orient: 'LR',
+                label: {
+                  position: 'left',
+                  verticalAlign: 'middle',
+                  align: 'right',
+                  fontSize: 14,
+                  color: '#1a1a2e',
+                  fontWeight: 'bold'
+                },
+                leaves: {
+                  label: {
+                    position: 'right',
+                    verticalAlign: 'middle',
+                    align: 'left',
+                    fontSize: 12,
+                    color: '#1a1a2e'
+                  }
+                },
+                expandAndCollapse: true,
+                animationDuration: 550,
+                animationDurationUpdate: 750,
+                itemStyle: {
+                  color: '#175FFF',
+                  borderColor: '#67F844',
+                  borderWidth: 2
+                },
+                lineStyle: {
+                  color: '#175FFF',
+                  width: 2,
+                  curveness: 0.5
+                }
+              }
+            ]
+          };
+          
+          chart.setOption(option);
+          
+          // 响应式
+          window.addEventListener('resize', () => {
+            chart.resize();
+          });
+        }
+      });
+    }
+    
+    // 切换思维导图显示
+    window.toggleMindmap = function(num) {
+      const content = document.getElementById(`mindmap-${num}`);
+      const toggle = document.getElementById(`mindmap-toggle-${num}`);
+      
+      if (content.classList.contains('show')) {
+        content.classList.remove('show');
+        toggle.classList.add('collapsed');
+      } else {
+        content.classList.add('show');
+        toggle.classList.remove('collapsed');
+        
+        // 重新渲染图表
+        setTimeout(() => {
+          const chart = echarts.getInstanceByDom(content);
+          if (chart) {
+            chart.resize();
+          }
+        }, 300);
+      }
+    };
+    
+    // 页面加载完成后初始化思维导图
+    setTimeout(() => {
+      initMindmaps();
+    }, 500);
+  </script>
+
+</body></html>

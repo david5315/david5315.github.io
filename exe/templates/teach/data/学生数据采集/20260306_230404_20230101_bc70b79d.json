@@ -1,0 +1,17 @@
+{
+  "teacher": "teach",
+  "activity_id": "学生数据采集",
+  "student_id": "20230101",
+  "_server_timestamp": "2026-03-06T23:04:04.198153",
+  "_files": [
+    {
+      "original_name": "测试.png",
+      "saved_name": "20260306_230404_8993a63e.png",
+      "size": 37284,
+      "url": "/templates/teach/uploads/20260306_230404_8993a63e.png"
+    }
+  ],
+  "subject": "语文",
+  "score": "55",
+  "remark": ""
+}

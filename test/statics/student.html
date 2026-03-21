@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生登录 - 课堂互动教学</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; }
+        .card { border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); border: none; max-width: 400px; margin: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-white text-center py-4">
+                        <h4><i class="fas fa-user-graduate me-2"></i>学生登录</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="login-form">
+                            <div class="mb-3">
+                                <label class="form-label">教师手机号或用户名</label>
+                                <input type="text" class="form-control" id="teacher-phone" placeholder="请输入教师手机号或用户名" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">学号</label>
+                                <input type="text" class="form-control" id="student-id" placeholder="请输入学号" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">密码</label>
+                                <input type="password" class="form-control" id="password" placeholder="请输入密码" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-sign-in-alt me-1"></i>登录</button>
+                        </form>
+                        <div class="text-center mt-3">
+                            <a href="login.html" class="text-decoration-none"><i class="fas fa-arrow-left me-1"></i>返回教师登录</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin + '/api';
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const teacherPhone = document.getElementById('teacher-phone').value.trim();
+            const studentId = document.getElementById('student-id').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!teacherPhone || !studentId || !password) {
+                alert('请填写所有字段');
+                return;
+            }
+
+            try {
+                const response = await fetch(API_BASE + '/login/private-student', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ teacherPhone, studentId, password })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    sessionStorage.setItem('currentStudent', JSON.stringify(data.user));
+                    window.location.href = 'student_home.html';
+                } else {
+                    alert(data.message || '登录失败');
+                }
+            } catch (error) {
+                alert('网络错误: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

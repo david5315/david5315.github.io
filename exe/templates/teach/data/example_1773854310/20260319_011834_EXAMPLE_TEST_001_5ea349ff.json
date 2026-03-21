@@ -1,0 +1,10 @@
+{
+  "teacher": "teach",
+  "activity_id": "example_1773854310",
+  "student_id": "EXAMPLE_TEST_001",
+  "_server_timestamp": "2026-03-19T01:18:34.414629",
+  "_files": [],
+  "data": {
+    "template": "MQTT模拟系统_MQTT_stat.html"
+  }
+}

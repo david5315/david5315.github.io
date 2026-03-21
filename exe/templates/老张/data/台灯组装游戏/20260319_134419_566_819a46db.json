@@ -1,0 +1,21 @@
+{
+  "teacher": "老张",
+  "activity_id": "台灯组装游戏",
+  "student_id": "566",
+  "_server_timestamp": "2026-03-19T13:44:19.450105",
+  "_files": [
+    {
+      "original_name": "lamp_566_1773899059437.png",
+      "saved_name": "20260319_134419_fd35f9d2.png",
+      "size": 114459,
+      "url": "/templates/老张/uploads/20260319_134419_fd35f9d2.png"
+    }
+  ],
+  "game_state": {
+    "usedComponents": 2,
+    "placedComponents": [
+      "shade-1",
+      "base-1"
+    ]
+  }
+}

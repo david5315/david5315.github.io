@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>思维导图创作</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); min-height: 100vh; padding: 20px; }
+        .app-container { max-width: 1400px; margin: 0 auto; display: flex; gap: 20px; height: calc(100vh - 40px); }
+        
+        .sidebar { width: 280px; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .sidebar h2 { color: #2d3748; margin-bottom: 20px; font-size: 1.3rem; }
+        
+        .node-input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 10px; transition: all 0.3s; }
+        .node-input:focus { outline: none; border-color: #667eea; }
+        
+        .color-picker { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
+        .color-btn { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+        .color-btn:hover { transform: scale(1.1); }
+        .color-btn.active { border-color: #333; }
+        
+        .action-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+        .btn { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; text-align: center; }
+        .btn-add { background: #667eea; color: white; }
+        .btn-add:hover { background: #5a67d8; }
+        .btn-clear { background: #fc8181; color: white; }
+        .btn-clear:hover { background: #f56565; }
+        .btn-export { background: #48bb78; color: white; }
+        .btn-export:hover { background: #38a169; }
+        .btn-submit { background: #ed8936; color: white; margin-top: 10px; }
+        .btn-submit:hover { background: #dd6b20; }
+        
+        .canvas-area { flex: 1; background: white; border-radius: 12px; position: relative; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        
+        .mindmap-node {
+            position: absolute;
+            padding: 15px 25px;
+            border-radius: 12px;
+            cursor: grab;
+            transition: all 0.2s;
+            min-width: 100px;
+            text-align: center;
+            user-select: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .mindmap-node:hover { transform: scale(1.05); z-index: 10; }
+        .mindmap-node:active { cursor: grabbing; }
+        .mindmap-node.main { font-size: 1.3rem; font-weight: bold; padding: 20px 30px; }
+        .mindmap-node.sub { font-size: 0.95rem; }
+        .mindmap-node.selected { outline: 3px solid #667eea; }
+        
+        .delete-btn { 
+            position: absolute; top: -8px; right: -8px; 
+            width: 24px; height: 24px; 
+            background: #fc8181; color: white; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            font-size: 14px; 
+            line-height: 24px; 
+            text-align: center;
+            display: none;
+        }
+        .mindmap-node:hover .delete-btn { display: block; }
+        
+        .toolbar-overlay { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.95); padding: 10px 20px; border-radius: 50px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); display: flex; gap: 10px; z-index: 100; }
+        .tool-btn { padding: 8px 16px; border: none; border-radius: 20px; cursor: pointer; font-size: 0.9rem; background: #e2e8f0; transition: all 0.3s; }
+        .tool-btn:hover { background: #cbd5e0; }
+        .tool-btn.active { background: #667eea; color: white; }
+        
+        .message { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; color: white; z-index: 1000; display: none; animation: slideIn 0.3s; }
+        .message.success { background: #48bb78; }
+        .message.error { background: #f56565; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        
+        footer { text-align: center; margin-top: 20px; color: #718096; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <h2>🎨 思维导图工具</h2>
+            
+            <div style="margin-bottom:20px;">
+                <label style="display:block;margin-bottom:8px;font-weight:600;color:#4a5568;">添加新节点</label>
+                <input type="text" id="newNodeText" class="node-input" placeholder="输入节点内容...">
+                <button onclick="addNewNode()" class="btn btn-add">➕ 添加到画布中心</button>
+            </div>
+            
+            <div style="margin-bottom:20px;">
+                <label style="display:block;margin-bottom:8px;font-weight:600;color:#4a5568;">节点颜色</label>
+                <div class="color-picker" id="colorPicker"></div>
+            </div>
+            
+            <div class="action-buttons">
+                <button onclick="addChildNode()" class="btn btn-add">🔗 添加子节点</button>
+                <button onclick="clearCanvas()" class="btn btn-clear">🗑️ 清空画布</button>
+                <button onclick="exportJSON()" class="btn btn-export">💾 导出 JSON</button>
+                <button onclick="submitMindMap()" class="btn btn-submit">✅ 提交作品</button>
+            </div>
+        </div>
+        
+        <div class="canvas-area" id="canvas">
+            <div class="toolbar-overlay">
+                <button class="tool-btn active" onclick="setMode('select')">👆 选择</button>
+                <button class="tool-btn" onclick="setMode('add')">➕ 添加</button>
+                <button class="tool-btn" onclick="zoomOut()">🔍-</button>
+                <button class="tool-btn" onclick="zoomIn()">🔍+</button>
+            </div>
+        </div>
+    </div>
+    
+    <form id="submitForm" style="display:none;">
+        </form>
+    
+    <div id="message" class="message"></div>
+    <footer><p>© 2026 QuickForge 课堂教学系统 | 拖拽节点自由创作</p></footer>
+
+        <script>
+        document.getElementById("mainForm")?.addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            let valid = true;
+            this.querySelectorAll("[required]").forEach(input => {
+                if (!input.value.trim()) {
+                    valid = false;
+                    input.style.borderColor = "#ef4444";
+                } else {
+                    input.style.borderColor = "#e2e8f0";
+                }
+            });
+            
+            if (!valid) {
+                alert("璇峰～鍐欐墍鏈夊繀濉」锛?);
+                return;
+            }
+            
+            alert("鉁?鎻愪氦鎴愬姛锛佹劅璋㈡偍鐨勫弬涓?);
+            this.reset();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "teacher": "老张",
+  "activity_id": "菜品营养搭配",
+  "student_id": "anon_1773897755172_iiaxk7",
+  "_server_timestamp": "2026-03-19T13:22:35.179843",
+  "_files": [],
+  "payload": {
+    "activity_type": "meal_planning",
+    "dishes": [
+      {
+        "id": 2,
+        "name": "西红柿炒鸡蛋"
+      },
+      {
+        "id": 3,
+        "name": "香菇油菜"
+      }
+    ],
+    "nutrition": {
+      "calories": 1810,
+      "fat": 26,
+      "protein": 18
+    },
+    "judgment": {
+      "user_answer": "yes",
+      "is_correct": false
+    },
+    "submit_time": "2026-03-19T05:22:35.173Z"
+  }
+}

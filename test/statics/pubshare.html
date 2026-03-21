@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公开资源 - 课堂互动教学</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+            cursor: pointer;
+        }
+        
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #eaeaea;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .admin-badge {
+            background-color: #e74c3c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-left: 8px;
+        }
+        
+        .user-profile-link {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .user-profile-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            text-decoration: underline;
+        }
+        
+        .user-profile-link .admin-badge {
+            margin-left: 5px;
+            font-size: 0.65rem;
+            vertical-align: middle;
+        }
+
+        .file-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .file-table th, .file-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .file-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        .dir-icon {
+            color: #f39c12;
+            margin-right: 8px;
+        }
+        .file-icon {
+            color: #3498db;
+            margin-right: 8px;
+        }
+        .checkbox-col {
+            width: 30px;
+        }
+        .actions-col {
+            width: 240px;
+        }
+        .public-badge {
+            background-color: #28a745;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        .shared-badge {
+            background-color: #17a2b8;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        .private-badge {
+            background-color: #6c757d;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        .private-student-badge {
+            background-color: #fd7e14;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        .global-student-badge {
+            background-color: #20c997;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin: 2px;
+        }
+
+        #teacher-selector {
+            color: #fff;
+            background-color: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            padding: 4px 8px;
+            margin-right: 10px;
+        }
+        #teacher-selector option {
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        .folder-card {
+            transition: transform 0.3s;
+            height: 100%;
+            position: relative;
+        }
+        .folder-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+        .folder-icon {
+            font-size: 2.5rem;
+            color: #f39c12;
+        }
+        .folder-checkbox {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+        }
+
+        #account-info {
+            color: #fff;
+            margin-right: 15px;
+            padding: 5px 10px;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        #account-info i {
+            margin-right: 3px;
+        }
+        #account-info a.btn-warning {
+            color: #212529;
+            text-decoration: none;
+        }
+
+        .pagination-info {
+            line-height: 2rem;
+        }
+
+        .area-card {
+            margin-bottom: 30px;
+        }
+        .area-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .area-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        .area-toolbar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .attr-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .attr-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .name-link {
+            color: #007bff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .name-link:hover {
+            text-decoration: underline;
+        }
+        .name-link .fas {
+            margin-right: 5px;
+        }
+
+        .generate-btn-group {
+            gap: 1.5rem !important;
+        }
+
+        .breadcrumb-link {
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .breadcrumb-link:hover {
+            text-decoration: underline;
+        }
+        .breadcrumb-separator {
+            margin: 0 5px;
+            color: #6c757d;
+        }
+
+        /* 隐藏指定元素 */
+        #teacher-selector,
+        #expiry-display,
+        #remaining-display,
+        #refresh-all-btn {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航栏（与 ai_prompt_templates.html 一致） -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#" id="help-trigger">
+                <i class="fas fa-chalkboard-teacher me-2"></i>
+                互动教学发布系统说明
+            </a>
+            
+            <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+                <!-- 页面切换按钮 -->
+                <a class="btn btn-outline-light btn-sm me-2" href="teacher.html">
+                    <i class="fas fa-folder-open me-1"></i> 我的网站群
+                </a>
+                <a class="btn btn-outline-light btn-sm me-2 active" href="pubshare.html">
+                    <i class="fas fa-globe me-1"></i> 公开资源
+                </a>
+                <a class="btn btn-outline-light btn-sm me-2" href="private_students.html" id="private-students-link" style="display: none;">
+                    <i class="fas fa-user-graduate me-1"></i> 学生管理
+                </a>
+                <a class="btn btn-outline-light btn-sm me-2" href="admin_management.html" id="admin-link" style="display: none;">
+                    <i class="fas fa-user-shield me-1"></i> 全局管理
+                </a>
+                <a class="btn btn-outline-light btn-sm me-2" href="data_viewer.html">
+                    <i class="fas fa-database me-1"></i> 数据管理
+                </a>
+                <a class="btn btn-outline-light btn-sm me-2" href="ai_prompt_templates.html">
+                    <i class="fas fa-file-code me-1"></i> 模板管理
+                </a>
+
+                <!-- 教师选择器（管理员用，已隐藏） -->
+                <select id="teacher-selector" class="form-select form-select-sm me-2" style="display: none; width: auto;">
+                    <option value="">加载中...</option>
+                </select>
+
+ 
+
+                <span class="navbar-text me-3">
+                    <i class="fas fa-user me-1"></i>
+                    <span id="current-user-display" class="user-profile-link">教师用户</span>
+                </span>
+
+                <!-- 刷新按钮（已隐藏） -->
+                <button class="btn btn-outline-light btn-sm me-2" id="refresh-all-btn">
+                    <i class="fas fa-sync-alt me-1"></i> 刷新
+                </button>
+                <button id="logout-btn" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-sign-out-alt me-1"></i> 退出
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区（保留原有公开资源管理功能） -->
+    <div class="container mt-4">
+        <div class="card area-card" id="shared-public-area">
+            <div class="area-header">
+                <h5 class="area-title"><i class="fas fa-globe text-success me-2"></i>公开/共享资源</h5>
+                <div class="area-toolbar">
+                    <button class="btn btn-sm btn-outline-secondary" id="shared-public-go-up-btn" disabled><i class="fas fa-level-up-alt"></i> 上级</button>
+                    <button class="btn btn-sm btn-outline-success" id="shared-public-download-zip-btn" disabled><i class="fas fa-file-archive"></i> 下载选中</button>
+                    <div class="input-group input-group-sm" style="width: 200px;">
+                        <input type="text" class="form-control" id="shared-public-search-input" placeholder="搜索...">
+                        <button class="btn btn-outline-primary" id="shared-public-search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="shared-public-root-view">
+                    <div class="row" id="shared-public-folder-grid"></div>
+                </div>
+                <div id="shared-public-file-view" style="display: none;">
+                    <div class="mb-2 small text-muted">
+                        当前路径：<span id="shared-public-current-path-display">/</span>
+                    </div>
+                    <table class="file-table">
+                        <thead>
+                            <tr>
+                                <th class="checkbox-col"><input type="checkbox" id="shared-public-select-all"></th>
+                                <th>名称</th>
+                                <th>大小</th>
+                                <th>修改时间</th>
+                                <th>属性</th>
+                                <th class="actions-col">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shared-public-file-list-body"></tbody>
+                    </table>
+                    <div id="shared-public-empty-folder" class="text-center text-muted py-4" style="display: none;">此文件夹为空</div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <button class="btn btn-sm btn-outline-secondary" id="shared-public-prev-page" disabled><i class="fas fa-chevron-left"></i> 上一页</button>
+                        <span id="shared-public-page-info">第 1 页 / 共 1 页</span>
+                        <button class="btn btn-sm btn-outline-secondary" id="shared-public-next-page" disabled>下一页 <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+ <div class="modal fade" id="helpModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-question-circle me-2 text-primary"></i>公开资源共享使用说明</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <p class="mb-2">浏览其他教师共享的文件夹或游客公开的资源。</p>
+                </div>
+                <ol class="list-group list-group-numbered mb-3">
+                    <li class="list-group-item d-flex align-items-start">
+                        <div class="ms-2 me-auto"><strong>根目录视图</strong><br>页面显示所有公开或共享的顶层文件夹卡片，点击文件夹图标或名称进入文件夹内部。</div>
+                    </li>
+                    <li class="list-group-item d-flex align-items-start">
+                        <div class="ms-2 me-auto"><strong>文件夹内部</strong><br>进入后以表格形式显示文件和子文件夹，可点击名称进入子文件夹或预览文件。工具栏支持返回上级、下载选中文件、搜索。</div>
+                    </li>
+                    <li class="list-group-item d-flex align-items-start">
+                        <div class="ms-2 me-auto"><strong>预览文件</strong><br>对于图片、PDF、视频、文本等文件，点击预览按钮可在模态框中查看。</div>
+                    </li>
+                    <li class="list-group-item d-flex align-items-start">
+                        <div class="ms-2 me-auto"><strong>下载与解压</strong><br>可下载单个文件或选中多个文件打包下载。对于ZIP文件，可点击解压按钮解压到当前目录。</div>
+                    </li>
+                    <li class="list-group-item d-flex align-items-start">
+                        <div class="ms-2 me-auto"><strong>属性标识</strong><br>文件属性列显示访问权限：游客公开、教师共享、私有等，以及学生可见性标签。</div>
+                    </li>
+                </ol>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- 预览模态框 -->
+    <div class="modal fade" id="previewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">文件预览</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center" id="preview-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 消息提示容器 -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ==================== 全局变量 ====================
+        const API_BASE = window.location.origin + '/api';
+        let currentUser = null;
+        let isAdmin = false;
+        let selectedTeacher = '';
+
+        let sharedPublicArea = {
+            currentPath: '',
+            items: [],
+            currentPage: 1,
+            pageSize: 12,
+            rootFolders: []
+        };
+
+        window.siteSetup = {};
+
+        // ==================== 登录状态管理 ====================
+        function checkLoginState() {
+            const token = localStorage.getItem('teacherToken');
+            const userStr = localStorage.getItem('teacherUser');
+            if (!token || !userStr) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            try {
+                return JSON.parse(userStr);
+            } catch (e) {
+                window.location.href = 'login.html';
+                return null;
+            }
+        }
+
+        function clearAllLoginState() {
+            localStorage.removeItem('teacherToken');
+            localStorage.removeItem('teacherUser');
+            sessionStorage.clear();
+            const cookies = document.cookie.split(";");
+            for (let cookie of cookies) {
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+            }
+        }
+
+        // ==================== 获取完整用户资料（包含 user_key）====================
+        async function fetchUserProfile() {
+            try {
+                const res = await apiCall('/account/profile');
+                if (res.success && res.profile) {
+                    currentUser.user_key = res.profile.user_key;
+                    currentUser.name = res.profile.name;
+                    currentUser.subject = res.profile.subject;
+                    currentUser.phone = res.profile.phone;
+                    currentUser.email = res.profile.email;
+                    currentUser.expiry_date = res.profile.expiry_date;
+                    currentUser.remaining_uses = res.profile.remaining_uses;
+                    localStorage.setItem('teacherUser', JSON.stringify(currentUser));
+                    updateRemainingDisplay();
+                }
+            } catch (error) {
+                console.warn('获取用户资料失败', error);
+            }
+        }
+
+        // ==================== 额度显示 ====================
+        async function updateRemainingDisplay() {
+            const expirySpan = document.getElementById('expiry-display');
+            const remainingSpan = document.getElementById('remaining-display');
+            const accountInfo = document.getElementById('account-info');
+
+            if (currentUser.role === 'admin' || currentUser.role === 'QF_school' || currentUser.role === 'QF_user') {
+                accountInfo.style.display = 'inline-block';
+                expirySpan.textContent = currentUser.expiry_date || '无限制';
+                const remaining = currentUser.remaining_uses;
+                remainingSpan.textContent = (remaining === 0 || remaining === undefined) ? '∞' : remaining;
+                return;
+            }
+
+            try {
+                const res = await fetch(API_BASE + '/gui-user');
+                const data = await res.json();
+                if (data.success && data.user) {
+                    const guiUser = data.user;
+                    if (guiUser.remaining_uses > 0) {
+                        accountInfo.style.display = 'inline-block';
+                        expirySpan.textContent = guiUser.expiry_date || '无限制';
+                        remainingSpan.textContent = guiUser.remaining_uses;
+                    } else {
+                        showUpgradeLink();
+                    }
+                } else {
+                    showUpgradeLink();
+                }
+            } catch (error) {
+                console.error('获取 GUI 用户信息失败', error);
+                showUpgradeLink();
+            }
+        }
+
+        function showUpgradeLink() {
+            const accountInfo = document.getElementById('account-info');
+            accountInfo.style.display = 'inline-block';
+            accountInfo.innerHTML = '<a href="payment.html" class="btn btn-sm btn-warning">开通</a>';
+        }
+
+        function updateUserDisplay(user) {
+            const userDisplay = document.getElementById('current-user-display');
+            if (userDisplay) {
+                let displayText = user.username;
+                if (user.isAdmin) {
+                    displayText += ' <span class="admin-badge">管理员</span>';
+                    isAdmin = true;
+                }
+                userDisplay.innerHTML = displayText;
+                userDisplay.style.cursor = 'pointer';
+                userDisplay.title = '点击查看个人资料';
+                userDisplay.addEventListener('click', function() {
+                    window.location.href = 'profile.html';
+                });
+            }
+            
+            const adminLink = document.getElementById('admin-link');
+            const privateStudentsLink = document.getElementById('private-students-link');
+            if (user.isAdmin) {
+                if (adminLink) adminLink.style.display = 'block';
+                if (privateStudentsLink) privateStudentsLink.style.display = 'block'; // 管理员也显示私有学生链接
+            } else {
+                if (adminLink) adminLink.style.display = 'none';
+                if (privateStudentsLink) privateStudentsLink.style.display = 'block';
+            }
+
+            updateRemainingDisplay();
+
+            if (user.isAdmin) {
+                loadTeacherSelector();
+            } else {
+                document.getElementById('teacher-selector').style.display = 'none';
+            }
+        }
+
+        // ==================== 加载教师选择器（管理员用）====================
+        async function loadTeacherSelector() {
+            try {
+                const teachersRes = await apiCall('/admin/teachers');
+                if (teachersRes.success && teachersRes.teachers) {
+                    const selector = document.getElementById('teacher-selector');
+                    selector.innerHTML = '';
+                    const rootOption = document.createElement('option');
+                    rootOption.value = '';
+                    rootOption.textContent = '根目录 (templates)';
+                    selector.appendChild(rootOption);
+                    teachersRes.teachers.forEach(t => {
+                        const option = document.createElement('option');
+                        option.value = t.username;
+                        option.textContent = `${t.name || t.username} (${t.username})`;
+                        selector.appendChild(option);
+                    });
+                    selector.style.display = 'inline-block';
+                    selector.value = currentUser.username;
+                    selector.addEventListener('change', (e) => {
+                        // 切换教师后重新加载公开资源
+                        loadSharedPublicRootFolders(e.target.value);
+                    });
+                }
+            } catch (error) {
+                console.error('加载教师列表失败', error);
+            }
+        }
+
+        // ==================== API 调用 ====================
+        async function apiCall(endpoint, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    headers: { 'Content-Type': 'application/json', ...options.headers },
+                    credentials: 'include',
+                    ...options
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('API调用失败:', error);
+                throw error;
+            }
+        }
+
+        // ==================== 加载站点配置（已移除 DeepSeek 按钮控制）====================
+        async function loadSiteSetup() {
+            try {
+                const res = await apiCall('/site-setup');
+                if (res.success) {
+                    window.siteSetup = res.site_setup || {};
+                }
+            } catch (e) {
+                console.error('加载站点配置失败', e);
+            }
+        }
+
+        // ==================== 工具函数 ====================
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+            if (bytes < 1024*1024*1024) return (bytes/1024/1024).toFixed(1) + ' MB';
+            return (bytes/1024/1024/1024).toFixed(1) + ' GB';
+        }
+
+        function formatDate(timestamp) {
+            const date = new Date(timestamp * 1000);
+            return date.toLocaleString('zh-CN', { hour12: false });
+        }
+
+        function getFileIconClass(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const iconMap = {
+                'html': 'fa-file-code text-primary',
+                'htm': 'fa-file-code text-primary',
+                'css': 'fa-file-code text-info',
+                'js': 'fa-file-code text-warning',
+                'png': 'fa-file-image text-success',
+                'jpg': 'fa-file-image text-success',
+                'jpeg': 'fa-file-image text-success',
+                'gif': 'fa-file-image text-success',
+                'pdf': 'fa-file-pdf text-danger',
+                'txt': 'fa-file-alt text-secondary',
+                'zip': 'fa-file-archive text-secondary',
+                'doc': 'fa-file-word text-primary',
+                'docx': 'fa-file-word text-primary',
+                'xls': 'fa-file-excel text-success',
+                'xlsx': 'fa-file-excel text-success',
+                'mp4': 'fa-video text-info',
+                'webm': 'fa-video text-info',
+                'mov': 'fa-video text-info'
+            };
+            return iconMap[ext] || 'fa-file text-muted';
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe.replace(/[&<>"]/g, function(m) {
+                if(m === '&') return '&amp;';
+                if(m === '<') return '&lt;';
+                if(m === '>') return '&gt;';
+                if(m === '"') return '&quot;';
+                return m;
+            });
+        }
+
+        function showToast(type, message) {
+            const container = document.querySelector('.toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0 show`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function getTeacherAttrBadge(item) {
+            if (item.public) {
+                return '<span class="public-badge">游客公开</span>';
+            } else if (item.allowOtherTeachers) {
+                return '<span class="shared-badge">教师共享</span>';
+            } else {
+                return '<span class="private-badge">私有</span>';
+            }
+        }
+
+        function getStudentAttrBadges(item) {
+            let badges = [];
+            if (item.allowPrivateStudents) {
+                badges.push('<span class="private-student-badge">私有学生可见</span>');
+            }
+            if (item.allowGlobalStudents) {
+                badges.push('<span class="global-student-badge">全局学生可见</span>');
+            }
+            return badges.join(' ');
+        }
+
+        // ==================== 公开/共享区域函数（完整保留）====================
+        async function loadSharedPublicRootFolders(teacherFilter = null) {
+            const grid = document.getElementById('shared-public-folder-grid');
+            grid.innerHTML = '<div class="col-12 text-center py-5"><i class="fas fa-spinner fa-spin fa-3x"></i></div>';
+            try {
+                const [publicRes, sharedRes] = await Promise.all([
+                    apiCall('/public/folders' + (teacherFilter ? `?teacher=${encodeURIComponent(teacherFilter)}` : '')),
+                    apiCall('/teacher/shared-folders' + (teacherFilter ? `?teacher=${encodeURIComponent(teacherFilter)}` : ''))
+                ]);
+                
+                let folders = [];
+                if (publicRes.success) {
+                    folders.push(...publicRes.folders);
+                }
+                if (sharedRes.success) {
+                    folders.push(...sharedRes.folders);
+                }
+                const seen = new Set();
+                sharedPublicArea.rootFolders = folders.filter(f => {
+                    if (seen.has(f.path)) return false;
+                    seen.add(f.path);
+                    return true;
+                });
+                renderSharedPublicRootFolders();
+            } catch (err) {
+                grid.innerHTML = `<div class="col-12 text-center text-danger py-5">加载失败: ${err.message}</div>`;
+                console.error('公开/共享文件夹加载错误:', err);
+            }
+        }
+
+        function renderSharedPublicRootFolders() {
+            const grid = document.getElementById('shared-public-folder-grid');
+            if (sharedPublicArea.rootFolders.length === 0) {
+                grid.innerHTML = '<div class="col-12 text-center text-muted py-5">暂无公开或共享文件夹</div>';
+                return;
+            }
+            let html = '';
+            sharedPublicArea.rootFolders.forEach(f => {
+                f.meta = f.meta || {};
+                const teacherAttr = getTeacherAttrBadge(f.meta);
+                html += `
+                    <div class="col-md-4 col-sm-6 mb-4">
+                        <div class="card folder-card" style="cursor: default;">
+                            <div class="card-body text-center">
+                                <input type="checkbox" class="folder-checkbox" data-path="${f.path}" data-isdir="true" data-teacher="${f.teacher}">
+                                <i class="fas fa-folder-open folder-icon" onclick="enterSharedPublicFolder('${f.path}')"></i>
+                                <h6 class="card-title mt-2">
+                                    <a class="name-link" onclick="enterSharedPublicFolder('${f.path}')">${escapeHtml(f.folderName)}</a>
+                                </h6>
+                                <p class="small text-muted">${f.teacher}</p>
+                                <div class="attr-row justify-content-center">${teacherAttr}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+
+        window.enterSharedPublicFolder = function(path) {
+            sharedPublicArea.currentPath = path;
+            document.getElementById('shared-public-root-view').style.display = 'none';
+            document.getElementById('shared-public-file-view').style.display = 'block';
+            document.getElementById('shared-public-current-path-display').textContent = '/' + path;
+            document.getElementById('shared-public-go-up-btn').disabled = false;
+            loadSharedPublicFolderContent(path);
+        };
+
+        async function loadSharedPublicFolderContent(path) {
+            const tbody = document.getElementById('shared-public-file-list-body');
+            const emptyMsg = document.getElementById('shared-public-empty-folder');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4"><i class="fas fa-spinner fa-spin me-2"></i>加载中...</td></tr>';
+            emptyMsg.style.display = 'none';
+
+            try {
+                const parts = path.split('/');
+                const teacher = parts[0];
+                const subPath = parts.slice(1).join('/');
+                const response = await apiCall(`/teacher/files?path=${encodeURIComponent(subPath)}&teacher=${encodeURIComponent(teacher)}`);
+                if (!response.success) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">${response.message}</td></tr>`;
+                    return;
+                }
+                sharedPublicArea.items = (response.items || []).map(item => {
+                    item.fullPath = teacher + '/' + item.path;
+                    return item;
+                });
+                sharedPublicArea.currentPage = 1;
+                renderSharedPublicFileList();
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">加载失败: ${err.message}</td></tr>`;
+            }
+        }
+
+        function renderSharedPublicFileList() {
+            const tbody = document.getElementById('shared-public-file-list-body');
+            const emptyMsg = document.getElementById('shared-public-empty-folder');
+            const start = (sharedPublicArea.currentPage - 1) * sharedPublicArea.pageSize;
+            const end = start + sharedPublicArea.pageSize;
+            const pageItems = sharedPublicArea.items.slice(start, end);
+            const totalPages = Math.ceil(sharedPublicArea.items.length / sharedPublicArea.pageSize) || 1;
+
+            if (sharedPublicArea.items.length === 0) {
+                tbody.innerHTML = '';
+                emptyMsg.style.display = 'block';
+                document.getElementById('shared-public-prev-page').disabled = true;
+                document.getElementById('shared-public-next-page').disabled = true;
+                document.getElementById('shared-public-page-info').innerText = '第 1 页 / 共 1 页';
+                return;
+            }
+
+            emptyMsg.style.display = 'none';
+            let html = '';
+            pageItems.forEach(item => {
+                const isDir = item.type === 'dir';
+                const iconClass = isDir ? 'fa-folder text-warning' : getFileIconClass(item.name);
+                const size = isDir ? '-' : formatFileSize(item.size);
+                const modified = formatDate(item.modified);
+                const teacherAttr = getTeacherAttrBadge(item);
+                const studentAttr = getStudentAttrBadges(item);
+                let nameHtml = '';
+                if (isDir) {
+                    nameHtml = `<a class="name-link" onclick="enterSharedPublicSubdir('${item.path}')"><i class="fas ${iconClass} me-2"></i>${item.name}</a>`;
+                } else {
+                    const ext = item.name.split('.').pop().toLowerCase();
+                    const fullUrl = `/templates/${item.fullPath}`;
+                    if (ext === 'html' || ext === 'htm') {
+                        nameHtml = `<a href="${fullUrl}" target="_blank" class="name-link"><i class="fas ${iconClass} me-2"></i>${item.name}</a>`;
+                    } else if (['png','jpg','jpeg','gif','pdf','txt','css','js','json','md','mp4','webm','mov'].includes(ext)) {
+                        nameHtml = `<a class="name-link" onclick="previewSharedPublicFile('${item.fullPath}')"><i class="fas ${iconClass} me-2"></i>${item.name}</a>`;
+                    } else {
+                        nameHtml = `<a href="${fullUrl}" download class="name-link"><i class="fas ${iconClass} me-2"></i>${item.name}</a>`;
+                    }
+                }
+
+                let actionBtns = '';
+                if (isDir) {
+                    actionBtns += `<button class="btn btn-sm btn-outline-secondary" onclick="enterSharedPublicSubdir('${item.path}')"><i class="fas fa-folder-open"></i> 进入</button> `;
+                    actionBtns += `<button class="btn btn-sm btn-outline-success" onclick="downloadSharedPublicZip('${item.fullPath}')"><i class="fas fa-file-archive"></i> 下载</button>`;
+                } else {
+                    const ext = item.name.split('.').pop().toLowerCase();
+                    if (['png','jpg','jpeg','gif','pdf','txt','html','htm','css','js','json','md','mp4','webm','mov'].includes(ext)) {
+                        actionBtns += `<button class="btn btn-sm btn-outline-info" onclick="previewSharedPublicFile('${item.fullPath}')"><i class="fas fa-eye"></i> 预览</button> `;
+                    }
+                    actionBtns += `<a href="/templates/${item.fullPath}" class="btn btn-sm btn-outline-primary" target="_blank" download><i class="fas fa-download"></i> 下载</a> `;
+                    if (ext === 'zip') {
+                        actionBtns += `<button class="btn btn-sm btn-outline-success" onclick="extractSharedPublicZip('${item.fullPath}')"><i class="fas fa-file-archive"></i> 解压</button>`;
+                    }
+                }
+
+                html += `<tr>
+                    <td><input type="checkbox" class="shared-public-file-checkbox" data-path="${item.fullPath}" ${isDir ? 'data-isdir="true"' : ''}></td>
+                    <td>${nameHtml}</td>
+                    <td>${size}</td>
+                    <td>${modified}</td>
+                    <td><div class="attr-cell attr-row">${teacherAttr} ${studentAttr}</div></td>
+                    <td>${actionBtns}</td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+
+            document.getElementById('shared-public-page-info').innerText = `第 ${sharedPublicArea.currentPage} 页 / 共 ${totalPages} 页`;
+            document.getElementById('shared-public-prev-page').disabled = sharedPublicArea.currentPage === 1;
+            document.getElementById('shared-public-next-page').disabled = sharedPublicArea.currentPage === totalPages;
+
+            const checkboxes = document.querySelectorAll('.shared-public-file-checkbox:checked');
+            document.getElementById('shared-public-download-zip-btn').disabled = checkboxes.length === 0;
+        }
+
+        window.enterSharedPublicSubdir = function(path) {
+            const currentPath = sharedPublicArea.currentPath;
+            const teacher = currentPath.split('/')[0];
+            const newFullPath = teacher + '/' + path;
+            sharedPublicArea.currentPath = newFullPath;
+            loadSharedPublicFolderContent(newFullPath);
+            document.getElementById('shared-public-current-path-display').textContent = '/' + newFullPath;
+        };
+        window.previewSharedPublicFile = function(fullPath) {
+            showPreviewModal(`/templates/${fullPath}`, fullPath.split('.').pop());
+        };
+        window.downloadSharedPublicZip = async function(fullPath) {
+            const teacher = fullPath.split('/')[0];
+            const path = fullPath.split('/').slice(1).join('/');
+            const response = await fetch(`${API_BASE}/teacher/download-zip`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paths: [path], teacher: teacher }),
+                credentials: 'include'
+            });
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = path.split('/').pop() + '.zip';
+                a.click();
+            } else {
+                showToast('error', '下载失败');
+            }
+        };
+        window.extractSharedPublicZip = async function(fullPath) {
+            if (!confirm(`确定要解压 ${fullPath} 到当前目录吗？`)) return;
+            const teacher = fullPath.split('/')[0];
+            const zipPath = fullPath.split('/').slice(1).join('/');
+            const result = await apiCall('/teacher/extract', {
+                method: 'POST',
+                body: JSON.stringify({ zipPath: zipPath, teacher: teacher })
+            });
+            if (result.success) {
+                showToast('success', '解压成功');
+                loadSharedPublicFolderContent(sharedPublicArea.currentPath);
+            } else {
+                showToast('error', result.message || '解压失败');
+            }
+        };
+
+        // 预览模态框函数
+        function showPreviewModal(fileUrl, fileType) {
+            const previewContent = document.getElementById('preview-content');
+            const type = fileType.toLowerCase();
+            if (['png','jpg','jpeg','gif','bmp','webp','svg'].includes(type)) {
+                previewContent.innerHTML = `<img src="${fileUrl}" style="max-width:100%; max-height:80vh;">`;
+            } else if (type === 'pdf') {
+                previewContent.innerHTML = `<embed src="${fileUrl}" type="application/pdf" width="100%" height="600px">`;
+            } else if (['mp4','webm','ogg','mov'].includes(type)) {
+                previewContent.innerHTML = `
+                    <video controls style="max-width:100%; max-height:70vh;">
+                        <source src="${fileUrl}" type="video/${type === 'mov' ? 'mp4' : type}">
+                        您的浏览器不支持视频预览。
+                    </video>
+                `;
+            } else {
+                previewContent.innerHTML = '<div class="spinner-border"></div>';
+                fetch(fileUrl)
+                    .then(res => {
+                        if (res.headers.get('content-type')?.includes('text') || ['txt','html','js','css','json','md'].includes(type)) {
+                            return res.text();
+                        } else {
+                            previewContent.innerHTML = `<p>无法预览此文件类型，<a href="${fileUrl}" target="_blank">点击下载</a></p>`;
+                            throw new Error('非文本文件');
+                        }
+                    })
+                    .then(text => {
+                        previewContent.innerHTML = `<pre style="max-height:70vh; overflow:auto;">${escapeHtml(text)}</pre>`;
+                    })
+                    .catch(() => {});
+            }
+            new bootstrap.Modal(document.getElementById('previewModal')).show();
+        }
+
+        // 其他事件绑定
+        document.getElementById('shared-public-go-up-btn').addEventListener('click', () => {
+            const parts = sharedPublicArea.currentPath.split('/');
+            if (parts.length === 1) {
+                document.getElementById('shared-public-root-view').style.display = 'block';
+                document.getElementById('shared-public-file-view').style.display = 'none';
+                document.getElementById('shared-public-go-up-btn').disabled = true;
+                sharedPublicArea.currentPath = '';
+                loadSharedPublicRootFolders();
+                return;
+            }
+            parts.pop();
+            sharedPublicArea.currentPath = parts.join('/');
+            loadSharedPublicFolderContent(sharedPublicArea.currentPath);
+            document.getElementById('shared-public-current-path-display').textContent = '/' + sharedPublicArea.currentPath;
+        });
+
+        document.getElementById('shared-public-select-all').addEventListener('change', (e) => {
+            document.querySelectorAll('.shared-public-file-checkbox').forEach(cb => cb.checked = e.target.checked);
+            const checkboxes = document.querySelectorAll('.shared-public-file-checkbox:checked');
+            document.getElementById('shared-public-download-zip-btn').disabled = checkboxes.length === 0;
+        });
+
+        document.addEventListener('change', (e) => {
+            if (e.target.classList.contains('shared-public-file-checkbox')) {
+                const checkboxes = document.querySelectorAll('.shared-public-file-checkbox:checked');
+                document.getElementById('shared-public-download-zip-btn').disabled = checkboxes.length === 0;
+            }
+        });
+
+        document.getElementById('shared-public-prev-page').addEventListener('click', () => {
+            if (sharedPublicArea.currentPage > 1) {
+                sharedPublicArea.currentPage--;
+                renderSharedPublicFileList();
+            }
+        });
+        document.getElementById('shared-public-next-page').addEventListener('click', () => {
+            const totalPages = Math.ceil(sharedPublicArea.items.length / sharedPublicArea.pageSize);
+            if (sharedPublicArea.currentPage < totalPages) {
+                sharedPublicArea.currentPage++;
+                renderSharedPublicFileList();
+            }
+        });
+
+        document.getElementById('shared-public-download-zip-btn').addEventListener('click', async () => {
+            const selected = Array.from(document.querySelectorAll('.shared-public-file-checkbox:checked')).map(cb => cb.dataset.path);
+            if (selected.length === 0) return;
+            const teacher = selected[0].split('/')[0];
+            const paths = selected.map(p => p.split('/').slice(1).join('/'));
+            const response = await fetch(`${API_BASE}/teacher/download-zip`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paths: paths, teacher: teacher }),
+                credentials: 'include'
+            });
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'shared-public-selected.zip';
+                a.click();
+            } else {
+                showToast('error', '下载失败');
+            }
+        });
+
+        document.getElementById('shared-public-search-btn').addEventListener('click', () => {
+            const keyword = document.getElementById('shared-public-search-input').value.trim();
+            if (!keyword) return;
+            alert('搜索功能待实现，请使用页面内查找');
+        });
+
+        // ==================== 刷新 ====================
+        document.getElementById('refresh-all-btn').addEventListener('click', () => {
+            location.reload();
+        });
+
+        // ==================== 帮助（品牌文字点击）====================
+        document.getElementById('help-trigger').addEventListener('click', (e) => {
+            e.preventDefault();
+            new bootstrap.Modal(document.getElementById('helpModal')).show();
+        });
+
+        // ==================== 退出登录 ====================
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            clearAllLoginState();
+            window.location.href = 'login.html';
+        });
+
+        // ==================== 初始化 ====================
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = checkLoginState();
+            if (!user) return;
+            currentUser = user;
+            isAdmin = user.isAdmin || false;
+            updateUserDisplay(user);
+
+            await fetchUserProfile();
+            await loadSiteSetup();
+
+            selectedTeacher = user.username;
+            await loadSharedPublicRootFolders();
+            document.getElementById('shared-public-root-view').style.display = 'block';
+            document.getElementById('shared-public-file-view').style.display = 'none';
+        });
+    </script>
+</body>
+</html>

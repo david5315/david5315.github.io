@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拖拽分类练习</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { text-align: center; color: white; margin-bottom: 30px; }
+        h1 { font-size: 2rem; margin-bottom: 10px; }
+        .description { font-size: 1.1rem; opacity: 0.9; }
+        
+        .game-area { display: flex; gap: 30px; }
+        .items-panel { flex: 1; background: rgba(255,255,255,0.95); border-radius: 15px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .zones-panel { flex: 2; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        
+        .panel-title { font-size: 1.3rem; font-weight: bold; margin-bottom: 15px; color: #2d3748; padding-bottom: 10px; border-bottom: 3px solid #667eea; }
+        
+        .item { 
+            padding: 15px 20px; 
+            margin: 8px 0; 
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); 
+            border-radius: 10px; 
+            cursor: grab; 
+            transition: all 0.3s;
+            border-left: 4px solid #667eea;
+            font-weight: 500;
+        }
+        .item:hover { transform: translateX(5px); box-shadow: 0 5px 15px rgba(102,126,234,0.3); }
+        .item.dragging { opacity: 0.5; cursor: grabbing; }
+        .item.matched { background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); border-color: #28a745; animation: popIn 0.3s ease; }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.9); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .zone { 
+            background: rgba(255,255,255,0.98); 
+            border-radius: 12px; 
+            padding: 15px; 
+            min-height: 150px;
+            transition: all 0.3s;
+            border: 3px dashed #cbd5e0;
+        }
+        .zone-header { 
+            font-size: 1.1rem; 
+            font-weight: bold; 
+            margin-bottom: 15px; 
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        }
+        .zone.hovered { border-color: #28a745; background: rgba(40,167,69,0.1); transform: scale(1.02); }
+        .zone.correct { border-color: #28a745; background: rgba(40,167,69,0.15); }
+        
+        .placed-item {
+            padding: 10px 15px;
+            margin: 5px 0;
+            background: #e3f2fd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .controls { margin-top: 30px; text-align: center; }
+        .btn-check { 
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+            color: white; 
+            border: none; 
+            padding: 15px 50px; 
+            font-size: 1.2rem; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(40,167,69,0.4);
+        }
+        .btn-check:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(40,167,69,0.5); }
+        .btn-check:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        
+        .result-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            z-index: 1000;
+            text-align: center;
+            display: none;
+            max-width: 500px;
+        }
+        .result-modal.show { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .score-big { font-size: 4rem; font-weight: bold; color: #28a745; margin: 20px 0; }
+        .btn-close {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+        }
+        
+        footer { text-align: center; margin-top: 30px; color: rgba(255,255,255,0.7); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 分类大挑战</h1>
+            <p class="description">将左侧的词语拖拽到右侧对应的分类中</p>
+        </header>
+        
+        <form id="submitForm" style="display:none;">
+            <input type="hidden" id="teacher" value="{{teacher}}">
+            <input type="hidden" id="activityId" value="{{task}}">
+        </form>
+        
+        <div class="game-area">
+            <div class="items-panel">
+                <div class="panel-title">📋 待分类物品</div>
+                <div id="itemsList"></div>
+            </div>
+            
+            <div class="zones-panel" id="zonesContainer"></div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="checkResults()" class="btn-check" id="checkBtn">✅ 检查答案</button>
+        </div>
+        
+        <footer><p>© 2026 QuickForge 课堂教学系统</p></footer>
+    </div>
+    
+    <div id="resultModal" class="result-modal">
+        <h2>🎉 答题完成！</h2>
+        <div id="scoreDisplay" class="score-big">80%</div>
+        <p id="feedbackText" style="color:#666;"></p>
+        <button onclick="closeResult()" class="btn-close">关闭</button>
+    </div>
+    
+    <script>
+        const classificationData = {
+            categories: [
+                { id: 'fruit', name: '🍎 水果类' },
+                { id: 'vegetable', name: '🥕 蔬菜类' },
+                { id: 'meat', name: '🥩 肉类' },
+                { id: 'drink', name: '🥤 饮料类' }
+            ],
+            items: [
+                { id: 1, name: '苹果', category: 'fruit' },
+                { id: 2, name: '香蕉', category: 'fruit' },
+                { id: 3, name: '橙子', category: 'fruit' },
+                { id: 4, name: '胡萝卜', category: 'vegetable' },
+                { id: 5, name: '白菜', category: 'vegetable' },
+                { id: 6, name: '西红柿', category: 'vegetable' },
+                { id: 7, name: '牛肉', category: 'meat' },
+                { id: 8, name: '猪肉', category: 'meat' },
+                { id: 9, name: '鸡肉', category: 'meat' },
+                { id: 10, name: '可乐', category: 'drink' },
+                { id: 11, name: '牛奶', category: 'drink' },
+                { id: 12, name: '果汁', category: 'drink' }
+            ]
+        };
+        
+        const teacher = document.getElementById('teacher').value;
+        const activityId = document.getElementById('activityId').value;
+        
+        let placements = {};
+        let currentDrag = null;
+
+        function shuffleArray(array) {
+            return [...array].sort(() => Math.random() - 0.5);
+        }
+
+        function renderItems() {
+            const container = document.getElementById('itemsList');
+            const shuffled = shuffleArray(classificationData.items);
+            
+            container.innerHTML = shuffled.map(item => `
+                <div class="item" draggable="true" data-id="${item.id}" data-category="${item.category}">
+                    ${item.name}
+                </div>
+            `).join('');
+            
+            // 绑定拖拽事件
+            container.querySelectorAll('.item').forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+        }
+
+        function renderZones() {
+            const container = document.getElementById('zonesContainer');
+            
+            classificationData.categories.forEach(cat => {
+                const zone = document.createElement('div');
+                zone.className = 'zone';
+                zone.dataset.category = cat.id;
+                
+                let placedItemsHTML = '';
+                if (placements[cat.id]) {
+                    placedItemsHTML = placements[cat.id].map(id => {
+                        const item = classificationData.items.find(i => i.id === id);
+                        return `<div class="placed-item"><span>${item.name}</span>✓</div>`;
+                    }).join('');
+                }
+                
+                zone.innerHTML = `
+                    <div class="zone-header">${cat.name}</div>
+                    <div class="placed-items-container">${placedItemsHTML}</div>
+                `;
+                
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('dragleave', handleDragLeave);
+                zone.addEventListener('drop', handleDrop);
+                
+                container.appendChild(zone);
+            });
+        }
+
+        function handleDragStart(e) {
+            currentDrag = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            currentDrag = null;
+            document.querySelectorAll('.zone').forEach(z => z.classList.remove('hovered'));
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            e.currentTarget.classList.add('hovered');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('hovered');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('hovered');
+            
+            if (!currentDrag || !currentDrag.dataset.id) return;
+            
+            const itemId = parseInt(currentDrag.dataset.id);
+            const category = e.currentTarget.dataset.category;
+            
+            // 记录放置
+            if (!placements[category]) {
+                placements[category] = [];
+            }
+            placements[category].push(itemId);
+            
+            // 更新界面
+            renderZones();
+            
+            // 隐藏源项目
+            const sourceItem = document.querySelector(`[data-id="${itemId}"]`);
+            if (sourceItem) {
+                sourceItem.style.display = 'none';
+            }
+        }
+
+        async function checkResults() {
+            let correctCount = 0;
+            let totalCount = classificationData.items.length;
+            
+            // 验证每个放置
+            Object.entries(placements).forEach(([category, itemIds]) => {
+                itemIds.forEach(itemId => {
+                    const item = classificationData.items.find(i => i.id === itemId);
+                    if (item && item.category === category) {
+                        correctCount++;
+                    }
+                });
+            });
+            
+            const percentage = Math.round((correctCount / totalCount) * 100);
+            
+            // 显示结果
+            document.getElementById('scoreDisplay').textContent = `${percentage}%`;
+            document.getElementById('feedbackText').textContent = 
+                correctCount + '/' + totalCount + ' 正确！' + 
+                (percentage >= 80 ? '太棒了！' : percentage >= 60 ? '不错哦！' : '继续努力！');
+            
+            document.getElementById('resultModal').classList.add('show');
+            
+            // 提交数据
+            try {
+                const formData = new FormData();
+                formData.append('teacher', teacher);
+                formData.append('activity_id', activityId);
+                formData.append('student_id', window.studentId || 'S001');
+                formData.append('data', JSON.stringify({
+                    placements: placements,
+                    correct_count: correctCount,
+                    total: totalCount,
+                    percentage: percentage,
+                    client_timestamp: new Date().toISOString()
+                }));
+
+                const response = await fetch('/api/submit', { method: 'POST', body: formData });
+                const result = await response.json();
+                console.log('提交结果:', result);
+            } catch (error) {
+                console.error('提交失败:', error);
+            }
+        }
+
+        function closeResult() {
+            document.getElementById('resultModal').classList.remove('show');
+            document.getElementById('checkBtn').disabled = false;
+            document.getElementById('checkBtn').textContent = '✅ 检查答案';
+        }
+
+        // 初始化
+        renderItems();
+        renderZones();
+    </script>
+</body>
+</html>

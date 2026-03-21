@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通用课堂活动数据分析</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .description {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        .query-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            align-items: center;
+        }
+        .query-section input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .query-section button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .query-section button:hover {
+            background: #2980b9;
+        }
+        .stats-overview {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+        .stat-card h3 {
+            color: #34495e;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 30px;
+        }
+        .answer-list {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .answer-item {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .answer-item:last-child {
+            border-bottom: none;
+        }
+        .file-link {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            text-decoration: none;
+            margin: 5px;
+        }
+        .file-link:hover {
+            background: #2980b9;
+        }
+        .no-data {
+            text-align: center;
+            color: #718096;
+            padding: 40px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #3498db;
+        }
+    </style>
+</head>
+
+            <!-- QUICKFORGE FIX -->
+            <input type="hidden" id="qf_teacher" value="{{teacher}}">
+            <input type="hidden" id="qf_activity_id" value="{{task}}">
+            <input type="hidden" id="qf_student_id" name="student_id" value="">
+            <!-- END FIX -->
+<body>
+    <div class="container">
+        <h1>课堂活动数据分析</h1>
+        <p class="description">输入活动ID，查看该活动所有提交的统计信息（统计逻辑完全由前端实现）</p>
+
+        <div class="query-section">
+            <input type="text" id="activityId" placeholder="输入活动ID (例如: demo_activity)" value="demo_activity">
+            <button onclick="loadData()">查询</button>
+        </div>
+
+        <!-- 概览卡片 -->
+        <div class="stats-overview" id="overview"></div>
+
+        <!-- 单选题分析 -->
+        <div class="section" id="singleChoiceSection" style="display: none;">
+            <h2 class="section-title">单选题分析</h2>
+            <div class="chart-container">
+                <canvas id="singleChoiceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 多选题分析 -->
+        <div class="section" id="multipleChoiceSection" style="display: none;">
+            <h2 class="section-title">多选题分析</h2>
+            <div class="chart-container">
+                <canvas id="multipleChoiceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 判断题分析 -->
+        <div class="section" id="trueFalseSection" style="display: none;">
+            <h2 class="section-title">判断题分析</h2>
+            <div class="chart-container">
+                <canvas id="trueFalseChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 填空题分析 -->
+        <div class="section" id="fillBlankSection" style="display: none;">
+            <h2 class="section-title">填空题答案列表</h2>
+            <div class="answer-list" id="fillBlankAnswers"></div>
+        </div>
+
+        <!-- 问答题分析 -->
+        <div class="section" id="essaySection" style="display: none;">
+            <h2 class="section-title">问答题回答列表</h2>
+            <div class="answer-list" id="essayAnswers"></div>
+        </div>
+
+        <!-- 附件列表 -->
+        <div class="section" id="filesSection" style="display: none;">
+            <h2 class="section-title">上传的附件</h2>
+            <div id="fileList"></div>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">加载中...</div>
+        <div id="noData" class="no-data" style="display: none;">暂无数据</div>
+    </div>
+
+    <script>
+        // 题目配置（硬编码，与 index.html 保持一致）
+        const QUESTIONS = {
+            single: {
+                id: 'q1',
+                text: '你最喜欢的编程语言是？',
+                options: { A: 'Python', B: 'Java', C: 'JavaScript', D: 'C++' }
+            },
+            multiple: {
+                id: 'q2',
+                text: '你使用过哪些前端框架？',
+                options: { React: 'React', Vue: 'Vue', Angular: 'Angular', Svelte: 'Svelte' }
+            },
+            trueFalse: {
+                id: 'q3',
+                text: 'Python 是一种编译型语言。',
+                options: { true: '正确', false: '错误' }
+            },
+            fill: {
+                id: 'q4',
+                text: 'Python 的作者是'
+            },
+            essay: {
+                id: 'q5',
+                text: '请简述你学习编程的经历。'
+            }
+        };
+
+        let chartInstances = {};
+
+        async function loadData() {
+            const activityId = document.getElementById('activityId').value.trim();
+            if (!activityId) {
+                alert('请输入活动ID');
+                return;
+            }
+
+            // 显示加载，隐藏无数据
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('noData').style.display = 'none';
+            document.getElementById('overview').innerHTML = '';
+
+            // 隐藏所有分析区块
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+
+            try {
+                const response = await fetch(`/api/submissions?activity_id=${encodeURIComponent(activityId)}`);
+                if (!response.ok) throw new Error('请求失败');
+                const data = await response.json();
+                const submissions = data.submissions || [];
+
+                document.getElementById('loading').style.display = 'none';
+
+                if (submissions.length === 0) {
+                    document.getElementById('noData').style.display = 'block';
+                    return;
+                }
+
+                // 处理数据：提取每个提交的 payload.answers
+                const answers = submissions.map(sub => sub.payload?.answers || {});
+
+                // 更新概览
+                updateOverview(submissions, answers);
+
+                // 分析各题型
+                analyzeSingleChoice(answers);
+                analyzeMultipleChoice(answers);
+                analyzeTrueFalse(answers);
+                analyzeFillBlank(answers);
+                analyzeEssay(answers);
+                analyzeFiles(submissions);
+
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('noData').style.display = 'block';
+                document.getElementById('noData').textContent = `加载失败: ${error.message}`;
+            }
+        }
+
+        function updateOverview(submissions, answers) {
+            const total = submissions.length;
+            const withFiles = submissions.filter(s => s._files && s._files.length > 0).length;
+            const fileCount = submissions.reduce((acc, s) => acc + (s._files?.length || 0), 0);
+
+            const overview = document.getElementById('overview');
+            overview.innerHTML = `
+                <div class="stat-card"><h3>总提交数</h3><div class="value">${total}</div></div>
+                <div class="stat-card"><h3>含附件提交</h3><div class="value">${withFiles}</div></div>
+                <div class="stat-card"><h3>附件总数</h3><div class="value">${fileCount}</div></div>
+            `;
+        }
+
+        function analyzeSingleChoice(answers) {
+            const qid = QUESTIONS.single.id;
+            const counts = { A: 0, B: 0, C: 0, D: 0 };
+            answers.forEach(ans => {
+                const val = ans[qid];
+                if (val && counts.hasOwnProperty(val)) counts[val]++;
+            });
+
+            const total = answers.length;
+            const data = Object.values(counts);
+
+            // 显示区块
+            const section = document.getElementById('singleChoiceSection');
+            section.style.display = 'block';
+
+            const ctx = document.getElementById('singleChoiceChart').getContext('2d');
+            if (chartInstances.single) chartInstances.single.destroy();
+
+            chartInstances.single = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.entries(QUESTIONS.single.options).map(([k, v]) => `${k}. ${v}`),
+                    datasets: [{
+                        data: data,
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: QUESTIONS.single.text },
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw} 人 (${((ctx.raw/total)*100).toFixed(1)}%)` } }
+                    }
+                }
+            });
+        }
+
+        function analyzeMultipleChoice(answers) {
+            const qid = QUESTIONS.multiple.id;
+            const counts = { React: 0, Vue: 0, Angular: 0, Svelte: 0 };
+            answers.forEach(ans => {
+                const vals = ans[qid] || [];
+                if (Array.isArray(vals)) {
+                    vals.forEach(v => { if (counts.hasOwnProperty(v)) counts[v]++; });
+                }
+            });
+
+            const total = answers.length;
+            const labels = Object.values(QUESTIONS.multiple.options);
+            const data = Object.values(counts);
+
+            const section = document.getElementById('multipleChoiceSection');
+            section.style.display = 'block';
+
+            const ctx = document.getElementById('multipleChoiceChart').getContext('2d');
+            if (chartInstances.multiple) chartInstances.multiple.destroy();
+
+            chartInstances.multiple = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '被选次数',
+                        data: data,
+                        backgroundColor: '#36A2EB'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: QUESTIONS.multiple.text },
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.raw} 次 (占总提交 ${((ctx.raw/total)*100).toFixed(1)}%)` } }
+                    },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+            });
+        }
+
+        function analyzeTrueFalse(answers) {
+            const qid = QUESTIONS.trueFalse.id;
+            let trueCount = 0, falseCount = 0, missing = 0;
+            answers.forEach(ans => {
+                const val = ans[qid];
+                if (val === 'true') trueCount++;
+                else if (val === 'false') falseCount++;
+                else missing++;
+            });
+
+            const total = answers.length;
+
+            const section = document.getElementById('trueFalseSection');
+            section.style.display = 'block';
+
+            const ctx = document.getElementById('trueFalseChart').getContext('2d');
+            if (chartInstances.tf) chartInstances.tf.destroy();
+
+            chartInstances.tf = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['正确', '错误', '未答'],
+                    datasets: [{
+                        data: [trueCount, falseCount, missing],
+                        backgroundColor: ['#27ae60', '#e74c3c', '#95a5a6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: QUESTIONS.trueFalse.text },
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw} 人 (${((ctx.raw/total)*100).toFixed(1)}%)` } }
+                    }
+                }
+            });
+        }
+
+        function analyzeFillBlank(answers) {
+            const qid = QUESTIONS.fill.id;
+            const list = answers.map(ans => ans[qid]).filter(v => v && v.trim() !== '');
+
+            const section = document.getElementById('fillBlankSection');
+            if (list.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            section.style.display = 'block';
+
+            const container = document.getElementById('fillBlankAnswers');
+            container.innerHTML = list.map(text => `<div class="answer-item">${escapeHtml(text)}</div>`).join('');
+        }
+
+        function analyzeEssay(answers) {
+            const qid = QUESTIONS.essay.id;
+            const list = answers.map(ans => ans[qid]).filter(v => v && v.trim() !== '');
+
+            const section = document.getElementById('essaySection');
+            if (list.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            section.style.display = 'block';
+
+            const container = document.getElementById('essayAnswers');
+            container.innerHTML = list.map(text => `<div class="answer-item">${escapeHtml(text)}</div>`).join('');
+        }
+
+        function analyzeFiles(submissions) {
+            const files = submissions.flatMap(s => (s._files || []).map(f => ({
+                ...f,
+                student_id: s.student_id,
+                submit_time: s._server_timestamp
+            })));
+
+            const section = document.getElementById('filesSection');
+            if (files.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            section.style.display = 'block';
+
+            const container = document.getElementById('fileList');
+            container.innerHTML = files.map(f => `
+                <div class="answer-item">
+                    <strong>学号 ${f.student_id}</strong> 上传: 
+                    <a href="/uploads/${f.saved_name}" target="_blank" class="file-link">${f.original_name}</a>
+                    <span style="color: #718096;">(${formatFileSize(f.size)})</span>
+                    <span style="margin-left: 10px; font-size: 0.85rem;">${new Date(f.submit_time).toLocaleString()}</span>
+                </div>
+            `).join('');
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+            return (bytes/(1024*1024)).toFixed(1) + ' MB';
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe.replace(/[&<>"']/g, function(m) {
+                if(m === '&') return '&amp;';
+                if(m === '<') return '&lt;';
+                if(m === '>') return '&gt;';
+                if(m === '"') return '&quot;';
+                if(m === "'") return '&#039;';
+                return m;
+            });
+        }
+
+        // 页面加载时自动查询默认活动
+        window.onload = function() {
+            loadData();
+        };
+    </script>
+</body>
+</html>

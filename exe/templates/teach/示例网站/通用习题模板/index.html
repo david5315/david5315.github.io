@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通用课堂活动提交示例</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .description {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .required {
+            color: #e53e3e;
+        }
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        input[type="text"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border: 2px dashed #cbd5e0;
+            border-radius: 5px;
+            background-color: #f7fafc;
+        }
+        .option-item {
+            margin-bottom: 8px;
+        }
+        .option-item label {
+            display: inline-block;
+            font-weight: normal;
+            margin-left: 5px;
+        }
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+            font-weight: 600;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        .message.loading {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            display: block;
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #e2e8f0;
+            margin: 20px 0;
+        }
+        .file-note {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>课堂活动提交示例</h1>
+        <p class="description">包含多种题型（单选、多选、判断、填空、问答）及附件上传，数据将提交到统一接口</p>
+
+        <form id="submitForm">
+            <!-- 活动标识（可自定义） -->
+            <div class="form-group">
+                <label for="activityId">活动ID <span class="required">*</span></label>
+                <input type="text" id="activityId" name="activityId" value="demo_activity" required placeholder="例如: demo_activity">
+                <small style="color: #718096;">用于区分不同活动，同一活动可统一分析</small>
+            </div>
+
+            <!-- 学号 -->
+            <div class="form-group">
+                <label for="studentId">学号 <span class="required">*</span></label>
+                <input type="text" id="studentId" name="studentId" required placeholder="例如: 2024001">
+            </div>
+
+            <hr>
+
+            <!-- 题目1：单选题 -->
+            <div class="form-group">
+                <label>1. 你最喜欢的编程语言是？ <span class="required">*</span></label>
+                <div class="option-item">
+                    <input type="radio" name="q1" id="q1_a" value="A" required>
+                    <label for="q1_a">A. Python</label>
+                </div>
+                <div class="option-item">
+                    <input type="radio" name="q1" id="q1_b" value="B">
+                    <label for="q1_b">B. Java</label>
+                </div>
+                <div class="option-item">
+                    <input type="radio" name="q1" id="q1_c" value="C">
+                    <label for="q1_c">C. JavaScript</label>
+                </div>
+                <div class="option-item">
+                    <input type="radio" name="q1" id="q1_d" value="D">
+                    <label for="q1_d">D. C++</label>
+                </div>
+            </div>
+
+            <!-- 题目2：多选题 -->
+            <div class="form-group">
+                <label>2. 你使用过哪些前端框架？（可多选）</label>
+                <div class="option-item">
+                    <input type="checkbox" name="q2" id="q2_a" value="React">
+                    <label for="q2_a">React</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" name="q2" id="q2_b" value="Vue">
+                    <label for="q2_b">Vue</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" name="q2" id="q2_c" value="Angular">
+                    <label for="q2_c">Angular</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" name="q2" id="q2_d" value="Svelte">
+                    <label for="q2_d">Svelte</label>
+                </div>
+            </div>
+
+            <!-- 题目3：判断题 -->
+            <div class="form-group">
+                <label>3. Python 是一种编译型语言。 <span class="required">*</span></label>
+                <div class="option-item">
+                    <input type="radio" name="q3" id="q3_true" value="true" required>
+                    <label for="q3_true">正确</label>
+                </div>
+                <div class="option-item">
+                    <input type="radio" name="q3" id="q3_false" value="false">
+                    <label for="q3_false">错误</label>
+                </div>
+            </div>
+
+            <!-- 题目4：填空题 -->
+            <div class="form-group">
+                <label for="q4">4. Python 的作者是 <span class="required">*</span></label>
+                <input type="text" id="q4" name="q4" required placeholder="请输入姓名">
+            </div>
+
+            <!-- 题目5：问答题 -->
+            <div class="form-group">
+                <label for="q5">5. 请简述你学习编程的经历。</label>
+                <textarea id="q5" name="q5" placeholder="可选回答"></textarea>
+            </div>
+
+            <!-- 附件上传 -->
+            <div class="form-group">
+                <label for="files">上传附件（可选，可多选）</label>
+                <input type="file" id="files" name="files" multiple>
+                <p class="file-note">支持格式: 任意文件，每个最大16MB</p>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">提交</button>
+        </form>
+
+        <!-- 消息显示区域 -->
+        <div id="message" class="message"></div>
+
+        <footer>
+            <p>提交接口: <code>/api/submit</code> (POST multipart/form-data)</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('submitForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // 显示加载消息
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = 'message loading';
+            messageDiv.textContent = '正在提交...';
+
+            // 收集表单数据
+            const activityId = document.getElementById('activityId').value.trim();
+            const studentId = document.getElementById('studentId').value.trim();
+
+            if (!activityId || !studentId) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = '活动ID和学号不能为空';
+                return;
+            }
+
+            // 构建 answers 对象
+            const answers = {};
+
+            // 单选题 q1
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            answers.q1 = q1 ? q1.value : null;
+
+            // 多选题 q2
+            const q2 = Array.from(document.querySelectorAll('input[name="q2"]:checked')).map(cb => cb.value);
+            answers.q2 = q2;
+
+            // 判断题 q3
+            const q3 = document.querySelector('input[name="q3"]:checked');
+            answers.q3 = q3 ? q3.value : null;
+
+            // 填空题 q4
+            answers.q4 = document.getElementById('q4').value.trim();
+
+            // 问答题 q5
+            answers.q5 = document.getElementById('q5').value.trim();
+
+            // 构建 payload（可自由定义结构）
+            const payload = {
+                answers: answers,
+                // 可以添加其他元数据，如提交时间（前端生成）
+                client_timestamp: new Date().toISOString()
+            };
+
+            // 创建 FormData
+            const formData = new FormData();
+            // 将 payload 作为 JSON 字符串放入 data 字段
+            formData.append('data', JSON.stringify({
+                activity_id: activityId,
+                student_id: studentId,
+                payload: payload
+            }));
+
+            // 添加文件
+            const fileInput = document.getElementById('files');
+            for (let i = 0; i < fileInput.files.length; i++) {
+                formData.append('files', fileInput.files[i]);
+            }
+
+            try {
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    messageDiv.className = 'message success';
+                    messageDiv.textContent = `提交成功！文件名: ${result.filename}`;
+                    // 清空表单（可选）
+                    document.getElementById('submitForm').reset();
+                } else {
+                    messageDiv.className = 'message error';
+                    messageDiv.textContent = `提交失败: ${result.error || '未知错误'}`;
+                }
+            } catch (error) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = `网络错误: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

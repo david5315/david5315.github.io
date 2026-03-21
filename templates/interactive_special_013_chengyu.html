@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成语填空游戏</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        header { text-align: center; color: white; margin-bottom: 30px; }
+        h1 { font-size: 2rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        .card { background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
+        .puzzle-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .puzzle-item { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; position: relative; }
+        .puzzle-text { font-size: 1.1rem; margin-bottom: 15px; line-height: 1.6; }
+        .missing-word { display: inline-block; width: 120px; height: 35px; border: 2px dashed white; border-radius: 5px; vertical-align: middle; margin: 0 10px; background: rgba(255,255,255,0.2); transition: all 0.3s; }
+        .word-pool { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 20px; }
+        .pool-title { font-weight: bold; margin-bottom: 15px; color: #2d3748; }
+        .word-cards { display: flex; flex-wrap: wrap; gap: 10px; }
+        .word-card { 
+            padding: 10px 20px; 
+            background: white; 
+            border: 2px solid #ddd; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .word-card:hover { background: #e2e8f0; transform: translateY(-2px); }
+        .word-card.selected { background: #667eea; color: white; border-color: #667eea; }
+        .word-card.correct { background: #48bb78; color: white; border-color: #48bb78; animation: pulse 0.5s; }
+        .word-card.wrong { background: #f56565; color: white; border-color: #f56565; animation: shake 0.5s; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .btn-check { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; border: none; padding: 15px 50px; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 20px; width: 100%; transition: all 0.3s; }
+        .btn-check:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(72,187,120,0.4); }
+        .result-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); z-index: 1000; text-align: center; display: none; }
+        .result-modal.show { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translate(-50%, -40%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+        .score-big { font-size: 4rem; font-weight: bold; color: #667eea; margin: 20px 0; }
+        footer { text-align: center; margin-top: 30px; color: rgba(255,255,255,0.7); }
+        @media (max-width: 600px) { .puzzle-container { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧩 成语填空大挑战</h1>
+            <p style="font-size:1.1rem;opacity:0.9;">从下方选择正确的字填入上方的成语空缺处</p>
+        </header>
+        
+        <form id="submitForm" style="display:none;">
+            </form>
+
+        <div class="card">
+            <div class="puzzle-container" id="puzzles"></div>
+            
+            <div class="word-pool">
+                <div class="pool-title">📝 词语库 (可拖拽点击)</div>
+                <div class="word-cards" id="wordPool"></div>
+            </div>
+            
+            <button onclick="checkAnswers()" class="btn-check">✅ 提交答案</button>
+        </div>
+        
+        <footer><p>© 2026 QuickForge 课堂教学系统</p></footer>
+    </div>
+    
+    <div id="resultModal" class="result-modal">
+        <h2>🎉 答题完成！</h2>
+        <div id="scoreDisplay" class="score-big">0%</div>
+        <p id="feedbackText"></p>
+        <button onclick="closeResult()" class="btn-check" style="background:#667eea;font-size:1rem;padding:12px 30px;margin-top:20px;">关闭</button>
+    </div>
+    
+        <script>
+        document.getElementById("mainForm")?.addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            let valid = true;
+            this.querySelectorAll("[required]").forEach(input => {
+                if (!input.value.trim()) {
+                    valid = false;
+                    input.style.borderColor = "#ef4444";
+                } else {
+                    input.style.borderColor = "#e2e8f0";
+                }
+            });
+            
+            if (!valid) {
+                alert("璇峰～鍐欐墍鏈夊繀濉」锛?);
+                return;
+            }
+            
+            alert("鉁?鎻愪氦鎴愬姛锛佹劅璋㈡偍鐨勫弬涓?);
+            this.reset();
+        });
+    </script>
+</body>
+</html>

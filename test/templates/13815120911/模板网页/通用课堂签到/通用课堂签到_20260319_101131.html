@@ -1,0 +1,589 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通用课堂签到系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            color: #3498db;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-submit {
+            background: #2ecc71;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background: #27ae60;
+        }
+
+        .btn-refresh {
+            background: #9b59b6;
+        }
+
+        .btn-refresh:hover {
+            background: #8e44ad;
+        }
+
+        .btn-export {
+            background: #e74c3c;
+        }
+
+        .btn-export:hover {
+            background: #c0392b;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d5f4e6;
+            color: #27ae60;
+            border: 1px solid #2ecc71;
+        }
+
+        .alert-error {
+            background: #fdeaea;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .alert.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #3498db;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e6ed;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
+
+        .file-list {
+            margin-top: 10px;
+        }
+
+        .file-item {
+            display: inline-block;
+            background: #ecf0f1;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .file-link {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .file-link:hover {
+            text-decoration: underline;
+        }
+
+        .timestamp {
+            font-size: 0.85rem;
+            color: #95a5a6;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 30px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📝 通用课堂签到系统</h1>
+            <p class="subtitle">基于统一数据中台的课堂签到与数据统计平台</p>
+        </header>
+
+        <div class="alert" id="alert"></div>
+
+        <div class="main-content">
+            <!-- 签到表单 -->
+            <div class="card">
+                <h2 class="card-title">学生签到</h2>
+                <form id="signinForm">
+                    <input type="hidden" name="teacher" value="13815120911">
+                    <input type="hidden" name="activity_id" value="模板网页/通用课堂签到">
+                    
+                    <div class="form-group">
+                        <label for="studentId">学生ID/学号 *</label>
+                        <input type="text" id="studentId" name="student_id" required 
+                               placeholder="请输入学号或匿名ID">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="studentName">学生姓名</label>
+                        <input type="text" id="studentName" name="student_name" 
+                               placeholder="请输入姓名（可选）">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="className">班级/课程</label>
+                        <input type="text" id="className" name="class_name" 
+                               placeholder="例如：计算机科学2023级1班">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="attendanceType">签到类型</label>
+                        <select id="attendanceType" name="attendance_type">
+                            <option value="正常">正常</option>
+                            <option value="迟到">迟到</option>
+                            <option value="早退">早退</option>
+                            <option value="请假">请假</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="memo">备注信息</label>
+                        <textarea id="memo" name="memo" rows="3" 
+                                  placeholder="可填写特殊情况说明"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>上传文件（可选）</label>
+                        <input type="file" id="fileInput" name="files" multiple>
+                        <small style="color: #7f8c8d; display: block; margin-top: 5px;">
+                            可上传证明文件，如请假条照片等
+                        </small>
+                    </div>
+
+                    <button type="submit" class="btn btn-submit">
+                        📤 提交签到
+                    </button>
+                </form>
+
+                <div class="loading" id="submitLoading">
+                    <div class="spinner"></div>
+                    <p>正在提交签到信息...</p>
+                </div>
+            </div>
+
+            <!-- 数据统计 -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 class="card-title">签到统计</h2>
+                    <div class="button-group">
+                        <button type="button" class="btn btn-refresh" id="refreshBtn">
+                            🔄 刷新数据
+                        </button>
+                        <button type="button" class="btn btn-export" id="exportBtn">
+                            📊 导出数据
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-grid" id="statsContainer">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalCount">0</div>
+                        <div class="stat-label">总签到人数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="normalCount">0</div>
+                        <div class="stat-label">正常签到</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="lateCount">0</div>
+                        <div class="stat-label">迟到</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="leaveCount">0</div>
+                        <div class="stat-label">请假</div>
+                    </div>
+                </div>
+
+                <div class="loading" id="dataLoading">
+                    <div class="spinner"></div>
+                    <p>正在加载签到数据...</p>
+                </div>
+
+                <div id="dataTableContainer">
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>学生ID</th>
+                                <th>姓名</th>
+                                <th>班级</th>
+                                <th>签到类型</th>
+                                <th>签到时间</th>
+                                <th>文件</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- 数据将通过JS动态填充 -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="empty-state" id="emptyState">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">📭</div>
+                    <h3>暂无签到数据</h3>
+                    <p>提交第一条签到记录后，数据将在这里显示</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2023 通用课堂签到系统 | 基于统一数据中台接口开发</p>
+            <p style="margin-top: 5px; font-size: 0.8rem;">
+                教师：13815120911 | 活动：模板网页/通用课堂签到
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // 全局配置
+        const CONFIG = {
+            teacher: '13815120911',
+            activityId: '模板网页/通用课堂签到',
+            api: {
+                submit: '/api/submit',
+                submissions: '/api/submissions'
+            }
+        };
+
+        // DOM 元素
+        const elements = {
+            signinForm: document.getElementById('signinForm'),
+            studentId: document.getElementById('studentId'),
+            studentName: document.getElementById('studentName'),
+            className: document.getElementById('className'),
+            attendanceType: document.getElementById('attendanceType'),
+            memo: document.getElementById('memo'),
+            fileInput: document.getElementById('fileInput'),
+            alert: document.getElementById('alert'),
+            submitLoading: document.getElementById('submitLoading'),
+            dataLoading: document.getElementById('dataLoading'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            exportBtn: document.getElementById('exportBtn'),
+            dataTableContainer: document.getElementById('dataTableContainer'),
+            tableBody: document.getElementById('tableBody'),
+            emptyState: document.getElementById('emptyState'),
+            statsContainer: document.getElementById('statsContainer'),
+            totalCount: document.getElementById('totalCount'),
+            normalCount: document.getElementById('normalCount'),
+            lateCount: document.getElementById('lateCount'),
+            leaveCount: document.getElementById('leaveCount')
+        };
+
+        // 显示提示消息
+        function showAlert(message, type = 'success') {
+            elements.alert.textContent = message;
+            elements.alert.className = `alert alert-${type} show`;
+            setTimeout(() => {
+                elements.alert.classList.remove('show');
+            }, 5000);
+        }
+
+        // 处理表单提交
+        elements.signinForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const studentId = elements.studentId.value.trim();
+            if (!studentId) {
+                showAlert('请输入学生ID/学号', 'error');
+                return;
+            }
+
+            // 显示加载状态
+            elements.submitLoading.classList.add('active');
+            
+            try {
+                const formData = new FormData();
+                formData.append('teacher', CONFIG.teacher);
+                formData.append('activity_id', CONFIG.activityId);
+                formData.append('student_id', studentId);
+                
+                // 构建其他数据
+                const otherData = {};
+                if (elements.studentName.value.trim()) {
+                    otherData.student_name = elements.studentName.value.trim();
+                }
+                if (elements.className.value.trim()) {
+                    otherData.class_name = elements.className.value.trim();
+                }
+                otherData.attendance_type = elements.attendanceType.value;
+                if (elements.memo.value.trim()) {
+                    otherData.memo = elements.memo.value.trim();
+                }
+                
+                // 如果有文件，使用 FormData 提交
+                if (elements.fileInput.files.length > 0) {
+                    formData.append('data', JSON.stringify(otherData));
+                    for (let file of elements.fileInput.files) {
+                        formData.append('files', file);
+                    }
+                    
+                    const response = await fetch(CONFIG.api.submit, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`提交失败: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    if (!data.success) {
+                        throw new Error(data.message || '提交失败');
+                    }
+                } else {
+                    // 无文件，使用 JSON 提交
+                    const payload = {
+                        teacher: CONFIG.teacher,
+                        activity_id: CONFIG.activityId,
+                        student_id: studentId,
+                        ...otherData
+                    };
+                    
+                    const response = await fetch(CONFIG.api.submit, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`提交失败: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    if (!data.success) {
+                        throw new Error(data.message || '提交失败');
+                    }
+                }
+                
+                showAlert('签到成功！');
+                
+                // 重置表单
+                elements.signinForm.reset();
+                elements.studentId.focus();
+                
+                // 刷新数据
+                await loadData();
+                
+            } catch (error) {
+                console.error('提交错误:', error);
+                showAlert(`提交失败: ${error.message}`, 'error');
+           

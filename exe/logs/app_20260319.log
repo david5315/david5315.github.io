@@ -1,0 +1,1038 @@
+🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (教师) - 学科: 语文  - njzx1 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔐 Web登录尝试: username=老张, ip=192.168.22.28📂 加载教师数据: 老张, 目录: C:\Users\Administrator\.openclaw\workspace\exe\data\teacher_老张✅ 创建新的教师数据目录: C:\Users\Administrator\.openclaw\workspace\exe\data\teacher_老张✅ 成功加载教师 老张 的数据到内存✅ Web登录成功: 老张 (角色: teacher)
+=== 进入 /ai/generate-page ===📥 收到请求: prompt='请修改这个网页确保可以正常提交和刷新数据...', target_folder='模板网页/通用课堂签到', file_name='通用课堂签到_20260319_100757.html'📎 参考文件: ['模板网页/通用课堂签到/通用课堂签到_20260319_001.HTML']🔑 配额检查: can_use=True, msg=, using_master=False📁 目标目录: C:\Users\Administrator\.openclaw\workspace\exe\templates\老张\模板网页\通用课堂签到📄 参考文件内容长度: 13378 字符📄 模板内容 (前200字符): '你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。\n\n目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。\n\n数据中台接口规范\n\n1. 提交接口\nURL：/api/submit\n方法：POST\n支持 Con'...
+============================================================【DEBUG】完整提示词内容：你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Content-Type：application/json 或 multipart/form-data（用于文件上传）
+必填字段（所有请求均需包含）：
+  - teacher：教师用户名（例如：老张 ），必须提供。
+  - activity_id：活动标识（例如 course_001），必须提供。也可使用字段名 task 作为替代，但建议统一使用 activity_id。
+  - student_id：学生标识，可以是学号或匿名ID。
+其他自定义字段（如题目答案、操作记录等）可任意添加。
+
+文件上传方式（如果需要）
+使用 FormData，将上述必要字段作为独立的表单字段添加，其他数据可放入一个名为 data 的 JSON 字符串中。文件字段名固定为 files，可重复添加多个文件。
+示例（JavaScript）：
+const formData = new FormData();
+formData.append('teacher', '老张 ');
+formData.append('activity_id', '模板网页/通用课堂签到');
+formData.append('student_id', 'S001');
+formData.append('data', JSON.stringify({ answer1: 'A', memo: '备注' }));
+for (let file of fileInput.files) {
+  formData.append('files', file);
+}
+await fetch('/api/submit', { method: 'POST', body: formData });
+
+纯 JSON 提交（无文件）：
+await fetch('/api/submit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    teacher: '老张 ',
+    activity_id: '模板网页/通用课堂签到',
+    student_id: 'S001',
+    answer1: 'A',
+    memo: '备注'
+  })
+});
+
+2. 查询接口
+URL：/api/submissions
+方法：GET
+参数（通过 query string 传递）：
+  - teacher（必选）：教师用户名。
+  - activity_id（可选）：筛选指定活动。
+  - student_id（可选）：筛选指定学生。
+  - limit（可选）：返回条数限制（默认100，最大500）。
+  - offset（可选）：分页偏移量（默认0）。
+响应示例（重要：数据实际存储在 "submissions" 字段中）：
+{
+  "success": true,
+  "total": 200,
+  "offset": 0,
+  "limit": 100,
+  "submissions": [              // ← 记录数组在此字段内
+    {
+      "teacher": "老张 ",
+      "activity_id": "'模板网页/通用课堂签到",
+      "student_id": "S001",
+      "answer1": "A",
+      "memo": "备注",
+      "_server_timestamp": "2025-03-21T14:30:00",
+      "_files": [ /* 文件列表，若无则为空数组 */ ],
+      "_meta": { "filename": "..." }
+    }
+  ]
+}
+解析时，应先检查 response.ok 和 data.success，然后从 data.submissions 中获取数组。
+
+3. 文件访问
+上传的文件可通过 /templates/老张/uploads/<filename> 直接访问。在 API 返回的 _files 字段中会包含完整的 url，可直接使用。
+
+生成要求：
+- 页面应美观、响应式，使用现代化 CSS（如 Flexbox、Grid），可引入 Tailwind CSS 或自定义样式。
+- 使用原生 JavaScript（ES6+）实现交互和 API 调用，无需额外框架。
+- 根据用户需求合理选择调用上述 API 接口，并处理成功/失败提示。
+- 如果页面包含表单，必须包含隐藏字段 teacher 和 task（值为 老张 和 模板网页/通用课堂签到，由后端替换），以及 studentId（可由登录填充或用户输入）。
+- 所有 API 调用应使用 fetch，并处理好 loading 状态和错误反馈。
+- **特别注意**：在调用查询接口 `/api/submissions` 获取记录列表时，必须从响应的 `data.submissions` 中提取数组（而非直接假设 data 本身是数组）。示例：
+  ```javascript
+  const response = await fetch(`/api/submissions?teacher=...`);
+  const data = await response.json();
+  if (data.success && Array.isArray(data.submissions)) {
+    const records = data.submissions;
+    // 渲染表格
+  } else {
+    console.error('获取失败', data.message);
+  }
+
+直接返回完整的 HTML 代码，不要包含任何解释或其他文本。
+
+用户需求：
+请修改这个网页确保可以正常提交和刷新数据
+ 
+如果以下提供了附件内容，则附件可能包含：参考网页、数据文件、图片、文档等。请务必仔细阅读附件内容，并根据附件中的信息，根据用户的需求进行数据分析、或者修改、或者生成网页：
+
+ 若附件为 HTML 代码，请将其作为参考样式或功能基础，必要时可复用或改造。
+- 若附件为 JSON 数据，请基于数据生成相应的展示图表、表格或分析界面。
+- 若附件为图片或其他文件，可在页面中引用或展示（使用提供的 URL）。
+- 若附件为文本或文档，请提取关键信息并融入页面设计或功能中。
+
+生成时，需将附件内容与用户需求紧密结合，使最终网页既能满足用户需求，又能体现附件中的已有信息或设计意图。
+
+附件内容如下：
+--- 文件 通用课堂签到_20260319_001.HTML ---
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课堂智能签到</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { max-width: 600px; width: 100%; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center; position: relative; }
+        header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="white" opacity="0.3"/></svg>'); animation: float 3s infinite ease-in-out; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        
+        h1 { font-size: 2rem; margin-bottom: 10px; position: relative; z-index: 1; }
+        .subtitle { opacity: 0.9; font-size: 1.1rem; position: relative; z-index: 1; }
+        .class-name { font-size: 1.3rem; font-weight: bold; margin-top: 15px; background: rgba(255,255,255,0.2); display: inline-block; padding: 8px 20px; border-radius: 50px; position: relative; z-index: 1; }
+        
+        .stats-container { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 15px; padding: 20px; margin: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; position: relative; z-index: 1; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 2rem; font-weight: bold; }
+        .stat-label { font-size: 0.85rem; opacity: 0.9; margin-top: 5px; }
+        .stat-icon { font-size: 1.5rem; margin-bottom: 5px; }
+        
+        form { padding: 30px; }
+        .input-group { margin-bottom: 25px; position: relative; }
+        label { display: block; font-weight: 600; color: #4a5568; margin-bottom: 8px; }
+        input[type="text"], select { width: 100%; padding: 15px 20px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 1rem; transition: all 0.3s; background: #fff; }
+        input:focus, select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        
+        .attendance-status { padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 600; display: none; }
+        .attendance-status.present { background: #d1fae5; color: #065f46; }
+        .attendance-status.late { background: #fef3c7; color: #92400e; }
+        
+        .submit-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px 50px; font-size: 1.1rem; border-radius: 50px; cursor: pointer; transition: all 0.3s; width: 100%; font-weight: 600; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,0.4); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        
+        .live-feed { max-height: 300px; overflow-y: auto; margin-top: 30px; border-top: 2px solid #e9ecef; padding-top: 20px; }
+        .live-feed-title { font-size: 1.1rem; font-weight: bold; color: #4a5568; margin-bottom: 15px; }
+        .feed-list { list-style: none; }
+        .feed-item { padding: 12px 15px; background: #f8fafc; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        .feed-time { font-size: 0.8rem; color: #95a5a6; }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+        .status-present { background: #d1fae5; color: #065f46; }
+        .status-late { background: #fef3c7; color: #92400e; }
+        
+        footer { text-align: center; padding: 20px; color: rgba(255,255,255,0.7); }
+        .refresh-info { font-size: 0.8rem; opacity: 0.8; margin-top: 10px; }
+        
+        @media (max-width: 600px) {
+            .stats-container { grid-template-columns: 1fr; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 课堂智能签到</h1>
+            <p class="subtitle">点击按钮完成今日考勤记录</p>
+            <div class="class-name">信息技术课 - 高一 (1) 班</div>
+        </header>
+
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-icon">✅</div>
+                <div class="stat-number" id="presentCount">0</div>
+                <div class="stat-label">已签到</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-number" id="lateCount">0</div>
+                <div class="stat-label">迟到的</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">👥</div>
+                <div class="stat-number" id="totalCount">0</div>
+                <div class="stat-label">总人数</div>
+            </div>
+        </div>
+
+        <form id="checkinForm">
+            <input type="hidden" id="teacher" value="老张">
+            <input type="hidden" id="activityId" value="模板网页/通用课堂签到">
+            
+            <div class="input-group">
+                <label for="studentName">姓名</label>
+                <input type="text" id="studentName" placeholder="请输入您的姓名" required autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label for="studentClass">班级</label>
+                <select id="studentClass" required>
+                    <option value="">请选择班级</option>
+                    <option value="高一 (1) 班">高一 (1) 班</option>
+                    <option value="高一 (2) 班">高一 (2) 班</option>
+                    <option value="高二 (1) 班">高二 (1) 班</option>
+                </select>
+            </div>
+
+            <div class="attendance-status present" id="statusPresent">
+                ✅ 签到成功！欢迎参加今天的课程
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">📍 立即签到</button>
+        </form>
+
+        <div class="live-feed">
+            <div class="live-feed-title">🔄 实时签到列表 (自动刷新)</div>
+            <ul class="feed-list" id="feedList"></ul>
+            <p class="refresh-info">每 30 秒自动更新 • 最后更新：<span id="lastUpdate">--:--</span></p>
+        </div>
+
+        <footer><p>© 2026 QuickForge 课堂教学系统 | 数据实时同步至教师端</p></footer>
+    </div>
+
+    <script>
+        const teacher = '老张';
+        const activityId = '通用课堂签到';
+        let isSignedIn = false;
+
+        // 格式化时间
+        function formatTime(date) {
+            return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // 计算迟到状态
+        function checkLateStatus(checkinTime) {
+            const now = new Date();
+            const diffMinutes = Math.floor((now - checkinTime) / 60000);
+            return diffMinutes <= 5 ? '正常' : '迟到';
+        }
+
+        // 加载签到数据
+        async function loadAttendanceData() {
+            try {
+                const response = await fetch(`/api/submissions?teacher=${teacher}&activity_id=${activityId}&limit=100`);
+                const data = await response.json();
+
+                if (data.success && Array.isArray(data.submissions)) {
+                    updateStatsAndFeed(data.submissions);
+                }
+            } catch (error) {
+                console.error('加载数据失败:', error);
+            }
+        }
+
+        function updateStatsAndFeed(submissions) {
+            const today = new Date().toDateString();
+            const todaySubmissions = submissions.filter(s => {
+                const submitDate = new Date(s._server_timestamp || Date.now()).toDateString();
+                return submitDate === today;
+            });
+
+            const total = todaySubmissions.length;
+            let late = 0;
+
+            todaySubmissions.forEach(sub => {
+                const timeStr = sub.data?.time;
+                if (timeStr) {
+                    const checkinTime = new Date(timeStr);
+                    const status = checkLateStatus(checkinTime);
+                    if (status === '迟到') late++;
+                }
+            });
+
+            const present = total - late;
+
+            // 更新统计
+            document.getElementById('presentCount').textContent = present;
+            document.getElementById('lateCount').textContent = late;
+            document.getElementById('totalCount').textContent = total;
+
+            // 更新实时列表
+            const feedList = document.getElementById('feedList');
+            feedList.innerHTML = todaySubmissions.slice(-20).reverse().map(sub => {
+                const timeStr = sub.data?.time;
+                const time = timeStr ? new Date(timeStr).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : formatTime(new Date(sub._server_timestamp));
+                
+                const name = sub.data?.name || 'Anonymous';
+                const status = checkLateStatus(timeStr ? new Date(timeStr) : new Date());
+                
+                return `
+                    <li class="feed-item">
+                        <span>${escapeHtml(name)}</span>
+                        <div style="text-align:right;">
+                            <span class="feed-time">${time}</span><br>
+                            <span class="status-badge ${status === '迟到' ? 'status-late' : 'status-present'}">
+                                ${status === '迟到' ? '⏰ 迟到' : '✅ 准时'}
+                            </span>
+                        </div>
+                    </li>
+                `;
+            }).join('');
+
+            document.getElementById('lastUpdate').textContent = formatTime(new Date());
+        }
+
+        async function handleCheckin(e) {
+            e.preventDefault();
+
+            if (isSignedIn) return;
+
+            const studentName = document.getElementById('studentName').value.trim();
+            const studentClass = document.getElementById('studentClass').value;
+
+            if (!studentName || !studentClass) {
+                alert('请填写完整信息！');
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ 正在签到...';
+
+            try {
+                const now = new Date();
+                const formData = new FormData();
+                formData.append('teacher', teacher);
+                formData.append('activity_id', activityId);
+                formData.append('student_id', window.studentId || 'S001');
+                formData.append('data', JSON.stringify({
+                    name: studentName,
+                    class: studentClass,
+                    time: now.toISOString(),
+                    submission_type: 'attendance_checkin',
+                    client_timestamp: now.toISOString()
+                }));
+
+                const response = await fetch('/api/submit', { method: 'POST', body: formData });
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    isSignedIn = true;
+                    
+                    // 显示签到成功状态
+                    const statusDiv = document.getElementById('statusPresent');
+                    const timeStr = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+                    const lateStatus = checkLateStatus(now);
+                    
+                    statusDiv.style.display = 'block';
+                    statusDiv.className = `attendance-status ${lateStatus === '迟到' ? 'late' : 'present'}`;
+                    statusDiv.innerHTML = `${lateStatus === '迟到' ? '⏰' : '✅'} 签到${lateStatus === '迟到' ? '(迟到)' : '成功'}！欢迎参加今天的课程<br><small>签到时间：${timeStr}</small>`;
+                    
+                    // 隐藏提交按钮
+                    btn.style.display = 'none';
+                    
+                    // 重新加载数据以显示最新记录
+                    setTimeout(() => loadAttendanceData(), 1000);
+                    
+                    alert(`✅ ${lateStatus === '迟到' ? '迟到' : '准时'}签到成功！\n签到时间：${timeStr}`);
+                } else {
+                    throw new Error(result.message || '未知错误');
+                }
+            } catch (error) {
+                console.error('签到失败:', error);
+                alert('❌ 签到失败：' + error.message);
+                btn.disabled = false;
+                btn.textContent = '📍 立即签到';
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 页面加载时初始化
+        document.getElementById('checkinForm').addEventListener('submit', handleCheckin);
+        loadAttendanceData();
+
+        // 每 30 秒自动刷新
+        setInterval(loadAttendanceData, 30000);
+    </script>
+</body>
+</html>
+============================================================
+🤖 最终发送给 AI 的提示词（前200字符）: 你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Con...🤖 模型配置: model=qwen3.5-flash, base_url=https://dashscope.aliyuncs.com/compatible-mode/v1--- 进入 call_ai_model_for_html ---📤 发送请求至: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions📦 请求体摘要: {"model": "qwen3.5-flash", "messages": [{"role": "system", "content": "你是一个专业的网页生成助手，只返回纯HTML代码，不要包含任何额外解释。"}, {"role": "user", "content": "你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript...📡 AI API响应状态码: 200✅ AI API调用成功📊 token 使用: {'prompt_tokens': 5138, 'completion_tokens': 4690, 'total_tokens': 9828, 'completion_tokens_details': {'reasoning_tokens': 686, 'text_tokens': 4690}, 'prompt_tokens_details': {'text_tokens': 5138}}💬 AI 原始响应长度: 14812 字符✅ 提取后 HTML 长度: 14812 字符✅ 网页已保存至: C:\Users\Administrator\.openclaw\workspace\exe\templates\老张\模板网页\通用课堂签到\通用课堂签到_20260319_100757.html✅ 文本模型已切换为: qwen3.5-flash📂 加载教师数据: 13815120911, 目录: C:\Users\Administrator\.openclaw\workspace\exe\data\teacher_13815120911✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 13815120911 的数据到内存✅ 文本模型已切换为: deepseek-v3.2
+=== 进入 /ai/generate-page ===📥 收到请求: prompt='请修改这个网页确保可以正常提交和接收数据...', target_folder='模板网页/通用课堂签到', file_name='通用课堂签到_20260319_101131.html'📎 参考文件: ['模板网页/通用课堂签到/通用课堂签到_20260319_001.HTML']🔑 配额检查: can_use=True, msg=, using_master=False📁 目标目录: C:\Users\Administrator\.openclaw\workspace\exe\templates\13815120911\模板网页\通用课堂签到📄 参考文件内容长度: 53 字符📄 模板内容 (前200字符): '你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。\n\n目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。\n\n数据中台接口规范\n\n1. 提交接口\nURL：/api/submit\n方法：POST\n支持 Con'...
+============================================================【DEBUG】完整提示词内容：你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Content-Type：application/json 或 multipart/form-data（用于文件上传）
+必填字段（所有请求均需包含）：
+  - teacher：教师用户名（例如：13815120911 ），必须提供。
+  - activity_id：活动标识（例如 course_001），必须提供。也可使用字段名 task 作为替代，但建议统一使用 activity_id。
+  - student_id：学生标识，可以是学号或匿名ID。
+其他自定义字段（如题目答案、操作记录等）可任意添加。
+
+文件上传方式（如果需要）
+使用 FormData，将上述必要字段作为独立的表单字段添加，其他数据可放入一个名为 data 的 JSON 字符串中。文件字段名固定为 files，可重复添加多个文件。
+示例（JavaScript）：
+const formData = new FormData();
+formData.append('teacher', '13815120911 ');
+formData.append('activity_id', '模板网页/通用课堂签到');
+formData.append('student_id', 'S001');
+formData.append('data', JSON.stringify({ answer1: 'A', memo: '备注' }));
+for (let file of fileInput.files) {
+  formData.append('files', file);
+}
+await fetch('/api/submit', { method: 'POST', body: formData });
+
+纯 JSON 提交（无文件）：
+await fetch('/api/submit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    teacher: '13815120911 ',
+    activity_id: '模板网页/通用课堂签到',
+    student_id: 'S001',
+    answer1: 'A',
+    memo: '备注'
+  })
+});
+
+2. 查询接口
+URL：/api/submissions
+方法：GET
+参数（通过 query string 传递）：
+  - teacher（必选）：教师用户名。
+  - activity_id（可选）：筛选指定活动。
+  - student_id（可选）：筛选指定学生。
+  - limit（可选）：返回条数限制（默认100，最大500）。
+  - offset（可选）：分页偏移量（默认0）。
+响应示例（重要：数据实际存储在 "submissions" 字段中）：
+{
+  "success": true,
+  "total": 200,
+  "offset": 0,
+  "limit": 100,
+  "submissions": [              // ← 记录数组在此字段内
+    {
+      "teacher": "13815120911 ",
+      "activity_id": "'模板网页/通用课堂签到",
+      "student_id": "S001",
+      "answer1": "A",
+      "memo": "备注",
+      "_server_timestamp": "2025-03-21T14:30:00",
+      "_files": [ /* 文件列表，若无则为空数组 */ ],
+      "_meta": { "filename": "..." }
+    }
+  ]
+}
+解析时，应先检查 response.ok 和 data.success，然后从 data.submissions 中获取数组。
+
+3. 文件访问
+上传的文件可通过 /templates/13815120911/uploads/<filename> 直接访问。在 API 返回的 _files 字段中会包含完整的 url，可直接使用。
+
+生成要求：
+- 页面应美观、响应式，使用现代化 CSS（如 Flexbox、Grid），可引入 Tailwind CSS 或自定义样式。
+- 使用原生 JavaScript（ES6+）实现交互和 API 调用，无需额外框架。
+- 根据用户需求合理选择调用上述 API 接口，并处理成功/失败提示。
+- 如果页面包含表单，必须包含隐藏字段 teacher 和 task（值为 13815120911 和 模板网页/通用课堂签到，由后端替换），以及 studentId（可由登录填充或用户输入）。
+- 所有 API 调用应使用 fetch，并处理好 loading 状态和错误反馈。
+- **特别注意**：在调用查询接口 `/api/submissions` 获取记录列表时，必须从响应的 `data.submissions` 中提取数组（而非直接假设 data 本身是数组）。示例：
+  ```javascript
+  const response = await fetch(`/api/submissions?teacher=...`);
+  const data = await response.json();
+  if (data.success && Array.isArray(data.submissions)) {
+    const records = data.submissions;
+    // 渲染表格
+  } else {
+    console.error('获取失败', data.message);
+  }
+
+直接返回完整的 HTML 代码，不要包含任何解释或其他文本。
+
+用户需求：
+请修改这个网页确保可以正常提交和接收数据
+ 
+如果以下提供了附件内容，则附件可能包含：参考网页、数据文件、图片、文档等。请务必仔细阅读附件内容，并根据附件中的信息，根据用户的需求进行数据分析、或者修改、或者生成网页：
+
+ 若附件为 HTML 代码，请将其作为参考样式或功能基础，必要时可复用或改造。
+- 若附件为 JSON 数据，请基于数据生成相应的展示图表、表格或分析界面。
+- 若附件为图片或其他文件，可在页面中引用或展示（使用提供的 URL）。
+- 若附件为文本或文档，请提取关键信息并融入页面设计或功能中。
+
+生成时，需将附件内容与用户需求紧密结合，使最终网页既能满足用户需求，又能体现附件中的已有信息或设计意图。
+
+附件内容如下：
+--- 文件 模板网页/通用课堂签到/通用课堂签到_20260319_001.HTML (不存在) ---============================================================
+🤖 最终发送给 AI 的提示词（前200字符）: 你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Con...🤖 模型配置: model=deepseek-v3.2, base_url=https://dashscope.aliyuncs.com/compatible-mode/v1--- 进入 call_ai_model_for_html ---📤 发送请求至: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions📦 请求体摘要: {"model": "deepseek-v3.2", "messages": [{"role": "system", "content": "你是一个专业的网页生成助手，只返回纯HTML代码，不要包含任何额外解释。"}, {"role": "user", "content": "你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript...📡 AI API响应状态码: 200✅ AI API调用成功📊 token 使用: {'prompt_tokens': 1273, 'completion_tokens': 4000, 'total_tokens': 5273, 'prompt_tokens_details': {'cached_tokens': 0}}💬 AI 原始响应长度: 18111 字符✅ 提取后 HTML 长度: 18111 字符✅ 网页已保存至: C:\Users\Administrator\.openclaw\workspace\exe\templates\13815120911\模板网页\通用课堂签到\通用课堂签到_20260319_101131.html🔐 Web登录尝试: username=13815120911, ip=192.168.22.28✅ Web登录成功: 13815120911 (角色: admin)🔐 Web登录尝试: username=老张, ip=192.168.22.28✅ Web登录成功: 老张 (角色: teacher)
+=== 进入 /ai/generate-page ===📥 收到请求: prompt='请修改这个网页确保可以正常提交和接收数据...', target_folder='模板网页/通用课堂签到', file_name='通用课堂签到_20260319_101944.html'📎 参考文件: ['模板网页/通用课堂签到/通用课堂签到_20260319_001.HTML']🔑 配额检查: can_use=True, msg=, using_master=False📁 目标目录: C:\Users\Administrator\.openclaw\workspace\exe\templates\老张\模板网页\通用课堂签到📄 参考文件内容长度: 13378 字符📄 模板内容 (前200字符): '你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。\n\n目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。\n\n数据中台接口规范\n\n1. 提交接口\nURL：/api/submit\n方法：POST\n支持 Con'...
+============================================================【DEBUG】完整提示词内容：你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Content-Type：application/json 或 multipart/form-data（用于文件上传）
+必填字段（所有请求均需包含）：
+  - teacher：教师用户名（例如：老张 ），必须提供。
+  - activity_id：活动标识（例如 course_001），必须提供。也可使用字段名 task 作为替代，但建议统一使用 activity_id。
+  - student_id：学生标识，可以是学号或匿名ID。
+其他自定义字段（如题目答案、操作记录等）可任意添加。
+
+文件上传方式（如果需要）
+使用 FormData，将上述必要字段作为独立的表单字段添加，其他数据可放入一个名为 data 的 JSON 字符串中。文件字段名固定为 files，可重复添加多个文件。
+示例（JavaScript）：
+const formData = new FormData();
+formData.append('teacher', '老张 ');
+formData.append('activity_id', '模板网页/通用课堂签到');
+formData.append('student_id', 'S001');
+formData.append('data', JSON.stringify({ answer1: 'A', memo: '备注' }));
+for (let file of fileInput.files) {
+  formData.append('files', file);
+}
+await fetch('/api/submit', { method: 'POST', body: formData });
+
+纯 JSON 提交（无文件）：
+await fetch('/api/submit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    teacher: '老张 ',
+    activity_id: '模板网页/通用课堂签到',
+    student_id: 'S001',
+    answer1: 'A',
+    memo: '备注'
+  })
+});
+
+2. 查询接口
+URL：/api/submissions
+方法：GET
+参数（通过 query string 传递）：
+  - teacher（必选）：教师用户名。
+  - activity_id（可选）：筛选指定活动。
+  - student_id（可选）：筛选指定学生。
+  - limit（可选）：返回条数限制（默认100，最大500）。
+  - offset（可选）：分页偏移量（默认0）。
+响应示例（重要：数据实际存储在 "submissions" 字段中）：
+{
+  "success": true,
+  "total": 200,
+  "offset": 0,
+  "limit": 100,
+  "submissions": [              // ← 记录数组在此字段内
+    {
+      "teacher": "老张 ",
+      "activity_id": "'模板网页/通用课堂签到",
+      "student_id": "S001",
+      "answer1": "A",
+      "memo": "备注",
+      "_server_timestamp": "2025-03-21T14:30:00",
+      "_files": [ /* 文件列表，若无则为空数组 */ ],
+      "_meta": { "filename": "..." }
+    }
+  ]
+}
+解析时，应先检查 response.ok 和 data.success，然后从 data.submissions 中获取数组。
+
+3. 文件访问
+上传的文件可通过 /templates/老张/uploads/<filename> 直接访问。在 API 返回的 _files 字段中会包含完整的 url，可直接使用。
+
+生成要求：
+- 页面应美观、响应式，使用现代化 CSS（如 Flexbox、Grid），可引入 Tailwind CSS 或自定义样式。
+- 使用原生 JavaScript（ES6+）实现交互和 API 调用，无需额外框架。
+- 根据用户需求合理选择调用上述 API 接口，并处理成功/失败提示。
+- 如果页面包含表单，必须包含隐藏字段 teacher 和 task（值为 老张 和 模板网页/通用课堂签到，由后端替换），以及 studentId（可由登录填充或用户输入）。
+- 所有 API 调用应使用 fetch，并处理好 loading 状态和错误反馈。
+- **特别注意**：在调用查询接口 `/api/submissions` 获取记录列表时，必须从响应的 `data.submissions` 中提取数组（而非直接假设 data 本身是数组）。示例：
+  ```javascript
+  const response = await fetch(`/api/submissions?teacher=...`);
+  const data = await response.json();
+  if (data.success && Array.isArray(data.submissions)) {
+    const records = data.submissions;
+    // 渲染表格
+  } else {
+    console.error('获取失败', data.message);
+  }
+
+直接返回完整的 HTML 代码，不要包含任何解释或其他文本。
+
+用户需求：
+请修改这个网页确保可以正常提交和接收数据
+ 
+如果以下提供了附件内容，则附件可能包含：参考网页、数据文件、图片、文档等。请务必仔细阅读附件内容，并根据附件中的信息，根据用户的需求进行数据分析、或者修改、或者生成网页：
+
+ 若附件为 HTML 代码，请将其作为参考样式或功能基础，必要时可复用或改造。
+- 若附件为 JSON 数据，请基于数据生成相应的展示图表、表格或分析界面。
+- 若附件为图片或其他文件，可在页面中引用或展示（使用提供的 URL）。
+- 若附件为文本或文档，请提取关键信息并融入页面设计或功能中。
+
+生成时，需将附件内容与用户需求紧密结合，使最终网页既能满足用户需求，又能体现附件中的已有信息或设计意图。
+
+附件内容如下：
+--- 文件 通用课堂签到_20260319_001.HTML ---
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课堂智能签到</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { max-width: 600px; width: 100%; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center; position: relative; }
+        header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="white" opacity="0.3"/></svg>'); animation: float 3s infinite ease-in-out; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        
+        h1 { font-size: 2rem; margin-bottom: 10px; position: relative; z-index: 1; }
+        .subtitle { opacity: 0.9; font-size: 1.1rem; position: relative; z-index: 1; }
+        .class-name { font-size: 1.3rem; font-weight: bold; margin-top: 15px; background: rgba(255,255,255,0.2); display: inline-block; padding: 8px 20px; border-radius: 50px; position: relative; z-index: 1; }
+        
+        .stats-container { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 15px; padding: 20px; margin: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; position: relative; z-index: 1; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 2rem; font-weight: bold; }
+        .stat-label { font-size: 0.85rem; opacity: 0.9; margin-top: 5px; }
+        .stat-icon { font-size: 1.5rem; margin-bottom: 5px; }
+        
+        form { padding: 30px; }
+        .input-group { margin-bottom: 25px; position: relative; }
+        label { display: block; font-weight: 600; color: #4a5568; margin-bottom: 8px; }
+        input[type="text"], select { width: 100%; padding: 15px 20px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 1rem; transition: all 0.3s; background: #fff; }
+        input:focus, select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        
+        .attendance-status { padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 600; display: none; }
+        .attendance-status.present { background: #d1fae5; color: #065f46; }
+        .attendance-status.late { background: #fef3c7; color: #92400e; }
+        
+        .submit-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px 50px; font-size: 1.1rem; border-radius: 50px; cursor: pointer; transition: all 0.3s; width: 100%; font-weight: 600; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,0.4); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        
+        .live-feed { max-height: 300px; overflow-y: auto; margin-top: 30px; border-top: 2px solid #e9ecef; padding-top: 20px; }
+        .live-feed-title { font-size: 1.1rem; font-weight: bold; color: #4a5568; margin-bottom: 15px; }
+        .feed-list { list-style: none; }
+        .feed-item { padding: 12px 15px; background: #f8fafc; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        .feed-time { font-size: 0.8rem; color: #95a5a6; }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+        .status-present { background: #d1fae5; color: #065f46; }
+        .status-late { background: #fef3c7; color: #92400e; }
+        
+        footer { text-align: center; padding: 20px; color: rgba(255,255,255,0.7); }
+        .refresh-info { font-size: 0.8rem; opacity: 0.8; margin-top: 10px; }
+        
+        @media (max-width: 600px) {
+            .stats-container { grid-template-columns: 1fr; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 课堂智能签到</h1>
+            <p class="subtitle">点击按钮完成今日考勤记录</p>
+            <div class="class-name">信息技术课 - 高一 (1) 班</div>
+        </header>
+
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-icon">✅</div>
+                <div class="stat-number" id="presentCount">0</div>
+                <div class="stat-label">已签到</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-number" id="lateCount">0</div>
+                <div class="stat-label">迟到的</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">👥</div>
+                <div class="stat-number" id="totalCount">0</div>
+                <div class="stat-label">总人数</div>
+            </div>
+        </div>
+
+        <form id="checkinForm">
+            <input type="hidden" id="teacher" value="老张">
+            <input type="hidden" id="activityId" value="模板网页/通用课堂签到">
+            
+            <div class="input-group">
+                <label for="studentName">姓名</label>
+                <input type="text" id="studentName" placeholder="请输入您的姓名" required autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label for="studentClass">班级</label>
+                <select id="studentClass" required>
+                    <option value="">请选择班级</option>
+                    <option value="高一 (1) 班">高一 (1) 班</option>
+                    <option value="高一 (2) 班">高一 (2) 班</option>
+                    <option value="高二 (1) 班">高二 (1) 班</option>
+                </select>
+            </div>
+
+            <div class="attendance-status present" id="statusPresent">
+                ✅ 签到成功！欢迎参加今天的课程
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">📍 立即签到</button>
+        </form>
+
+        <div class="live-feed">
+            <div class="live-feed-title">🔄 实时签到列表 (自动刷新)</div>
+            <ul class="feed-list" id="feedList"></ul>
+            <p class="refresh-info">每 30 秒自动更新 • 最后更新：<span id="lastUpdate">--:--</span></p>
+        </div>
+
+        <footer><p>© 2026 QuickForge 课堂教学系统 | 数据实时同步至教师端</p></footer>
+    </div>
+
+    <script>
+        const teacher = '老张';
+        const activityId = '通用课堂签到';
+        let isSignedIn = false;
+
+        // 格式化时间
+        function formatTime(date) {
+            return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // 计算迟到状态
+        function checkLateStatus(checkinTime) {
+            const now = new Date();
+            const diffMinutes = Math.floor((now - checkinTime) / 60000);
+            return diffMinutes <= 5 ? '正常' : '迟到';
+        }
+
+        // 加载签到数据
+        async function loadAttendanceData() {
+            try {
+                const response = await fetch(`/api/submissions?teacher=${teacher}&activity_id=${activityId}&limit=100`);
+                const data = await response.json();
+
+                if (data.success && Array.isArray(data.submissions)) {
+                    updateStatsAndFeed(data.submissions);
+                }
+            } catch (error) {
+                console.error('加载数据失败:', error);
+            }
+        }
+
+        function updateStatsAndFeed(submissions) {
+            const today = new Date().toDateString();
+            const todaySubmissions = submissions.filter(s => {
+                const submitDate = new Date(s._server_timestamp || Date.now()).toDateString();
+                return submitDate === today;
+            });
+
+            const total = todaySubmissions.length;
+            let late = 0;
+
+            todaySubmissions.forEach(sub => {
+                const timeStr = sub.data?.time;
+                if (timeStr) {
+                    const checkinTime = new Date(timeStr);
+                    const status = checkLateStatus(checkinTime);
+                    if (status === '迟到') late++;
+                }
+            });
+
+            const present = total - late;
+
+            // 更新统计
+            document.getElementById('presentCount').textContent = present;
+            document.getElementById('lateCount').textContent = late;
+            document.getElementById('totalCount').textContent = total;
+
+            // 更新实时列表
+            const feedList = document.getElementById('feedList');
+            feedList.innerHTML = todaySubmissions.slice(-20).reverse().map(sub => {
+                const timeStr = sub.data?.time;
+                const time = timeStr ? new Date(timeStr).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : formatTime(new Date(sub._server_timestamp));
+                
+                const name = sub.data?.name || 'Anonymous';
+                const status = checkLateStatus(timeStr ? new Date(timeStr) : new Date());
+                
+                return `
+                    <li class="feed-item">
+                        <span>${escapeHtml(name)}</span>
+                        <div style="text-align:right;">
+                            <span class="feed-time">${time}</span><br>
+                            <span class="status-badge ${status === '迟到' ? 'status-late' : 'status-present'}">
+                                ${status === '迟到' ? '⏰ 迟到' : '✅ 准时'}
+                            </span>
+                        </div>
+                    </li>
+                `;
+            }).join('');
+
+            document.getElementById('lastUpdate').textContent = formatTime(new Date());
+        }
+
+        async function handleCheckin(e) {
+            e.preventDefault();
+
+            if (isSignedIn) return;
+
+            const studentName = document.getElementById('studentName').value.trim();
+            const studentClass = document.getElementById('studentClass').value;
+
+            if (!studentName || !studentClass) {
+                alert('请填写完整信息！');
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ 正在签到...';
+
+            try {
+                const now = new Date();
+                const formData = new FormData();
+                formData.append('teacher', teacher);
+                formData.append('activity_id', activityId);
+                formData.append('student_id', window.studentId || 'S001');
+                formData.append('data', JSON.stringify({
+                    name: studentName,
+                    class: studentClass,
+                    time: now.toISOString(),
+                    submission_type: 'attendance_checkin',
+                    client_timestamp: now.toISOString()
+                }));
+
+                const response = await fetch('/api/submit', { method: 'POST', body: formData });
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    isSignedIn = true;
+                    
+                    // 显示签到成功状态
+                    const statusDiv = document.getElementById('statusPresent');
+                    const timeStr = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+                    const lateStatus = checkLateStatus(now);
+                    
+                    statusDiv.style.display = 'block';
+                    statusDiv.className = `attendance-status ${lateStatus === '迟到' ? 'late' : 'present'}`;
+                    statusDiv.innerHTML = `${lateStatus === '迟到' ? '⏰' : '✅'} 签到${lateStatus === '迟到' ? '(迟到)' : '成功'}！欢迎参加今天的课程<br><small>签到时间：${timeStr}</small>`;
+                    
+                    // 隐藏提交按钮
+                    btn.style.display = 'none';
+                    
+                    // 重新加载数据以显示最新记录
+                    setTimeout(() => loadAttendanceData(), 1000);
+                    
+                    alert(`✅ ${lateStatus === '迟到' ? '迟到' : '准时'}签到成功！\n签到时间：${timeStr}`);
+                } else {
+                    throw new Error(result.message || '未知错误');
+                }
+            } catch (error) {
+                console.error('签到失败:', error);
+                alert('❌ 签到失败：' + error.message);
+                btn.disabled = false;
+                btn.textContent = '📍 立即签到';
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 页面加载时初始化
+        document.getElementById('checkinForm').addEventListener('submit', handleCheckin);
+        loadAttendanceData();
+
+        // 每 30 秒自动刷新
+        setInterval(loadAttendanceData, 30000);
+    </script>
+</body>
+</html>
+============================================================
+🤖 最终发送给 AI 的提示词（前200字符）: 你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Con...🤖 模型配置: model=deepseek-v3.2, base_url=https://dashscope.aliyuncs.com/compatible-mode/v1--- 进入 call_ai_model_for_html ---📤 发送请求至: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions📦 请求体摘要: {"model": "deepseek-v3.2", "messages": [{"role": "system", "content": "你是一个专业的网页生成助手，只返回纯HTML代码，不要包含任何额外解释。"}, {"role": "user", "content": "你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript...📡 AI API响应状态码: 200✅ AI API调用成功📊 token 使用: {'prompt_tokens': 4741, 'completion_tokens': 4000, 'total_tokens': 8741, 'prompt_tokens_details': {'cached_tokens': 0}}💬 AI 原始响应长度: 16637 字符✅ 提取后 HTML 长度: 16637 字符✅ 网页已保存至: C:\Users\Administrator\.openclaw\workspace\exe\templates\老张\模板网页\通用课堂签到\通用课堂签到_20260319_101944.html🔐 Web登录尝试: username=13815120911, ip=192.168.22.28✅ Web登录成功: 13815120911 (角色: admin)🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (教师) - 学科: 语文  - 老张 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔐 Web登录尝试: username=老张, ip=192.168.22.28📂 加载教师数据: 老张, 目录: C:\Users\Administrator\.openclaw\workspace\exe\data\teacher_老张✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 老张 的数据到内存✅ Web登录成功: 老张 (角色: teacher)🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (教师) - 学科: 语文  - 老张 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (管理员) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (教师) - 学科: 语文  - 老张 (教师) - 学科: 语文  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科: ✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.28请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔐 Web登录尝试: username=老张, ip=192.168.22.28📂 加载教师数据: 老张, 目录: C:\Users\Administrator\.openclaw\workspace\exe\data\teacher_老张✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 老张 的数据到内存✅ Web登录成功: 老张 (角色: teacher)
+=== 进入 /ai/generate-page ===📥 收到请求: prompt='请修改这个网页确保可以正常提交数据...', target_folder='示例网站/台灯组装游戏', file_name='台灯组装游戏_20260319_133154.html'📎 参考文件: ['示例网站/台灯组装游戏/台灯组装游戏.html']🔑 配额检查: can_use=True, msg=, using_master=False📁 目标目录: C:\Users\Administrator\.openclaw\workspace\exe\templates\老张\示例网站\台灯组装游戏📄 参考文件内容长度: 29920 字符📄 模板内容 (前200字符): '你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。\n\n目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。\n\n数据中台接口规范\n\n1. 提交接口\nURL：/api/submit\n方法：POST\n支持 Con'...
+============================================================【DEBUG】完整提示词内容：你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Content-Type：application/json 或 multipart/form-data（用于文件上传）
+必填字段（所有请求均需包含）：
+  - teacher：教师用户名（例如：老张 ），必须提供。
+  - activity_id：活动标识（例如 course_001），必须提供。也可使用字段名 task 作为替代，但建议统一使用 activity_id。
+  - student_id：学生标识，可以是学号或匿名ID。
+其他自定义字段（如题目答案、操作记录等）可任意添加。
+
+文件上传方式（如果需要）
+使用 FormData，将上述必要字段作为独立的表单字段添加，其他数据可放入一个名为 data 的 JSON 字符串中。文件字段名固定为 files，可重复添加多个文件。
+示例（JavaScript）：
+const formData = new FormData();
+formData.append('teacher', '老张 ');
+formData.append('activity_id', '示例网站/台灯组装游戏');
+formData.append('student_id', 'S001');
+formData.append('data', JSON.stringify({ answer1: 'A', memo: '备注' }));
+for (let file of fileInput.files) {
+  formData.append('files', file);
+}
+await fetch('/api/submit', { method: 'POST', body: formData });
+
+纯 JSON 提交（无文件）：
+await fetch('/api/submit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    teacher: '老张 ',
+    activity_id: '示例网站/台灯组装游戏',
+    student_id: 'S001',
+    answer1: 'A',
+    memo: '备注'
+  })
+});
+
+2. 查询接口
+URL：/api/submissions
+方法：GET
+参数（通过 query string 传递）：
+  - teacher（必选）：教师用户名。
+  - activity_id（可选）：筛选指定活动。
+  - student_id（可选）：筛选指定学生。
+  - limit（可选）：返回条数限制（默认100，最大500）。
+  - offset（可选）：分页偏移量（默认0）。
+响应示例（重要：数据实际存储在 "submissions" 字段中）：
+{
+  "success": true,
+  "total": 200,
+  "offset": 0,
+  "limit": 100,
+  "submissions": [              // ← 记录数组在此字段内
+    {
+      "teacher": "老张 ",
+      "activity_id": "'示例网站/台灯组装游戏",
+      "student_id": "S001",
+      "answer1": "A",
+      "memo": "备注",
+      "_server_timestamp": "2025-03-21T14:30:00",
+      "_files": [ /* 文件列表，若无则为空数组 */ ],
+      "_meta": { "filename": "..." }
+    }
+  ]
+}
+解析时，应先检查 response.ok 和 data.success，然后从 data.submissions 中获取数组。
+
+3. 文件访问
+上传的文件可通过 /templates/老张/uploads/<filename> 直接访问。在 API 返回的 _files 字段中会包含完整的 url，可直接使用。
+
+生成要求：
+- 页面应美观、响应式，使用现代化 CSS（如 Flexbox、Grid），可引入 Tailwind CSS 或自定义样式。
+- 使用原生 JavaScript（ES6+）实现交互和 API 调用，无需额外框架。
+- 根据用户需求合理选择调用上述 API 接口，并处理成功/失败提示。
+- **获取教师和活动标识**：页面需要当前教师的用户名（teacher）和活动标识（activity_id/task）。建议通过解析当前页面的 URL 路径动态获取（因为页面可能以静态方式部署，如直接访问 `/templates/教师名/.../活动名/页面.html`）。示例代码：
+  ```javascript
+  const pathParts = window.location.pathname.split('/');
+  // 教师名通常在路径的第二段（索引2），需解码URL编码的中文
+  const teacher = decodeURIComponent(pathParts[2]);
+  // 活动名通常为最后一级文件夹名（倒数第二段）
+  const activityId = decodeURIComponent(pathParts[pathParts.length - 2]);
+
+
+ ============================================================
+🤖 最终发送给 AI 的提示词（前200字符）: 你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript），页面应能调用系统提供的API来实现所需功能。
+
+目标：根据用户要求生成交互式网页。网页需接入统一数据中台，所有提交的数据通过中台接口存储，分析页面从中台查询数据并展示统计结果。
+
+数据中台接口规范
+
+1. 提交接口
+URL：/api/submit
+方法：POST
+支持 Con...🤖 模型配置: model=qwen3.5-flash, base_url=https://dashscope.aliyuncs.com/compatible-mode/v1--- 进入 call_ai_model_for_html ---📤 发送请求至: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions📦 请求体摘要: {"model": "qwen3.5-flash", "messages": [{"role": "system", "content": "你是一个专业的网页生成助手，只返回纯HTML代码，不要包含任何额外解释。"}, {"role": "user", "content": "你是一个专业的网页生成助手。请根据以下用户需求生成一个完整的、可直接运行的HTML页面（包含CSS和JavaScript...📡 AI API响应状态码: 200✅ AI API调用成功📊 token 使用: {'prompt_tokens': 1082, 'completion_tokens': 5008, 'total_tokens': 6090, 'completion_tokens_details': {'reasoning_tokens': 1003, 'text_tokens': 5008}, 'prompt_tokens_details': {'text_tokens': 1082}}💬 AI 原始响应长度: 16532 字符✅ 提取后 HTML 长度: 16532 字符✅ 网页已保存至: C:\Users\Administrator\.openclaw\workspace\exe\templates\老张\示例网站\台灯组装游戏\台灯组装游戏_20260319_133154.html🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (教师) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (教师) - 学科: 语文  - 13921223092 (教师) - 学科: 信息技术  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科:   - 15052161428 (教师) - 学科:   - xqy6600 (教师) - 学科:   - 13921253402 (教师) - 学科:   - jylfy (教师) - 学科:   - 1122 (教师) - 学科:   - noon (教师) - 学科: ✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.22请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80📱 注册验证码发送到 18261031502: 333657📱 发送短信验证码到 18261031502: 333657，有效期5分钟✅ 保存 assignments 数据: 0 条记录✅ 保存 submissions 数据: 0 条记录💾 教师 ookk 数据已成功保存到磁盘🔐 Web登录尝试: username=ookk, ip=61.177.120.165📂 加载教师数据: ookk, 目录: E:\网站测试\官网 ok打包\data\teacher_ookk✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 ookk 的数据到内存✅ Web登录成功: ookk (角色: teacher)🔐 Web登录尝试: username=老张, ip=192.168.22.22🔐 Web登录尝试: username=13815120911, ip=192.168.22.22📂 加载教师数据: 13815120911, 目录: E:\网站测试\官网 ok打包\data\teacher_13815120911✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 13815120911 的数据到内存✅ Web登录成功: 13815120911 (角色: admin)✅ 保存 assignments 数据: 0 条记录✅ 保存 submissions 数据: 0 条记录💾 教师 老张 数据已成功保存到磁盘🔐 Web登录尝试: username=老张, ip=192.168.22.22📂 加载教师数据: 老张, 目录: E:\网站测试\官网 ok打包\data\teacher_老张✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 老张 的数据到内存✅ Web登录成功: 老张 (角色: teacher)🔐 Web登录尝试: username=老张, ip=192.168.22.22✅ Web登录成功: 老张 (角色: teacher)🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (教师) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (教师) - 学科: 语文  - 13921223092 (教师) - 学科: 信息技术  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科:   - 15052161428 (教师) - 学科:   - xqy6600 (教师) - 学科:   - 13921253402 (教师) - 学科:   - jylfy (教师) - 学科:   - 1122 (教师) - 学科:   - noon (教师) - 学科:   - ookk (教师) - 学科:   - 老张 (教师) - 学科: 信息技术✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)端口 80 已被占用，请选择其他端口用户取消了操作，程序将退出🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (教师) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (教师) - 学科: 语文  - 13921223092 (教师) - 学科: 信息技术  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科:   - 15052161428 (教师) - 学科:   - xqy6600 (教师) - 学科:   - 13921253402 (教师) - 学科:   - jylfy (教师) - 学科:   - 1122 (教师) - 学科:   - noon (教师) - 学科:   - ookk (教师) - 学科:   - 老张 (教师) - 学科: 信息技术✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.22请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔐 Web登录尝试: username=老张, ip=192.168.22.22📂 加载教师数据: 老张, 目录: E:\网站测试\官网 ok打包\data\teacher_老张✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 老张 的数据到内存✅ Web登录成功: 老张 (角色: teacher)🔐 Web登录尝试: username=13815120911, ip=183.210.232.185📂 加载教师数据: 13815120911, 目录: E:\网站测试\官网 ok打包\data\teacher_13815120911✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 13815120911 的数据到内存✅ Web登录成功: 13815120911 (角色: admin)🔐 Web登录尝试: username=teach, ip=183.210.232.185📂 加载教师数据: teach, 目录: E:\网站测试\官网 ok打包\data\teacher_teach✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 teach 的数据到内存✅ Web登录成功: teach (角色: teacher)🔐 Web登录尝试: username=13921223092, ip=183.210.232.185📂 加载教师数据: 13921223092, 目录: E:\网站测试\官网 ok打包\data\teacher_13921223092✅ 创建新的教师数据目录: E:\网站测试\官网 ok打包\data\teacher_13921223092✅ 成功加载教师 13921223092 的数据到内存✅ Web登录成功: 13921223092 (角色: teacher)🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (教师) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (教师) - 学科: 语文  - 13921223092 (教师) - 学科: 信息技术  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科:   - 15052161428 (教师) - 学科:   - xqy6600 (教师) - 学科:   - 13921253402 (教师) - 学科:   - jylfy (教师) - 学科:   - 1122 (教师) - 学科:   - noon (教师) - 学科:   - ookk (教师) - 学科:   - 老张 (教师) - 学科: 信息技术✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.22请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔐 Web登录尝试: username=13921223092, ip=183.210.232.185📂 加载教师数据: 13921223092, 目录: E:\网站测试\官网 ok打包\data\teacher_13921223092✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 13921223092 的数据到内存✅ Web登录成功: 13921223092 (角色: teacher)🔧 初始化系统数据...✅ 系统数据初始化成功👨‍🏫 系统账号:  - admin (教师) - 学科: 信息技术  - 13815120911 (管理员) - 学科: 信息技术  - QFS001 (教师) - 学科: 信息技术  - 15950123803 (教师) - 学科: 语文  - teach (教师) - 学科: 语文  - 13921223092 (教师) - 学科: 信息技术  - 13961699226 (教师) - 学科:   - 13812127334 (教师) - 学科:   - 15052161428 (教师) - 学科:   - xqy6600 (教师) - 学科:   - 13921253402 (教师) - 学科:   - jylfy (教师) - 学科:   - 1122 (教师) - 学科:   - noon (教师) - 学科:   - ookk (教师) - 学科:   - 老张 (教师) - 学科: 信息技术✅ 使用硬编码的 AI 配置ℹ️ 当前模式: quickforge，角色保持不变🌐 官网版服务已启动✅ 数据初始化成功🔄 自动保存线程已启动 (每1分钟检查一次)
+============================================================课堂互动教学评测系统============================================================服务已启动，访问地址: http://192.168.22.22请勿关闭此窗口，否则服务将停止============================================================
+🚀 启动生产服务器 (Waitress)，端口 80🔐 Web登录尝试: username=13921223092, ip=183.210.232.185📂 加载教师数据: 13921223092, 目录: E:\网站测试\官网 ok打包\data\teacher_13921223092✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 13921223092 的数据到内存✅ Web登录成功: 13921223092 (角色: teacher)🔐 Web登录尝试: username=13815120911, ip=183.210.232.185📂 加载教师数据: 13815120911, 目录: E:\网站测试\官网 ok打包\data\teacher_13815120911✅ 加载 assignments: 0 条记录✅ 加载 submissions: 0 条记录✅ 成功加载教师 13815120911 的数据到内存✅ Web登录成功: 13815120911 (角色: admin)

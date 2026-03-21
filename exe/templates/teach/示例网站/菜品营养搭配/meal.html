@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>菜品营养信息展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #4a90e2 0%, #63b3ed 100%);
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            color: white;
+            grid-column: 1 / -1;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #2c5282;
+            border-bottom: 2px solid #bee3f8;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .dishes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+        
+        .dish-card {
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .dish-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .dish-card.selected {
+            border-color: #d69e2e;
+            background-color: #fef9e7;
+        }
+        
+        .dish-card.selected.correct-yes {
+            border-color: #38a169;
+            background-color: #c6f6d5;
+        }
+        
+        .dish-card.selected.correct-no {
+            border-color: #e53e3e;
+            background-color: #fed7d7;
+        }
+        
+        .dish-header {
+            padding: 15px;
+            text-align: center;
+            background-color: #ebf8ff;
+            border-bottom: 1px solid #bee3f8;
+            transition: all 0.3s;
+        }
+        
+        .dish-card.selected .dish-header {
+            background-color: #fef9e7;
+            border-bottom-color: #faf3d0;
+        }
+        
+        .dish-card.selected.correct-yes .dish-header {
+            background-color: #c6f6d5;
+            border-bottom-color: #9ae6b4;
+        }
+        
+        .dish-card.selected.correct-no .dish-header {
+            background-color: #fed7d7;
+            border-bottom-color: #feb2b2;
+        }
+        
+        .dish-name {
+            font-weight: bold;
+            color: #2c5282;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+        
+        .dish-card.selected .dish-name {
+            color: #744210;
+        }
+        
+        .dish-card.selected.correct-yes .dish-name {
+            color: #22543d;
+        }
+        
+        .dish-card.selected.correct-no .dish-name {
+            color: #742a2a;
+        }
+        
+        .dish-info {
+            padding: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px 0;
+        }
+        
+        .info-label {
+            font-weight: bold;
+        }
+        
+        .calories {
+            color: #e53e3e;
+        }
+        
+        .fat {
+            color: #38a169;
+        }
+        
+        .protein {
+            color: #d69e2e;
+        }
+        
+        .nutrition-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .nutrition-table th, .nutrition-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .nutrition-table th {
+            background-color: #4299e1;
+            color: white;
+        }
+        
+        .nutrition-table tr:nth-child(even) {
+            background-color: #f7fafc;
+        }
+        
+        .nutrition-table tr:hover {
+            background-color: #edf2f7;
+        }
+        
+        .total-row {
+            background-color: #e3f2fd !important;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .total-row.correct-yes {
+            background-color: #c6f6d5 !important;
+        }
+        
+        .total-row.correct-no {
+            background-color: #fed7d7 !important;
+        }
+        
+        .total-display {
+            text-align: center;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .question-group {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .question-label {
+            font-weight: bold;
+            color: #2d3748;
+            font-size: 16px;
+            white-space: nowrap;
+        }
+        
+        .radio-options {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .radio-option input[type="radio"] {
+            margin: 0;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #4299e1;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            background-color: #3182ce;
+        }
+        
+        .btn-clear {
+            background-color: #718096;
+        }
+        
+        .btn-clear:hover {
+            background-color: #4a5568;
+        }
+        
+        .judgment-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            display: none;
+        }
+        
+        .judgment-result.correct {
+            background-color: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+            display: block;
+        }
+        
+        .judgment-result.incorrect {
+            background-color: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #feb2b2;
+            display: block;
+        }
+        
+        .empty-selection {
+            text-align: center;
+            color: #718096;
+            font-style: italic;
+            padding: 20px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #718096;
+            font-size: 14px;
+            grid-column: 1 / -1;
+        }
+        
+        .student-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f7fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .student-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .student-input label {
+            font-weight: bold;
+            color: #2d3748;
+            white-space: nowrap;
+        }
+        
+        .student-input input {
+            padding: 8px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 14px;
+            flex: 1;
+            max-width: 200px;
+        }
+        
+        .student-input input:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+        }
+        
+        .message {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .message-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .message-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        .message-loading {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            display: block;
+        }
+        
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .dishes-container {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .question-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .student-input {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .student-input input {
+                max-width: 100%;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>菜品营养信息展示</h1>
+            <p class="description">从菜品列表中选择您感兴趣的菜品（最多3个），查看它们的营养信息</p>
+        </header>
+        
+        <!-- 左栏：菜品列表 -->
+        <div class="left-column">
+            <section class="section">
+                <h2 class="section-title">
+                    <span>菜品列表</span>
+                    <button class="btn btn-clear" id="clearAllBtn">清空所有选择</button>
+                </h2>
+                <div class="dishes-container" id="dishesContainer">
+                    <!-- 菜品将通过JavaScript动态添加 -->
+                </div>
+            </section>
+        </div>
+        
+        <!-- 右栏：营养信息和判断区域 -->
+        <div class="right-column">
+            <!-- 学号输入区域 -->
+            <section class="section">
+                <h2 class="section-title">学生信息</h2>
+                <div class="student-info">
+                    <div class="student-input">
+                        <label for="studentId">学号：</label>
+                        <input type="text" id="studentId" placeholder="请输入您的学号" maxlength="20">
+                    </div>
+                </div>
+            </section>
+            
+            <section class="section">
+                <h2 class="section-title">已选菜品营养信息</h2>
+                <div id="nutritionInfo" style="display: none;">
+                    <table class="nutrition-table">
+                        <thead>
+                            <tr>
+                                <th>菜品名称</th>
+                                <th>热量 (千焦)</th>
+                                <th>脂肪 (g)</th>
+                                <th>蛋白质 (g)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="nutritionTableBody">
+                            <!-- 营养信息将通过JavaScript动态添加 -->
+                        </tbody>
+                        <tfoot>
+                            <tr class="total-row" id="totalRow">
+                                <td><strong>总计</strong></td>
+                                <td><div class="total-display" id="totalCalories">0</div></td>
+                                <td><div class="total-display" id="totalFat">0</div></td>
+                                <td><div class="total-display" id="totalProtein">0</div></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div id="emptySelection" class="empty-selection">尚未选择任何菜品</div>
+            </section>
+            
+            <section class="section">
+                <h2 class="section-title">判断</h2>
+                
+                <div class="question-group">
+                    <div class="question-label">目前的搭配是否符合标准：</div>
+                    <div class="radio-options">
+                        <div class="radio-option">
+                            <input type="radio" id="answerYes" name="answer" value="yes" checked>
+                            <label for="answerYes">是</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="answerNo" name="answer" value="no">
+                            <label for="answerNo">否</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn" id="judgeBtn" style="width: 100%;">判断</button>
+                <div id="judgmentResult" class="judgment-result">
+                    <!-- 判断结果将通过JavaScript动态添加 -->
+                </div>
+            </section>
+            
+            <!-- 消息显示区域 -->
+            <div id="messageArea"></div>
+        </div>
+        
+        <footer>
+            <p>© 2025 菜品营养信息展示系统 | 数据仅供参考</p>
+        </footer>
+    </div>
+
+    <script>
+        // 菜品数据 - 按照要求的顺序排列
+        const dishes = [
+            { id: 1, name: "炸鸡排", calories: 1254, fat: 19, protein: 20 },
+            { id: 2, name: "西红柿炒鸡蛋", calories: 899, fat: 15, protein: 11 },
+            { id: 3, name: "香菇油菜", calories: 911, fat: 11, protein: 7 },
+            { id: 4, name: "糖醋鱼排", calories: 2112, fat: 18, protein: 14 },
+            { id: 5, name: "家常豆腐", calories: 1020, fat: 16, protein: 13 },
+            { id: 6, name: "香菜冬瓜", calories: 564, fat: 7, protein: 1 },
+            { id: 7, name: "宫保鸡丁", calories: 1033, fat: 18, protein: 7 },
+            { id: 8, name: "土豆炖牛肉", calories: 1095, fat: 23, protein: 16 },
+            { id: 9, name: "韭菜炒豆芽", calories: 497, fat: 12, protein: 3 }
+        ];
+
+        // 存储已选菜品
+        let selectedDishes = [];
+
+        // 初始化菜品列表
+        function initializeDishes() {
+            const dishesContainer = document.getElementById('dishesContainer');
+            
+            dishes.forEach(dish => {
+                const dishCard = document.createElement('div');
+                dishCard.className = 'dish-card';
+                dishCard.dataset.id = dish.id;
+                
+                dishCard.innerHTML = `
+                    <div class="dish-header">
+                        <div class="dish-name">${dish.name}</div>
+                    </div>
+                    <div class="dish-info">
+                        <div class="info-item">
+                            <span class="info-label">热量:</span>
+                            <span class="calories">${dish.calories}千焦</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">脂肪:</span>
+                            <span class="fat">${dish.fat}g</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">蛋白质:</span>
+                            <span class="protein">${dish.protein}g</span>
+                        </div>
+                    </div>
+                `;
+                
+                dishCard.addEventListener('click', () => toggleDishSelection(dish));
+                
+                dishesContainer.appendChild(dishCard);
+            });
+        }
+
+        // 切换菜品选择状态
+        function toggleDishSelection(dish) {
+            const index = selectedDishes.findIndex(d => d.id === dish.id);
+            
+            if (index !== -1) {
+                // 如果菜品已选中，则取消选择
+                selectedDishes.splice(index, 1);
+                document.querySelector(`.dish-card[data-id="${dish.id}"]`).classList.remove('selected');
+            } else {
+                // 如果菜品未选中且未达到最大选择数量
+                if (selectedDishes.length < 3) {
+                    selectedDishes.push(dish);
+                    document.querySelector(`.dish-card[data-id="${dish.id}"]`).classList.add('selected');
+                } else {
+                    // 如果超过3个，自动清除所有选择
+                    clearAllSelections();
+                    // 然后选择当前菜品
+                    selectedDishes.push(dish);
+                    document.querySelector(`.dish-card[data-id="${dish.id}"]`).classList.add('selected');
+                }
+            }
+            
+            updateNutritionTable();
+            // 清空总计行和菜品卡片的颜色状态
+            resetAllColors();
+        }
+
+        // 更新营养信息表格
+        function updateNutritionTable() {
+            const nutritionInfo = document.getElementById('nutritionInfo');
+            const emptySelection = document.getElementById('emptySelection');
+            const nutritionTableBody = document.getElementById('nutritionTableBody');
+            
+            // 清空表格
+            nutritionTableBody.innerHTML = '';
+            
+            if (selectedDishes.length === 0) {
+                nutritionInfo.style.display = 'none';
+                emptySelection.style.display = 'block';
+                // 清空总计行
+                document.getElementById('totalCalories').textContent = '0';
+                document.getElementById('totalFat').textContent = '0';
+                document.getElementById('totalProtein').textContent = '0';
+                return;
+            }
+            
+            // 显示营养信息区域，隐藏提示信息
+            nutritionInfo.style.display = 'block';
+            emptySelection.style.display = 'none';
+            
+            let totalCalories = 0;
+            let totalFat = 0;
+            let totalProtein = 0;
+            
+            // 添加营养信息
+            selectedDishes.forEach(dish => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${dish.name}</td>
+                    <td>${dish.calories}</td>
+                    <td>${dish.fat}</td>
+                    <td>${dish.protein}</td>
+                `;
+                
+                nutritionTableBody.appendChild(row);
+                
+                // 累加总计
+                totalCalories += dish.calories;
+                totalFat += dish.fat;
+                totalProtein += dish.protein;
+            });
+            
+            // 更新总计显示
+            document.getElementById('totalCalories').textContent = totalCalories;
+            document.getElementById('totalFat').textContent = totalFat;
+            document.getElementById('totalProtein').textContent = totalProtein;
+        }
+
+        // 清空所有选择
+        function clearAllSelections() {
+            selectedDishes = [];
+            
+            // 移除所有选中状态
+            document.querySelectorAll('.dish-card.selected').forEach(item => {
+                item.classList.remove('selected', 'correct-yes', 'correct-no');
+            });
+            
+            updateNutritionTable();
+            resetAllColors();
+        }
+
+        // 重置所有颜色状态
+        function resetAllColors() {
+            const totalRow = document.getElementById('totalRow');
+            totalRow.className = 'total-row';
+            
+            // 重置所有选中菜品的颜色状态
+            document.querySelectorAll('.dish-card.selected').forEach(item => {
+                item.classList.remove('correct-yes', 'correct-no');
+            });
+            
+            // 清空判断结果
+            const judgmentResult = document.getElementById('judgmentResult');
+            judgmentResult.className = 'judgment-result';
+            judgmentResult.style.display = 'none';
+        }
+
+        // 判断营养数据
+        function judgeNutritionData() {
+            const totalCalories = parseInt(document.getElementById('totalCalories').textContent) || 0;
+            const totalFat = parseInt(document.getElementById('totalFat').textContent) || 0;
+            const judgmentResult = document.getElementById('judgmentResult');
+            const totalRow = document.getElementById('totalRow');
+            
+            // 获取用户选择的答案
+            const userAnswer = document.querySelector('input[name="answer"]:checked').value;
+            
+            // 清空之前的判断结果
+            judgmentResult.innerHTML = '';
+            
+            // 判断是否符合标准：热量≥2926千焦且脂肪≤50克
+            const meetsStandard = totalCalories >= 2926 && totalFat <= 50;
+            
+            // 判断用户答案是否正确
+            let isCorrect = false;
+            
+            if (userAnswer === 'yes') {
+                // 选择"是"：必须同时满足两个条件才算正确
+                isCorrect = meetsStandard;
+            } else {
+                // 选择"否"：只要有一项不满足就算正确
+                isCorrect = !meetsStandard;
+            }
+            
+            // 设置总计行和菜品卡片的颜色
+            resetAllColors(); // 先重置颜色
+            if (isCorrect) {
+                if (userAnswer === 'yes') {
+                    totalRow.classList.add('correct-yes');
+                    // 设置选中菜品为浅绿色
+                    document.querySelectorAll('.dish-card.selected').forEach(item => {
+                        item.classList.add('correct-yes');
+                    });
+                    judgmentResult.className = 'judgment-result correct';
+                    judgmentResult.textContent = '判断正确！恭喜你搭配成功！';
+                } else {
+                    totalRow.classList.add('correct-no');
+                    // 设置选中菜品为浅红色
+                    document.querySelectorAll('.dish-card.selected').forEach(item => {
+                        item.classList.add('correct-no');
+                    });
+                    judgmentResult.className = 'judgment-result correct';
+                    judgmentResult.textContent = '判断正确！请调整你的搭配。';
+                }
+            } else {
+                judgmentResult.className = 'judgment-result incorrect';
+                judgmentResult.textContent = '判断错误！';
+            }
+            
+            judgmentResult.style.display = 'block';
+            
+            // 上传学号和选择的菜品信息到服务器
+            uploadSelectionData(isCorrect);
+        }
+
+        // 上传选择数据到服务器（修改为调用本地统一接口）
+        async function uploadSelectionData(isCorrect) {
+            const studentId = document.getElementById('studentId').value.trim();
+            
+            // 验证学号是否为空
+            if (!studentId) {
+                showMessage('请输入学号！', 'error');
+                return;
+            }
+            
+            // 验证是否选择了菜品
+            if (selectedDishes.length === 0) {
+                showMessage('请至少选择一个菜品！', 'error');
+                return;
+            }
+            
+            // 准备要上传的数据
+            const totalCalories = parseInt(document.getElementById('totalCalories').textContent) || 0;
+            const totalFat = parseInt(document.getElementById('totalFat').textContent) || 0;
+            const totalProtein = parseInt(document.getElementById('totalProtein').textContent) || 0;
+            const userAnswer = document.querySelector('input[name="answer"]:checked').value;
+
+            const data = {
+                activity_id: 'meal_planning',      // 固定活动ID，用于区分
+                student_id: studentId,
+                payload: {                          // 所有自定义数据放入payload
+                    activity_type: 'meal_planning',
+                    dishes: selectedDishes.map(dish => ({ id: dish.id, name: dish.name })),
+                    nutrition: {
+                        calories: totalCalories,
+                        fat: totalFat,
+                        protein: totalProtein
+                    },
+                    judgment: {
+                        user_answer: userAnswer,
+                        is_correct: isCorrect
+                    },
+                    submit_time: new Date().toISOString()
+                }
+            };
+            
+            // 显示加载消息
+            showMessage('正在提交数据...', 'loading');
+            
+            try {
+                // 使用fetch API上传数据到统一提交接口
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) {
+                    throw new Error('网络响应不正常');
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('数据提交成功！', 'success');
+                    
+                    // 清空选择
+                    clearAllSelections();
+                    document.getElementById('studentId').value = '';
+                } else {
+                    showMessage('提交失败: ' + (result.error || '未知错误'), 'error');
+                }
+                
+            } catch (error) {
+                console.error('上传数据时出错:', error);
+                showMessage('数据提交失败，请稍后重试。', 'error');
+            }
+        }
+
+        // 显示消息函数
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `<div class="message message-${type}">${message}</div>`;
+            
+            // 3秒后自动隐藏消息（加载消息除外，因为它会被后续成功/失败消息替换）
+            if (type !== 'loading') {
+                setTimeout(() => {
+                    messageArea.innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化菜品列表
+            initializeDishes();
+            
+            // 添加按钮点击事件
+            document.getElementById('clearAllBtn').addEventListener('click', clearAllSelections);
+            document.getElementById('judgeBtn').addEventListener('click', judgeNutritionData);
+            
+            // 绑定回车键提交
+            document.getElementById('studentId').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    judgeNutritionData();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

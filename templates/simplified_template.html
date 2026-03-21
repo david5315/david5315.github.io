@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{TITLE}}</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { max-width: 600px; width: 100%; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center; }
+        h1 { font-size: 2rem; margin-bottom: 10px; }
+        .subtitle { opacity: 0.9; font-size: 1.1rem; }
+        
+        form { padding: 30px; }
+        .input-group { margin-bottom: 25px; }
+        label { display: block; font-weight: 600; color: #4a5568; margin-bottom: 8px; }
+        input[type="text"], input[type="email"], textarea, select { width: 100%; padding: 15px 20px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 1rem; transition: all 0.3s; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        textarea { min-height: 120px; resize: vertical; }
+        
+        .submit-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px 50px; font-size: 1.1rem; border-radius: 50px; cursor: pointer; transition: all 0.3s; width: 100%; font-weight: 600; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,0.4); }
+        
+        .success-message { background: #d1fae5; color: #065f46; padding: 20px; border-radius: 10px; text-align: center; margin-top: 20px; display: none; }
+        .success-message.show { display: block; }
+        
+        footer { text-align: center; padding: 20px; color: rgba(255,255,255,0.7); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>{{TITLE}}</h1>
+            <p class="subtitle">{{DESCRIPTION}}</p>
+        </header>
+
+        <form id="mainForm">
+{{FORM_FIELDS}}
+            <button type="submit" class="submit-btn">📤 提交</button>
+        </form>
+
+        <div class="success-message" id="successMsg">
+            <h3 style="margin-bottom:10px;">✅ 提交成功！</h3>
+            <p>感谢您的参与！</p>
+        </div>
+
+        <footer><p>© 2026 QuickForge 课堂教学系统</p></footer>
+    </div>
+
+    <script>
+        document.getElementById('mainForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let valid = true;
+            this.querySelectorAll('[required]').forEach(input => {
+                if (!input.value.trim()) {
+                    valid = false;
+                    input.style.borderColor = '#ef4444';
+                } else {
+                    input.style.borderColor = '#e2e8f0';
+                }
+            });
+            
+            if (!valid) {
+                alert('请填写所有必填项！');
+                return;
+            }
+            
+            document.getElementById('successMsg').classList.add('show');
+            this.reset();
+            
+            setTimeout(() => {
+                document.getElementById('successMsg').classList.remove('show');
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

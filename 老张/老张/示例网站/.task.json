@@ -1,0 +1,6 @@
+{
+  "public": true,
+  "allowOtherTeachers": true,
+  "allowPrivateStudents": false,
+  "allowGlobalStudents": false
+}

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>连线题互动</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; padding: 20px; overflow: hidden; }
+        .container { max-width: 1400px; margin: 0 auto; display: flex; height: calc(100vh - 40px); }
+        .panel { flex: 1; padding: 20px; overflow-y: auto; }
+        .left-panel { background: white; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); margin-right: 20px; }
+        .right-panel { background: #fff5e6; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #ff6b6b; margin-bottom: 20px; }
+        .item { padding: 15px; margin: 10px 0; background: #f8f9fa; border-radius: 8px; cursor: grab; transition: all 0.3s; border-left: 4px solid #ff6b6b; }
+        .item:hover { transform: translateX(5px); background: #e3f2fd; }
+        .item.dragging { opacity: 0.5; }
+        .drop-zone { min-height: 60px; padding: 10px; margin: 10px 0; background: white; border-radius: 8px; border: 2px dashed #ddd; transition: all 0.3s; }
+        .drop-zone.hovered { border-color: #4caf50; background: #e8f5e9; }
+        .btn { background: #4caf50; color: white; border: none; padding: 12px 30px; font-size: 1rem; border-radius: 5px; cursor: pointer; transition: background 0.3s; margin-top: 20px; font-weight: bold; }
+        .btn:hover { background: #45a049; }
+        .message { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; color: white; z-index: 1000; display: none; }
+        .message.success { background: #4caf50; }
+        .message.error { background: #f44336; }
+        .score-display { position: fixed; bottom: 20px; right: 20px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.2); display: none; }
+        footer { text-align: center; margin-top: 20px; color: #718096; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel left-panel">
+            <h1>🔗 古诗 - 作者连线题</h1>
+            <div id="gushiList"></div>
+        </div>
+        <div class="panel right-panel">
+            <h1>✍️ 请将诗句拖到对应的作者</h1>
+            <div id="authorZones"></div>
+        </div>
+    </div>
+    
+    <form id="submitForm" style="display:none;">
+        <input type="hidden" id="teacher" value="{{teacher}}">
+        <input type="hidden" id="activityId" value="{{task}}">
+    </form>
+    
+    <div id="message" class="message"></div>
+    <div id="scoreDisplay" class="score-display"></div>
+    <footer><p>© 2026 QuickForge 课堂教学系统</p></footer>
+
+    <script>
+        const data = {
+            gushi: [
+                "床前明月光", "春眠不觉晓", "举头望明月", "白日依山尽", "海上生明月"
+            ],
+            authors: ["李白", "孟浩然", "王之涣"]
+        };
+        
+        // 正确答案映射
+        const answers = {
+            "床前明月光": "李白",
+            "春眠不觉晓": "孟浩然",
+            "举头望明月": "李白",
+            "白日依山尽": "王之涣",
+            "海上生明月": "张九龄"
+        };
+        
+        const teacher = document.getElementById('teacher').value;
+        const activityId = document.getElementById('activityId').value;
+        
+        let currentDrag = null;
+        let matches = [];
+
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function renderGushi() {
+            const container = document.getElementById('gushiList');
+            container.innerHTML = shuffle([...data.gushi]).map(gushi => 
+                `<div class="item" draggable="true" data-value="${gushi}">${gushi}</div>`
+            ).join('');
+            
+            // 绑定拖拽事件
+            container.querySelectorAll('.item').forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+        }
+
+        function renderAuthorZones() {
+            const container = document.getElementById('authorZones');
+            container.innerHTML = data.authors.map(author => 
+                `<div class="drop-zone" data-author="${author}">
+                    <strong>${author}</strong>
+                    <div class="matched-items"></div>
+                </div>`
+            ).join('');
+            
+            // 绑定放置区域事件
+            container.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('dragleave', handleDragLeave);
+                zone.addEventListener('drop', handleDrop);
+            });
+        }
+
+        function handleDragStart(e) {
+            currentDrag = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            currentDrag = null;
+            document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('hovered'));
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            e.currentTarget.classList.add('hovered');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('hovered');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('hovered');
+            
+            if (!currentDrag || !currentDrag.dataset.value) return;
+            
+            const gushi = currentDrag.dataset.value;
+            const authorZone = e.currentTarget.getAttribute('data-author');
+            const matchedDiv = e.currentTarget.querySelector('.matched-items');
+            
+            // 创建匹配显示
+            const matchItem = document.createElement('div');
+            matchItem.className = 'item';
+            matchItem.style.margin = '5px 0';
+            matchItem.style.cursor = 'pointer';
+            matchItem.innerHTML = `${gushi} ← ${authorZone}`;
+            matchItem.onclick = function() {
+                this.remove();
+                currentDrag = document.querySelector(`[data-value="${gushi}"]`);
+                if (currentDrag) currentDrag.style.display = '';
+            };
+            
+            matchedDiv.appendChild(matchItem);
+            currentDrag.style.display = 'none';
+            
+            matches.push({ gushi, author: authorZone });
+        }
+
+        async function submitAnswers() {
+            const scoreDiv = document.getElementById('scoreDisplay');
+            const messageDiv = document.getElementById('message');
+            
+            let correctCount = 0;
+            matches.forEach(m => {
+                if (answers[m.gushi] === m.author) correctCount++;
+            });
+            
+            const percentage = Math.round((correctCount / matches.length) * 100);
+            
+            scoreDiv.innerHTML = `🎉 得分：<strong>${percentage}%</strong><br>
+                                  <small>${correctCount}/${matches.length} 正确</small>`;
+            scoreDiv.style.display = 'block';
+            
+            const formData = new FormData();
+            formData.append('teacher', teacher);
+            formData.append('activity_id', activityId);
+            formData.append('student_id', window.studentId || 'S001');
+            formData.append('data', JSON.stringify({
+                matches: matches,
+                correct_count: correctCount,
+                total: matches.length,
+                percentage: percentage,
+                client_timestamp: new Date().toISOString()
+            }));
+
+            try {
+                const response = await fetch('/api/submit', { method: 'POST', body: formData });
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    messageDiv.textContent = '✅ 提交成功！';
+                    messageDiv.className = 'message success';
+                    messageDiv.style.display = 'block';
+                } else {
+                    messageDiv.textContent = '❌ 提交失败：' + (result.message || '未知错误');
+                    messageDiv.className = 'message error';
+                    messageDiv.style.display = 'block';
+                }
+            } catch (error) {
+                messageDiv.textContent = '❌ 网络错误：' + error.message;
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+            }
+        }
+
+        document.body.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn') || e.target.id === 'submitBtn') {
+                submitAnswers();
+            }
+        });
+
+        // 初始化
+        renderGushi();
+        renderAuthorZones();
+    </script>
+</body>
+</html>

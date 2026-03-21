@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>思维导图创作</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); min-height: 100vh; padding: 20px; }
+        .app-container { max-width: 1400px; margin: 0 auto; display: flex; gap: 20px; height: calc(100vh - 40px); }
+        
+        .sidebar { width: 280px; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .sidebar h2 { color: #2d3748; margin-bottom: 20px; font-size: 1.3rem; }
+        
+        .node-input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 10px; transition: all 0.3s; }
+        .node-input:focus { outline: none; border-color: #667eea; }
+        
+        .color-picker { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
+        .color-btn { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+        .color-btn:hover { transform: scale(1.1); }
+        .color-btn.active { border-color: #333; }
+        
+        .action-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+        .btn { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; text-align: center; }
+        .btn-add { background: #667eea; color: white; }
+        .btn-add:hover { background: #5a67d8; }
+        .btn-clear { background: #fc8181; color: white; }
+        .btn-clear:hover { background: #f56565; }
+        .btn-export { background: #48bb78; color: white; }
+        .btn-export:hover { background: #38a169; }
+        .btn-submit { background: #ed8936; color: white; margin-top: 10px; }
+        .btn-submit:hover { background: #dd6b20; }
+        
+        .canvas-area { flex: 1; background: white; border-radius: 12px; position: relative; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        
+        .mindmap-node {
+            position: absolute;
+            padding: 15px 25px;
+            border-radius: 12px;
+            cursor: grab;
+            transition: all 0.2s;
+            min-width: 100px;
+            text-align: center;
+            user-select: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .mindmap-node:hover { transform: scale(1.05); z-index: 10; }
+        .mindmap-node:active { cursor: grabbing; }
+        .mindmap-node.main { font-size: 1.3rem; font-weight: bold; padding: 20px 30px; }
+        .mindmap-node.sub { font-size: 0.95rem; }
+        .mindmap-node.selected { outline: 3px solid #667eea; }
+        
+        .delete-btn { 
+            position: absolute; top: -8px; right: -8px; 
+            width: 24px; height: 24px; 
+            background: #fc8181; color: white; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            font-size: 14px; 
+            line-height: 24px; 
+            text-align: center;
+            display: none;
+        }
+        .mindmap-node:hover .delete-btn { display: block; }
+        
+        .toolbar-overlay { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.95); padding: 10px 20px; border-radius: 50px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); display: flex; gap: 10px; z-index: 100; }
+        .tool-btn { padding: 8px 16px; border: none; border-radius: 20px; cursor: pointer; font-size: 0.9rem; background: #e2e8f0; transition: all 0.3s; }
+        .tool-btn:hover { background: #cbd5e0; }
+        .tool-btn.active { background: #667eea; color: white; }
+        
+        .message { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; color: white; z-index: 1000; display: none; animation: slideIn 0.3s; }
+        .message.success { background: #48bb78; }
+        .message.error { background: #f56565; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        
+        footer { text-align: center; margin-top: 20px; color: #718096; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <h2>🎨 思维导图工具</h2>
+            
+            <div style="margin-bottom:20px;">
+                <label style="display:block;margin-bottom:8px;font-weight:600;color:#4a5568;">添加新节点</label>
+                <input type="text" id="newNodeText" class="node-input" placeholder="输入节点内容...">
+                <button onclick="addNewNode()" class="btn btn-add">➕ 添加到画布中心</button>
+            </div>
+            
+            <div style="margin-bottom:20px;">
+                <label style="display:block;margin-bottom:8px;font-weight:600;color:#4a5568;">节点颜色</label>
+                <div class="color-picker" id="colorPicker"></div>
+            </div>
+            
+            <div class="action-buttons">
+                <button onclick="addChildNode()" class="btn btn-add">🔗 添加子节点</button>
+                <button onclick="clearCanvas()" class="btn btn-clear">🗑️ 清空画布</button>
+                <button onclick="exportJSON()" class="btn btn-export">💾 导出 JSON</button>
+                <button onclick="submitMindMap()" class="btn btn-submit">✅ 提交作品</button>
+            </div>
+        </div>
+        
+        <div class="canvas-area" id="canvas">
+            <div class="toolbar-overlay">
+                <button class="tool-btn active" onclick="setMode('select')">👆 选择</button>
+                <button class="tool-btn" onclick="setMode('add')">➕ 添加</button>
+                <button class="tool-btn" onclick="zoomOut()">🔍-</button>
+                <button class="tool-btn" onclick="zoomIn()">🔍+</button>
+            </div>
+        </div>
+    </div>
+    
+    <form id="submitForm" style="display:none;">
+        <input type="hidden" id="teacher" value="{{teacher}}">
+        <input type="hidden" id="activityId" value="{{task}}">
+    </form>
+    
+    <div id="message" class="message"></div>
+    <footer><p>© 2026 QuickForge 课堂教学系统 | 拖拽节点自由创作</p></footer>
+
+    <script>
+        const teacher = document.getElementById('teacher').value;
+        const activityId = document.getElementById('activityId').value;
+        
+        let nodes = [];
+        let selectedNode = null;
+        let currentColor = '#667eea';
+        let mode = 'select';
+        let scale = 1;
+
+        const colors = ['#667eea', '#48bb78', '#ed8936', '#f56565', '#4299e1', '#9f7aea', '#ecc94b'];
+        const colorPicker = document.getElementById('colorPicker');
+        
+        colors.forEach(color => {
+            const btn = document.createElement('div');
+            btn.className = `color-btn ${color === '#667eea' ? 'active' : ''}`;
+            btn.style.backgroundColor = color;
+            btn.onclick = () => selectColor(btn, color);
+            colorPicker.appendChild(btn);
+        });
+
+        function selectColor(btn, color) {
+            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentColor = color;
+        }
+
+        function setMode(newMode) {
+            mode = newMode;
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function addNewNode() {
+            const text = document.getElementById('newNodeText').value.trim();
+            if (!text) return alert('请输入节点内容！');
+            
+            const centerX = canvas.offsetWidth / 2;
+            const centerY = canvas.offsetHeight / 2;
+            
+            createNode(text, centerX, centerY, true);
+            document.getElementById('newNodeText').value = '';
+        }
+
+        function addChildNode() {
+            if (!selectedNode) return alert('请先选择一个父节点！');
+            
+            const text = prompt('请输入子节点内容:');
+            if (!text) return;
+            
+            const parentRect = selectedNode.getBoundingClientRect();
+            const containerRect = document.getElementById('canvas').getBoundingClientRect();
+            
+            const x = parentRect.left - containerRect.left + parentRect.width / 2;
+            const y = parentRect.top - containerRect.top + parentRect.height + 30;
+            
+            createNode(text, x, y, false);
+        }
+
+        function createNode(text, x, y, isMain) {
+            const node = {
+                id: Date.now(),
+                text: text,
+                x: x,
+                y: y,
+                color: currentColor,
+                isMain: isMain
+            };
+            
+            nodes.push(node);
+            renderNode(node);
+        }
+
+        function renderNode(node) {
+            const div = document.createElement('div');
+            div.className = `mindmap-node ${node.isMain ? 'main' : 'sub'}`;
+            div.id = `node-${node.id}`;
+            div.style.left = `${node.x - 60}px`;
+            div.style.top = `${node.y - 25}px`;
+            div.style.backgroundColor = node.color;
+            div.style.color = node.isMain ? 'white' : '#2d3748';
+            div.textContent = node.text;
+            
+            const deleteBtn = document.createElement('span');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '✕';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                deleteNode(node.id);
+            };
+            div.appendChild(deleteBtn);
+            
+            div.onmousedown = (e) => handleMouseDown(e, node);
+            div.ontouchstart = (e) => handleTouchStart(e, node);
+            
+            document.getElementById('canvas').appendChild(div);
+        }
+
+        function deleteNode(id) {
+            nodes = nodes.filter(n => n.id !== id);
+            const nodeEl = document.getElementById(`node-${id}`);
+            if (nodeEl) nodeEl.remove();
+            
+            if (selectedNode && selectedNode.id === id) {
+                selectedNode = null;
+            }
+        }
+
+        function handleMouseDown(e, node) {
+            if (e.button !== 0) return;
+            e.preventDefault();
+            
+            selectedNode = node;
+            updateSelection();
+            
+            const startX = e.clientX;
+            const startY = e.clientY;
+            
+            function onMouseMove(e) {
+                const container = document.getElementById('canvas');
+                const rect = container.getBoundingClientRect();
+                node.x = (e.clientX - rect.left) / scale;
+                node.y = (e.clientY - rect.top) / scale;
+                
+                const el = document.getElementById(`node-${node.id}`);
+                el.style.left = `${node.x - 60}px`;
+                el.style.top = `${node.y - 25}px`;
+            }
+            
+            function onMouseUp() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+                document.removeEventListener('touchmove', onTouchMove);
+                document.removeEventListener('touchend', onTouchUp);
+            }
+            
+            function onTouchMove(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const container = document.getElementById('canvas');
+                const rect = container.getBoundingClientRect();
+                node.x = (touch.clientX - rect.left) / scale;
+                node.y = (touch.clientY - rect.top) / scale;
+                
+                const el = document.getElementById(`node-${node.id}`);
+                el.style.left = `${node.x - 60}px`;
+                el.style.top = `${node.y - 25}px`;
+            }
+            
+            function onTouchUp() {
+                onMouseUp();
+            }
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            document.addEventListener('touchmove', onTouchMove, { passive: false });
+            document.addEventListener('touchend', onTouchUp);
+        }
+
+        function handleTouchStart(e, node) {
+            if (e.touches.length !== 1) return;
+            handleMouseDown(e, node);
+        }
+
+        function updateSelection() {
+            document.querySelectorAll('.mindmap-node').forEach(el => el.classList.remove('selected'));
+            if (selectedNode) {
+                const el = document.getElementById(`node-${selectedNode.id}`);
+                if (el) el.classList.add('selected');
+            }
+        }
+
+        function clearCanvas() {
+            if (confirm('确定要清空整个思维导图吗？')) {
+                document.getElementById('canvas').innerHTML = `
+                    <div class="toolbar-overlay">
+                        <button class="tool-btn active">👆 选择</button>
+                        <button class="tool-btn">➕ 添加</button>
+                        <button class="tool-btn">🔍-</button>
+                        <button class="tool-btn">🔍+</button>
+                    </div>
+                `;
+                nodes = [];
+                setupToolbar();
+            }
+        }
+
+        function zoomIn() { scale = Math.min(scale + 0.1, 2); applyZoom(); }
+        function zoomOut() { scale = Math.max(scale - 0.1, 0.5); applyZoom(); }
+        function applyZoom() {
+            document.getElementById('canvas').style.transform = `scale(${scale})`;
+            document.getElementById('canvas').style.transformOrigin = 'center center';
+        }
+
+        function exportJSON() {
+            const jsonData = JSON.stringify(nodes, null, 2);
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `思维导图_${Date.now()}.json`;
+            link.click();
+            showMessage('✓ 思维导图已导出', 'success');
+        }
+
+        async function submitMindMap() {
+            if (nodes.length === 0) return alert('请至少创建一个主节点！');
+            
+            try {
+                const formData = new FormData();
+                formData.append('teacher', teacher);
+                formData.append('activity_id', activityId);
+                formData.append('student_id', window.studentId || 'S001');
+                formData.append('data', JSON.stringify({
+                    mindmap: nodes,
+                    main_node_count: nodes.filter(n => n.isMain).length,
+                    sub_node_count: nodes.filter(n => !n.isMain).length,
+                    total_nodes: nodes.length,
+                    client_timestamp: new Date().toISOString()
+                }));
+
+                const response = await fetch('/api/submit', { method: 'POST', body: formData });
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    showMessage('✓ 思维导图提交成功！老师将仔细查看你的创作', 'success');
+                } else {
+                    showMessage('✗ 提交失败：' + (result.message || '未知错误'), 'error');
+                }
+            } catch (error) {
+                console.error('提交错误:', error);
+                showMessage('✗ 网络错误：' + error.message, 'error');
+            }
+        }
+
+        function showMessage(text, type) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.textContent = text;
+            msgDiv.className = `message ${type}`;
+            msgDiv.style.display = 'block';
+            setTimeout(() => msgDiv.style.display = 'none', 3000);
+        }
+
+        function setupToolbar() {
+            const toolbar = document.querySelector('.toolbar-overlay');
+            toolbar.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.onclick = (e) => {
+                    e.currentTarget.parentElement.parentElement.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                };
+            });
+        }
+
+        // 初始化
+        setupToolbar();
+        
+        // 创建默认主节点
+        const centerX = document.getElementById('canvas').offsetWidth / 2;
+        const centerY = document.getElementById('canvas').offsetHeight / 2;
+        createNode('中心主题', centerX, centerY, true);
+    </script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>连线题互动</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; padding: 20px; overflow: hidden; }
+        .container { max-width: 1400px; margin: 0 auto; display: flex; height: calc(100vh - 40px); }
+        .panel { flex: 1; padding: 20px; overflow-y: auto; }
+        .left-panel { background: white; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); margin-right: 20px; }
+        .right-panel { background: #fff5e6; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #ff6b6b; margin-bottom: 20px; }
+        .item { padding: 15px; margin: 10px 0; background: #f8f9fa; border-radius: 8px; cursor: grab; transition: all 0.3s; border-left: 4px solid #ff6b6b; }
+        .item:hover { transform: translateX(5px); background: #e3f2fd; }
+        .item.dragging { opacity: 0.5; }
+        .drop-zone { min-height: 60px; padding: 10px; margin: 10px 0; background: white; border-radius: 8px; border: 2px dashed #ddd; transition: all 0.3s; }
+        .drop-zone.hovered { border-color: #4caf50; background: #e8f5e9; }
+        .btn { background: #4caf50; color: white; border: none; padding: 12px 30px; font-size: 1rem; border-radius: 5px; cursor: pointer; transition: background 0.3s; margin-top: 20px; font-weight: bold; }
+        .btn:hover { background: #45a049; }
+        .message { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; color: white; z-index: 1000; display: none; }
+        .message.success { background: #4caf50; }
+        .message.error { background: #f44336; }
+        .score-display { position: fixed; bottom: 20px; right: 20px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.2); display: none; }
+        footer { text-align: center; margin-top: 20px; color: #718096; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel left-panel">
+            <h1>🔗 古诗 - 作者连线题</h1>
+            <div id="gushiList"></div>
+        </div>
+        <div class="panel right-panel">
+            <h1>✍️ 请将诗句拖到对应的作者</h1>
+            <div id="authorZones"></div>
+        </div>
+    </div>
+    
+    <form id="submitForm" style="display:none;">
+        </form>
+    
+    <div id="message" class="message"></div>
+    <div id="scoreDisplay" class="score-display"></div>
+    <footer><p>© 2026 QuickForge 课堂教学系统</p></footer>
+
+        <script>
+        document.getElementById("mainForm")?.addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            let valid = true;
+            this.querySelectorAll("[required]").forEach(input => {
+                if (!input.value.trim()) {
+                    valid = false;
+                    input.style.borderColor = "#ef4444";
+                } else {
+                    input.style.borderColor = "#e2e8f0";
+                }
+            });
+            
+            if (!valid) {
+                alert("璇峰～鍐欐墍鏈夊繀濉」锛?);
+                return;
+            }
+            
+            alert("鉁?鎻愪氦鎴愬姛锛佹劅璋㈡偍鐨勫弬涓?);
+            this.reset();
+        });
+    </script>
+</body>
+</html>

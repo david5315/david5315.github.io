@@ -1,0 +1,14 @@
+{
+  "teacher": "teach",
+  "activity_id": "test_1773852176",
+  "student_id": "TEST_STU_001",
+  "_server_timestamp": "2026-03-19T00:43:18.654082",
+  "_files": [],
+  "data": {
+    "elements": [
+      {
+        "type": "battery"
+      }
+    ]
+  }
+}
