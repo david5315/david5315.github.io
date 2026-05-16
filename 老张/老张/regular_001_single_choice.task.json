@@ -1,8 +1,0 @@
-{
-  "public": true,
-  "allowOtherTeachers": false,
-  "allowPrivateStudents": true,
-  "allowGlobalStudents": false,
-  "templateType": "001",
-  "templateId": "regular_001_single_choice"
-}

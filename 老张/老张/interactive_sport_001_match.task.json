@@ -1,8 +1,0 @@
-{
-  "public": true,
-  "allowOtherTeachers": false,
-  "allowPrivateStudents": true,
-  "allowGlobalStudents": false,
-  "templateType": "sport",
-  "templateId": "interactive_sport_001_match"
-}

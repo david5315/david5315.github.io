@@ -1,8 +1,0 @@
-{
-  "public": true,
-  "allowOtherTeachers": false,
-  "allowPrivateStudents": true,
-  "allowGlobalStudents": false,
-  "templateType": "13",
-  "templateId": "data_13_attendance"
-}
