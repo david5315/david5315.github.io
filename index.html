@@ -1,0 +1,932 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧校园应用软件平台 - 人工智能+教育应用</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2980b9;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --purple: #667eea;
+            --deep-purple: #764ba2;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --glass: rgba(255, 255, 255, 0.85);
+            --shadow-sm: 0 4px 15px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.09);
+            --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.14);
+            --shadow-xl: 0 30px 60px rgba(0, 0, 0, 0.18);
+            --transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --radius-sm: 12px;
+            --radius-md: 20px;
+            --radius-lg: 28px;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: -180px;
+            right: -180px;
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: float1 18s ease-in-out infinite;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -120px;
+            left: -120px;
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: float2 22s ease-in-out infinite;
+        }
+        @keyframes float1 {
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(-35px, 28px) scale(1.07);
+            }
+            50% {
+                transform: translate(-18px, -22px) scale(0.94);
+            }
+            75% {
+                transform: translate(30px, -12px) scale(1.04);
+            }
+        }
+        @keyframes float2 {
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+            30% {
+                transform: translate(28px, -30px) scale(1.09);
+            }
+            60% {
+                transform: translate(-22px, 18px) scale(0.91);
+            }
+            85% {
+                transform: translate(14px, 26px) scale(1.05);
+            }
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(28px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .main-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 1200px;
+            padding: 28px 20px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        /* Hero区域（融合首页与子页面） */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 28px;
+            z-index: 1;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.16);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: #fff;
+            padding: 6px 24px;
+            border-radius: 50px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            letter-spacing: 0.07em;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            margin-bottom: 16px;
+            animation: fadeInDown 0.7s ease-out;
+        }
+        .hero-badge i {
+            margin-right: 6px;
+            color: #ffd700;
+        }
+        .hero-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+            letter-spacing: 0.03em;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.7s ease-out;
+            line-height: 1.25;
+        }
+        .hero-title .highlight {
+            background: linear-gradient(to right, #ffd700, #ffeb3b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+            animation: fadeInUp 0.7s ease-out 0.12s both;
+        }
+        .hero-desc {
+            font-size: 0.92rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+            animation: fadeInUp 0.7s ease-out 0.22s both;
+            max-width: 620px;
+            margin: 0 auto;
+        }
+        /* 统计条 */
+        .stats-strip {
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 30px;
+            z-index: 1;
+            animation: fadeInUp 0.7s ease-out 0.28s both;
+        }
+        .stat-item {
+            text-align: center;
+            color: #fff;
+            min-width: 70px;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            font-weight: 300;
+            opacity: 0.85;
+            letter-spacing: 0.05em;
+        }
+        /* 板块通用卡片（沿用子页面样式） */
+        .panel-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px 22px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            width: 100%;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.7s ease-out both;
+            position: relative;
+            overflow: hidden;
+        }
+        .panel-card:hover {
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(102, 126, 234, 0.25);
+        }
+        .panel-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+        .panel-teaching::before {
+            background: linear-gradient(90deg, #667eea, #3498db);
+        }
+        .panel-monitor::before {
+            background: linear-gradient(90deg, #e74c3c, #f39c12);
+        }
+        .panel-pbl::before {
+            background: linear-gradient(90deg, #f39c12, #e67e22);
+        }
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .panel-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: #fff;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+            transition: var(--bounce);
+        }
+        .panel-teaching .panel-icon {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        .panel-monitor .panel-icon {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        .panel-pbl .panel-icon {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+        .panel-card:hover .panel-icon {
+            transform: scale(1.05) rotate(-2deg);
+        }
+        .panel-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2c3e50;
+            letter-spacing: 0.02em;
+        }
+        .panel-subtitle {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            font-weight: 400;
+        }
+        .panel-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-bottom: 14px;
+        }
+        .panel-tag {
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.74rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+        }
+        .panel-teaching .panel-tag {
+            background: #f3f0fa;
+            color: #5b3cc4;
+        }
+        .panel-monitor .panel-tag {
+            background: #fef5f5;
+            color: #c0392b;
+        }
+        .panel-pbl .panel-tag {
+            background: #fef9f0;
+            color: #b8600c;
+        }
+        .panel-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 18px;
+        }
+        @media (max-width: 768px) {
+            .panel-features {
+                grid-template-columns: 1fr;
+            }
+        }
+        .panel-features li {
+            font-size: 0.88rem;
+            color: #4a5568;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.5;
+        }
+        .panel-features li i {
+            font-size: 0.75rem;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+        .panel-teaching .panel-features li i {
+            color: #667eea;
+        }
+        .panel-monitor .panel-features li i {
+            color: #e74c3c;
+        }
+        .panel-pbl .panel-features li i {
+            color: #f39c12;
+        }
+        .panel-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-panel-primary {
+            padding: 11px 22px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            letter-spacing: 0.03em;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            color: #fff;
+            white-space: nowrap;
+        }
+        .btn-panel-outline {
+            padding: 10px 18px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            letter-spacing: 0.03em;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+            background: transparent;
+            border: 1.5px solid #dde4ed;
+            color: #5a6c7d;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .btn-panel-outline:hover {
+            border-color: #667eea;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.04);
+            transform: translateY(-2px);
+        }
+        .panel-teaching .btn-panel-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            box-shadow: 0 4px 14px rgba(102, 126, 234, 0.30);
+        }
+        .panel-teaching .btn-panel-primary:hover {
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.45);
+            transform: translateY(-3px);
+            color: #fff;
+        }
+        .panel-monitor .btn-panel-primary {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            box-shadow: 0 4px 14px rgba(231, 76, 60, 0.30);
+        }
+        .panel-monitor .btn-panel-primary:hover {
+            box-shadow: 0 8px 24px rgba(231, 76, 60, 0.45);
+            transform: translateY(-3px);
+            color: #fff;
+        }
+        .panel-pbl .btn-panel-primary {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            box-shadow: 0 4px 14px rgba(243, 156, 18, 0.30);
+        }
+        .panel-pbl .btn-panel-primary:hover {
+            box-shadow: 0 8px 24px rgba(243, 156, 18, 0.45);
+            transform: translateY(-3px);
+            color: #fff;
+        }
+        /* PBL内部结构 */
+        .pbl-intro {
+            font-size: 0.9rem;
+            color: #4a5568;
+            margin-bottom: 16px;
+        }
+        .pbl-sub-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 768px) {
+            .pbl-sub-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .pbl-sub-card {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: var(--radius-md);
+            padding: 20px 18px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            transition: var(--transition);
+        }
+        .pbl-sub-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: rgba(243, 156, 18, 0.3);
+        }
+        .pbl-sub-card h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 4px;
+            letter-spacing: 0.02em;
+        }
+        .pbl-sub-card .sub-subtitle {
+            font-size: 0.78rem;
+            color: #7f8c8d;
+            margin-bottom: 12px;
+        }
+        .pbl-sub-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .pbl-sub-card ul li {
+            font-size: 0.85rem;
+            color: #4a5568;
+            padding: 5px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 7px;
+            line-height: 1.5;
+        }
+        .pbl-sub-card ul li i {
+            color: #f39c12;
+            font-size: 0.7rem;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+        /* 场景矩阵 */
+        .section-title-sm {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: rgba(44, 62, 80, 0.9);
+            letter-spacing: 0.04em;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .section-title-sm i {
+            color: #f39c12;
+            margin-right: 5px;
+        }
+        .scene-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+        @media (max-width: 992px) {
+            .scene-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 576px) {
+            .scene-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .scene-item {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: var(--radius-sm);
+            padding: 16px 12px;
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+        .scene-item:hover {
+            box-shadow: var(--shadow-sm);
+            border-color: rgba(243, 156, 18, 0.25);
+            transform: translateY(-3px);
+        }
+        .scene-item .scene-icon {
+            font-size: 1.4rem;
+            color: #f39c12;
+            margin-bottom: 8px;
+        }
+        .scene-item h5 {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 4px;
+            letter-spacing: 0.02em;
+        }
+        .scene-item p {
+            font-size: 0.78rem;
+            color: #7f8c8d;
+            margin: 0;
+            line-height: 1.4;
+        }
+        /* 底部 */
+        .footer-bar {
+            text-align: center;
+            margin-top: 36px;
+            padding: 16px 10px;
+            z-index: 1;
+            width: 100%;
+            max-width: 1200px;
+        }
+        .footer-info-card {
+            display: inline-block;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--radius-md);
+            padding: 14px 26px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .footer-info-card p {
+            margin: 0;
+            font-size: 0.84rem;
+            color: #5a6c7d;
+            letter-spacing: 0.03em;
+            line-height: 1.6;
+        }
+        .footer-info-card a {
+            color: #5a6c7d;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .footer-info-card a:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+        .footer-divider {
+            display: inline-block;
+            width: 1px;
+            height: 13px;
+            background: #dde4ed;
+            margin: 0 10px;
+            vertical-align: middle;
+        }
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            .panel-card {
+                padding: 20px 16px;
+            }
+            .panel-features {
+                grid-template-columns: 1fr;
+            }
+            .pbl-sub-grid {
+                grid-template-columns: 1fr;
+            }
+            .scene-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .footer-info-card {
+                padding: 10px 14px;
+            }
+            .footer-info-card p {
+                font-size: 0.74rem;
+            }
+            .footer-divider {
+                display: block;
+                width: 0;
+                height: 0;
+                margin: 3px 0;
+            }
+        }
+
+        
+
+        /* 二维码触发按钮 */
+        .qr-trigger-section {
+            display: flex;
+            justify-content: center;
+            padding: 30px 20px 50px;
+        }
+        .qr-trigger-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .qr-trigger-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
+        }
+        .qr-trigger-btn i {
+            font-size: 1.2rem;
+        }
+        /* 二维码弹窗样式 */
+        .qr-modal-grid {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .qr-modal-item {
+            text-align: center;
+        }
+        .qr-modal-image {
+            width: 300px;
+            height: 300px;
+            border-radius: 15px;
+            border: 4px solid #667eea;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .qr-modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 8px 0;
+        }
+        .qr-modal-url {
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            margin: 0;
+            font-family: Consolas, Monaco, monospace;
+        }
+        @media (max-width: 768px) {
+            .qr-modal-grid {
+                gap: 30px;
+            }
+            .qr-modal-image {
+                width: 240px;
+                height: 240px;
+            }
+        }
+        @media (max-width: 550px) {
+            .qr-modal-image {
+                width: 200px;
+                height: 200px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Hero区域：融合首页品牌与子页面主题 -->
+        <div class="hero-section">
+            <div class="hero-badge"><i class="fas fa-crown"></i> AI 赋能 · 智慧校园</div>
+            <h1 class="hero-title">智慧校园<span class="highlight">应用软件</span>平台</h1>
+            <p class="hero-subtitle">AI赋能应用项目 · 人工智能+教育应用</p>
+            <p class="hero-desc">三大核心板块：QuickForge教学评测智能体 · AIoT 智慧校园管理智能体 · AI+PBL课程软件开发，构建覆盖校园管理、教学评测与创新教育的智能化生态体系</p>
+        </div>
+
+        <!-- 统计条 -->
+        <div class="stats-strip">
+            <div class="stat-item">
+                <div class="stat-number">3</div>
+                <div class="stat-label">核心应用板块</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">AI</div>
+                <div class="stat-label">全栈智能驱动</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">7+</div>
+                <div class="stat-label">学科赋能场景</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">持续扩展能力</div>
+            </div>
+        </div>
+
+
+        <!-- ==================== 板块二：AIoT 智慧校园管理智能体 ==================== -->
+        <div class="panel-card panel-monitor" style="animation-delay:0.16s;">
+            <div class="panel-header">
+                <div class="panel-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div>
+                    <div class="panel-title">AIoT 智慧校园管理智能体</div>
+                    <div class="panel-subtitle">机器人 (AI agent) 驱动的智慧校园管理，用智能监控驱动物联网设备</div>
+                </div>
+            </div>
+            <div class="panel-tags">
+                <span class="panel-tag">智能考勤</span><span class="panel-tag">行为预警</span><span class="panel-tag">活动监管</span><span class="panel-tag">能源监测</span><span class="panel-tag">短信告警</span>
+            </div>
+            <ul class="panel-features">
+                <li><i class="fas fa-check-circle"></i> 多模态大模型实时分析监控画面，覆盖考勤、纪律、活动等场景</li>
+                <li><i class="fas fa-check-circle"></i> 自定义分析任务与提示词模板，定时/连续双模式灵活切换</li>
+                <li><i class="fas fa-check-circle"></i> 网页/短信/微信机器人/openclaw等AI agent查询、设置和控制</li>
+                <li><i class="fas fa-check-circle"></i> 跨平台指令输出：语音播报、浏览器自动化、能耗安防联动、智能广播</li>
+            </ul>
+            <div class="panel-actions">
+                <a href="aiot_index.html" target="_blank" rel="noopener" class="btn-panel-primary"><i class="fas fa-arrow-right"></i> 进入管理平台</a>
+                <a href="file/VLM.pptx" class="btn-panel-outline"><i class="fas fa-file-powerpoint"></i> 2025智慧校园</a>
+                <a href="file/AIoT.pptx" class="btn-panel-outline"><i class="fas fa-file-powerpoint"></i> Openclaw驱动物联网PBL课程设计</a>
+                <a href="aiot_app.html" target="_blank" rel="noopener" class="btn-panel-outline"><i class="fas fa-info-circle"></i> 更多PBL项目应用场景</a>
+                <a href="aiot-screenshots/index.html" target="_blank" rel="noopener" class="btn-panel-outline"><i class="fas fa-images"></i>AIoT网站功能截图</a>
+            </div>
+        </div>
+        <!-- ==================== 板块一：QuickForge 教学评测智能体 ==================== -->
+        <div class="panel-card panel-teaching" style="animation-delay:0.08s;">
+            <div class="panel-header">
+                <div class="panel-icon"><i class="fas fa-shield-virus"></i></div>
+                <div>
+                    <div class="panel-title">QuickForge 教学评测智能体</div>
+                    <div class="panel-subtitle">多模态 AI 赋能的互动教学评测系统</div>
+                </div>
+            </div>
+            <div class="panel-tags">
+                <span class="panel-tag">智能出题</span><span class="panel-tag">AI 批阅</span><span class="panel-tag">学情分析</span><span class="panel-tag">互动网页</span><span class="panel-tag">7 大题型</span>
+            </div>
+            <ul class="panel-features">
+                <li><i class="fas fa-check-circle"></i> 支持7大题型智能出题，AI自动批阅并生成学情分析报告</li>
+                <li><i class="fas fa-check-circle"></i> 互动网页模式，实时答题反馈，提升课堂参与度</li>
+                <li><i class="fas fa-check-circle"></i> 多模态AI评测，覆盖文字、图片、代码等多种答案形式</li>
+                <li><i class="fas fa-check-circle"></i> 数据驱动的个性化学习路径推荐，精准定位知识薄弱点</li>
+            </ul>
+            <div class="panel-actions">
+                <a href="http://quickforge.njschool.cn" class="btn-panel-primary" target="_blank" rel="noopener"><i class="fas fa-arrow-right"></i> 进入QuickForge平台</a>
+                <a href="quickforge.html" class="btn-panel-outline"><i class="fas fa-book-open"></i> 使用说明</a>
+                <a href="file/QuickForge.pptx" class="btn-panel-outline"><i class="fas fa-file-powerpoint"></i> 项目介绍</a>
+                <a href="file/快铸网站校园版.zip" class="btn-panel-outline"><i class="fas fa-download"></i> QuickForge 软件下载</a>
+
+            </div>
+        </div>
+
+        <!-- ==================== 板块三：PBL软件开发教学（项目式课程） ==================== -->
+        <div class="panel-card panel-pbl" style="animation-delay:0.24s;">
+            <div class="panel-header">
+                <div class="panel-icon"><i class="fas fa-laptop-code"></i></div>
+                <div>
+                    <div class="panel-title">PBL 软件开发教学（项目式课程）</div>
+                    <div class="panel-subtitle">中小学AI通识教育项目式学习课程体系</div>
+                </div>
+            </div>
+            <div class="panel-tags">
+                <span class="panel-tag">自动驾驶</span><span class="panel-tag">物联网节能</span><span class="panel-tag">智能体开发</span><span class="panel-tag">多学科应用</span><span class="panel-tag">PBL</span>
+            </div>
+            <p class="pbl-intro">以"学-用AI双循环"为核心理念，通过生成式AI辅助编程创建视觉语言智能体，让学生在真实问题（自动驾驶、校园节能等）中实现"理解-应用-迁移"三阶能力跃升。</p>
+
+            <!-- 子模块：两个核心项目 -->
+            <div class="section-title-sm"><i class="fas fa-star"></i> 核心项目式课程</div>
+            <div class="pbl-sub-grid">
+                <div class="pbl-sub-card">
+                    <h4><i class="fas fa-car-side" style="color:#e67e22;margin-right:6px;"></i> 探秘人工智能——自动驾驶</h4>
+                    <p class="sub-subtitle">AI通识教育旗舰项目 · 感知-决策-行动闭环</p>
+                    <ul>
+                        <li><i class="fas fa-circle"></i> 用AI生成自动驾驶智能体，零基础入门AI编程</li>
+                        <li><i class="fas fa-circle"></i> 调用视觉大模型API分析路况，实现模拟驾驶</li>
+                        <li><i class="fas fa-circle"></i> "生成-调试-移植"三阶任务梯度，分层适配</li>
+                        <li><i class="fas fa-circle"></i> 校友专家讲座+产业前沿，强化科技自立自强意识</li>
+                    </ul>
+                </div>
+                <div class="pbl-sub-card">
+                    <h4><i class="fas fa-leaf" style="color:#27ae60;margin-right:6px;"></i> AI+物联网——智慧校园节能系统</h4>
+                    <p class="sub-subtitle">工程实践项目 · 真实校园能源问题驱动</p>
+                    <ul>
+                        <li><i class="fas fa-circle"></i> AI分析校园监控，智能决策输出，定时记录日志。</li>
+                        <li><i class="fas fa-circle"></i> 涂鸦云API控制物联网设备，打通AI决策与物理世界</li>
+                        <li><i class="fas fa-circle"></i> 短信/网站/微信AI对话，智能机器人（openclaw）整合应用</li>
+                        <li><i class="fas fa-circle"></i> 感知→决策→执行→反馈物联网闭环，培养工程思维</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 子模块：赋能课堂教学场景矩阵 -->
+            <div class="section-title-sm"><i class="fas fa-th-large"></i> 赋能课堂教学场景矩阵</div>
+            <p style="font-size:0.85rem;color:#7f8c8d;text-align:center;margin-bottom:14px;">学生创建的视觉语言智能体可迁移至多个学科实验教学与创新应用，实现"AI + 五育"融合</p>
+            <div class="scene-grid">
+                <div class="scene-item">
+                    <div class="scene-icon"><i class="fas fa-code"></i></div>
+                    <h5>编程与AI通识</h5>
+                    <p>生成式AI辅助编程创建智能体，模拟机器人控制与交互</p>
+                </div>
+                <div class="scene-item">
+                    <div class="scene-icon"><i class="fas fa-flask"></i></div>
+                    <h5>物理实验分析</h5>
+                    <p>追踪运动轨迹、分析抛体运动、识别实验装置连接状态</p>
+                </div>
+                <div class="scene-item">
+                    <div class="scene-icon"><i class="fas fa-vial"></i></div>
+                    <h5>化学实验分析</h5>
+                    <p>识别滴定反应颜色突变终点，监测沉淀生成与溶解过程</p>
+                </div>
+                <div class="scene-item">
+                    <div class="scene-icon"><i class="fas fa-bug"></i></div>
+                    <h5>生物实验分析</h5>
+                    <p>识别病虫害类型与植物病变区域，观察细胞显微图像</p>
+                </div>
+                <div class="scene-item">
+                    <div class="scene-icon"><i class="fas fa-hand-paper"></i></div>
+                    <h5>AI手势识别游戏</h5>
+                    <p>手势识别控制游戏角色，体感交互编程项目设计</p>
+                </div>
+                <div class="scene-item">
+                    <div class="scene-icon"><i class="fas fa-running"></i></div>
+                    <h5>体育与动作规范</h5>
+                    <p>运动姿态识别与动作对比分析，实验操作规范步骤智能评分</p>
+                </div>
+            </div>
+
+            <div class="panel-actions">
+                <a href="http://quickforge.njschool.cn:9999" class="btn-panel-primary" target="_blank" rel="noopener"><i class="fas fa-arrow-right"></i> 进入智慧教学PBL课程平台</a>
+                <a href="file/AIoT.pptx" class="btn-panel-outline"><i class="fas fa-file-powerpoint"></i> AIoT软件开发项目式学习（智慧校园节能系统）</a>
+                <a href="http://quickforge.njschool.cn/public.html" class="btn-panel-outline" target="_blank" rel="noopener"><i class="fas fa-download"></i> 教师共享课程案例资源</a>
+            </div>
+        </div>
+
+        <!-- 底部信息 -->
+        <div class="footer-bar">
+            <div class="footer-info-card">
+                <p>© 江苏省南菁高级中学 版权所有 <span class="footer-divider"></span> <a href="https://beian.miit.gov.cn" target="_blank" rel="noopener">苏ICP备06060021号-1</a></p>
+                <p style="margin-top:4px;font-size:0.74rem;color:#8899aa;">技术支持：南菁AI教学研究小组 &nbsp;|&nbsp; 当前版本：校园版</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 二维码查看按钮 -->
+    <div class="qr-trigger-section">
+        <button class="qr-trigger-btn" onclick="showQrModal()">
+            <i class="fas fa-qrcode"></i>
+            <span>查看网站二维码</span>
+        </button>
+    </div>
+
+    <!-- 二维码弹窗 -->
+    <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="qrModalLabel"><i class="fas fa-qrcode me-2"></i>扫描二维码访问</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div class="qr-modal-grid">
+                        <div class="qr-modal-item">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=http://quickforge.cn" alt="QuickForge 二维码" class="qr-modal-image">
+                            <h6 class="qr-modal-title">QuickForge 平台</h6>
+                            <p class="qr-modal-url">quickforge.cn</p>
+                        </div>
+                        <div class="qr-modal-item">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=http://aiot.njschool.cn" alt="AIoT 智慧校园二维码" class="qr-modal-image">
+                            <h6 class="qr-modal-title">AIoT 智慧校园</h6>
+                            <p class="qr-modal-url">aiot.njschool.cn</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 智慧校园应用软件平台 · 人工智能+教育应用 已就绪');
+            console.log('✅ 三大核心板块：QuickForge | 视觉语言智能体 | PBL软件开发教学');
+        });
+
+        // 显示二维码弹窗
+        function showQrModal() {
+            const modal = new bootstrap.Modal(document.getElementById('qrModal'));
+            modal.show();
+        }
+    </script>
+
+</body>
+</html>
