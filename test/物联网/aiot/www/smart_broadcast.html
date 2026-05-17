@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能广播管理 - AIoT 智慧校园</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-color: #f8f9fa;
+            --dark-color: #1f2937;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px 0;
+        }
+        
+        .header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 2rem;
+        }
+        
+        .header p {
+            margin: 0.5rem 0 0;
+            opacity: 0.9;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 50px;
+            padding: 10px 25px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(to right, var(--success-color), #059669);
+            border: none;
+            border-radius: 50px;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.15);
+        }
+        
+        .device-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .device-card:hover {
+            border-color: var(--primary-color);
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .device-card.selected {
+            border-color: var(--primary-color);
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .device-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-right: 1rem;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-online {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+        
+        .status-offline {
+            background: rgba(107, 114, 128, 0.1);
+            color: #6b7280;
+        }
+        
+        .log-container {
+            background: var(--dark-color);
+            color: #10b981;
+            font-family: 'Courier New', monospace;
+            padding: 1rem;
+            border-radius: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+        
+        .log-entry {
+            margin-bottom: 0.5rem;
+        }
+        
+        .log-time {
+            color: #6b7280;
+            margin-right: 0.5rem;
+        }
+        
+        .preset-btn {
+            margin: 0.25rem;
+            border-radius: 8px;
+        }
+        
+        .volume-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="container">
+                <h1><i class="fas fa-broadcast-tower me-2"></i>智能广播管理</h1>
+                <p>百度音箱 TTS 文字转语音广播系统</p>
+            </div>
+        </div>
+        
+        <!-- 配置状态 -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-cog me-2"></i>配置状态
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-key fa-2x me-3 text-primary"></i>
+                            <div>
+                                <h6 class="mb-0">API 配置</h6>
+                                <span id="api-status" class="status-badge status-online">已配置</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-volume-up fa-2x me-3 text-success"></i>
+                            <div>
+                                <h6 class="mb-0">TTS 服务</h6>
+                                <span id="tts-status" class="status-badge status-online">正常</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-wifi fa-2x me-3 text-info"></i>
+                            <div>
+                                <h6 class="mb-0">设备连接</h6>
+                                <span id="device-status" class="status-badge status-online">已连接</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-history fa-2x me-3 text-warning"></i>
+                            <div>
+                                <h6 class="mb-0">今日广播</h6>
+                                <span id="broadcast-count" class="fw-bold">0</span> 次
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- 左侧：广播控制 -->
+            <div class="col-lg-8">
+                <!-- 广播消息 -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-microphone-alt me-2"></i>广播消息
+                    </div>
+                    <div class="card-body">
+                        <form id="broadcast-form">
+                            <div class="mb-3">
+                                <label for="broadcast-text" class="form-label">
+                                    <i class="fas fa-comment-dots me-1"></i>广播内容
+                                </label>
+                                <textarea class="form-control" id="broadcast-text" rows="4" 
+                                          placeholder="请输入要广播的内容，例如：现在是北京时间 12 点整，请各班做好午休准备。"></textarea>
+                                <div class="form-text">支持中文、英文、数字，最长 1024 个字符</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-magic me-1"></i>快捷短语
+                                </label>
+                                <div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm preset-btn" 
+                                            onclick="setPreset('现在是北京时间，上午好。')">
+                                        ⏰ 时间播报
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm preset-btn"
+                                            onclick="setPreset('请各班班长清点人数，并向班主任报告。')">
+                                        📋 点名通知
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm preset-btn"
+                                            onclick="setPreset('眼保健操时间到了，请全体同学起立，做好准备。')">
+                                        👁️ 眼保健操
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm preset-btn"
+                                            onclick="setPreset('放学时间到了，请同学们整理好书包，有序离校。')">
+                                        🏠 放学通知
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm preset-btn"
+                                            onclick="setPreset('紧急通知，请各班班主任立即到会议室开会。')">
+                                        ⚠️ 紧急通知
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-sliders-h me-1"></i>TTS 设置
+                                </label>
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <select class="form-select" id="tts-per">
+                                            <option value="0">女声（默认）</option>
+                                            <option value="1">男声</option>
+                                            <option value="2">度逍遥</option>
+                                            <option value="3">度丫丫</option>
+                                            <option value="4">度博文</option>
+                                            <option value="5">度童童</option>
+                                            <option value="6">度萌音</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <input type="range" class="volume-slider" id="tts-spd" 
+                                               min="0" max="15" value="5">
+                                        <small class="text-muted">语速：<span id="spd-value">5</span></small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-broadcast-tower me-2"></i>立即广播
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="testTTS()">
+                                    <i class="fas fa-flask me-2"></i>测试 TTS
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- 广播日志 -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-list-alt me-2"></i>广播日志
+                    </div>
+                    <div class="card-body">
+                        <div class="log-container" id="log-container">
+                            <div class="log-entry">
+                                <span class="log-time">[系统]</span>
+                                智能广播系统已启动
+                            </div>
+                        </div>
+                        <div class="mt-2 text-end">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="clearLogs()">
+                                <i class="fas fa-trash me-1"></i>清空日志
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧：设备管理 -->
+            <div class="col-lg-4">
+                <!-- 设备列表 -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-tv me-2"></i>设备列表
+                    </div>
+                    <div class="card-body">
+                        <div id="device-list">
+                            <div class="device-card selected" onclick="selectDevice('device-1')">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-volume-up device-icon"></i>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0">客厅音箱</h6>
+                                        <small class="text-muted">device-001</small>
+                                    </div>
+                                    <span class="status-badge status-online">在线</span>
+                                </div>
+                            </div>
+                            <div class="device-card" onclick="selectDevice('device-2')">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-volume-up device-icon"></i>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0">卧室音箱</h6>
+                                        <small class="text-muted">device-002</small>
+                                    </div>
+                                    <span class="status-badge status-offline">离线</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm w-100 mt-2" onclick="addDevice()">
+                            <i class="fas fa-plus me-1"></i>添加设备
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 音量控制 -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-volume-up me-2"></i>音量控制
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">广播音量</label>
+                            <input type="range" class="volume-slider" id="volume-control" 
+                                   min="0" max="100" value="80">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">0%</small>
+                                <small class="text-muted" id="volume-value">80%</small>
+                                <small class="text-muted">100%</small>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">定时广播</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="schedule-morning">
+                                <label class="form-check-label" for="schedule-morning">
+                                    早晨 7:00 起床播报
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="schedule-noon">
+                                <label class="form-check-label" for="schedule-noon">
+                                    中午 12:00 午休播报
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="schedule-evening">
+                                <label class="form-check-label" for="schedule-evening">
+                                    下午 17:00 放学播报
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 配置管理 -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-wrench me-2"></i>配置管理
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-outline-primary btn-sm w-100 mb-2" onclick="openConfig()">
+                            <i class="fas fa-cog me-1"></i>API 配置
+                        </button>
+                        <button class="btn btn-outline-success btn-sm w-100 mb-2" onclick="testConnection()">
+                            <i class="fas fa-plug me-1"></i>测试连接
+                        </button>
+                        <button class="btn btn-outline-info btn-sm w-100" onclick="viewDocs()">
+                            <i class="fas fa-book me-1"></i>查看文档
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast 容器 -->
+    <div class="toast-container" id="toast-container"></div>
+    
+    <!-- 配置模态框 -->
+    <div class="modal fade" id="configModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-cog me-2"></i>百度 API 配置
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="config-form">
+                        <div class="mb-3">
+                            <label for="app-id" class="form-label">App ID</label>
+                            <input type="text" class="form-control" id="app-id" 
+                                   placeholder="百度开放平台 App ID">
+                        </div>
+                        <div class="mb-3">
+                            <label for="api-key" class="form-label">API Key</label>
+                            <input type="text" class="form-control" id="api-key" 
+                                   placeholder="百度开放平台 API Key">
+                        </div>
+                        <div class="mb-3">
+                            <label for="secret-key" class="form-label">Secret Key</label>
+                            <input type="password" class="form-control" id="secret-key" 
+                                   placeholder="百度开放平台 Secret Key">
+                        </div>
+                        <div class="mb-3">
+                            <label for="device-id" class="form-label">默认设备 ID</label>
+                            <input type="text" class="form-control" id="device-id" 
+                                   placeholder="百度音箱设备 ID">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveConfig()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        let broadcastCount = 0;
+        let selectedDevice = 'device-1';
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConfig();
+            updateVolume();
+            addLog('系统', '智能广播管理页面已加载');
+        });
+        
+        // 设置快捷短语
+        function setPreset(text) {
+            document.getElementById('broadcast-text').value = text;
+        }
+        
+        // 选择设备
+        function selectDevice(deviceId) {
+            selectedDevice = deviceId;
+            document.querySelectorAll('.device-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            addLog('设备', `已选择设备：${deviceId}`);
+        }
+        
+        // 更新音量显示
+        function updateVolume() {
+            const volume = document.getElementById('volume-control').value;
+            document.getElementById('volume-value').textContent = volume + '%';
+        }
+        
+        document.getElementById('volume-control').addEventListener('input', updateVolume);
+        
+        // 更新语速显示
+        document.getElementById('tts-spd').addEventListener('input', function() {
+            document.getElementById('spd-value').textContent = this.value;
+        });
+        
+        // 广播表单提交
+        document.getElementById('broadcast-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const text = document.getElementById('broadcast-text').value.trim();
+            if (!text) {
+                showToast('error', '请输入广播内容');
+                return;
+            }
+            
+            const per = document.getElementById('tts-per').value;
+            const spd = document.getElementById('tts-spd').value;
+            const volume = document.getElementById('volume-control').value;
+            
+            addLog('广播', `开始广播：${text.substring(0, 30)}...`);
+            
+            // 调用后端 API
+            try {
+                const response = await fetch('/api/broadcast', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: text,
+                        device_id: selectedDevice,
+                        per: parseInt(per),
+                        spd: parseInt(spd),
+                        vol: parseInt(volume)
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    broadcastCount++;
+                    document.getElementById('broadcast-count').textContent = broadcastCount;
+                    addLog('广播', `广播成功`);
+                    showToast('success', '广播发送成功！');
+                } else {
+                    addLog('错误', result.message || '广播失败');
+                    showToast('error', result.message || '广播失败');
+                }
+            } catch (error) {
+                addLog('错误', `广播异常：${error.message}`);
+                showToast('error', '广播失败，请检查网络连接');
+            }
+        });
+        
+        // 测试 TTS
+        async function testTTS() {
+            addLog('测试', '开始 TTS 测试...');
+            
+            try {
+                const response = await fetch('/api/broadcast/test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: '你好，这是 TTS 测试',
+                        per: 0,
+                        spd: 5
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    addLog('测试', `TTS 测试成功，音频大小：${result.size || '未知'}`);
+                    showToast('success', 'TTS 测试成功！');
+                } else {
+                    addLog('测试', result.message || 'TTS 测试失败');
+                    showToast('error', result.message || 'TTS 测试失败');
+                }
+            } catch (error) {
+                addLog('测试', `异常：${error.message}`);
+                showToast('error', 'TTS 测试失败');
+            }
+        }
+        
+        // 添加日志
+        function addLog(type, message) {
+            const container = document.getElementById('log-container');
+            const now = new Date().toLocaleTimeString('zh-CN');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `<span class="log-time">[${now} ${type}]</span>${message}`;
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        // 清空日志
+        function clearLogs() {
+            document.getElementById('log-container').innerHTML = '';
+            addLog('系统', '日志已清空');
+        }
+        
+        // 显示 Toast
+        function showToast(type, message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast show align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'}`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
+        
+        // 加载配置
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/broadcast/config');
+                const config = await response.json();
+                
+                if (config.success) {
+                    document.getElementById('app-id').value = config.data.app_id || '';
+                    document.getElementById('api-key').value = config.data.api_key || '';
+                    document.getElementById('device-id').value = config.data.device_id || '';
+                    
+                    if (config.data.api_key) {
+                        document.getElementById('api-status').textContent = '已配置';
+                        document.getElementById('api-status').className = 'status-badge status-online';
+                    }
+                }
+            } catch (error) {
+                console.error('加载配置失败:', error);
+            }
+        }
+        
+        // 打开配置
+        function openConfig() {
+            const modal = new bootstrap.Modal(document.getElementById('configModal'));
+            modal.show();
+        }
+        
+        // 保存配置
+        async function saveConfig() {
+            const config = {
+                app_id: document.getElementById('app-id').value.trim(),
+                api_key: document.getElementById('api-key').value.trim(),
+                secret_key: document.getElementById('secret-key').value.trim(),
+                device_id: document.getElementById('device-id').value.trim()
+            };
+            
+            try {
+                const response = await fetch('/api/broadcast/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showToast('success', '配置保存成功！');
+                    bootstrap.Modal.getInstance(document.getElementById('configModal')).hide();
+                    loadConfig();
+                } else {
+                    showToast('error', result.message || '保存失败');
+                }
+            } catch (error) {
+                showToast('error', '保存失败');
+            }
+        }
+        
+        // 测试连接
+        async function testConnection() {
+            addLog('测试', '正在测试 API 连接...');
+            
+            try {
+                const response = await fetch('/api/broadcast/test-connection');
+                const result = await response.json();
+                
+                if (result.success) {
+                    addLog('测试', 'API 连接正常');
+                    document.getElementById('tts-status').textContent = '正常';
+                    document.getElementById('tts-status').className = 'status-badge status-online';
+                    showToast('success', 'API 连接正常！');
+                } else {
+                    addLog('测试', result.message || '连接失败');
+                    document.getElementById('tts-status').textContent = '异常';
+                    document.getElementById('tts-status').className = 'status-badge status-offline';
+                    showToast('error', result.message || '连接失败');
+                }
+            } catch (error) {
+                addLog('测试', `异常：${error.message}`);
+                showToast('error', '连接失败');
+            }
+        }
+        
+        // 添加设备
+        function addDevice() {
+            const deviceId = prompt('请输入设备 ID:');
+            if (deviceId) {
+                const deviceName = prompt('请输入设备名称:') || '新设备';
+                const deviceList = document.getElementById('device-list');
+                const deviceCard = document.createElement('div');
+                deviceCard.className = 'device-card';
+                deviceCard.onclick = function() { selectDevice(deviceId); };
+                deviceCard.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-volume-up device-icon"></i>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0">${deviceName}</h6>
+                            <small class="text-muted">${deviceId}</small>
+                        </div>
+                        <span class="status-badge status-offline">未连接</span>
+                    </div>
+                `;
+                deviceList.appendChild(deviceCard);
+                addLog('设备', `添加设备：${deviceName} (${deviceId})`);
+            }
+        }
+        
+        // 查看文档
+        function viewDocs() {
+            window.open('README-智能广播.md', '_blank');
+        }
+    </script>
+</body>
+</html>

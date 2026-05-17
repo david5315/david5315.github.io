@@ -1,0 +1,613 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能电控 - AIoT 智慧校园管理平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #7209b7;
+            --success: #06d6a0;
+            --danger: #ef476f;
+            --warning: #ffd166;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea22, #764ba222);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .page-header {
+            background: white;
+            border-radius: 20px;
+            padding: 25px 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+        .form-label {
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67,97,238,0.1);
+        }
+        .btn {
+            border-radius: 10px;
+            padding: 12px 25px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border: none;
+        }
+        .btn-success { background: var(--success); border: none; }
+        .btn-danger { background: var(--danger); border: none; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .device-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+        }
+        .device-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+        .device-card.active { border-color: var(--success); background: linear-gradient(135deg, #e8fdf5, #d0f5e0); }
+        .device-card.inactive { border-color: #dee2e6; }
+        .device-name { font-weight: 600; font-size: 1.1rem; color: #333; }
+        .device-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .status-on { background: #d4edda; color: #155724; }
+        .status-off { background: #f8d7da; color: #721c24; }
+        .status-unknown { background: #fff3cd; color: #856404; }
+        .time-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .time-table th, .time-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+        .time-table th { background: var(--primary); color: white; font-weight: 500; }
+        .time-table tr:nth-child(even) { background: #f8f9fa; }
+        .time-table tr:hover { background: #e7f1ff; }
+        .holiday-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 20px;
+            background: #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .holiday-chip:hover { background: #dee2e6; }
+        .holiday-chip.enabled { background: var(--success); color: white; }
+        .holiday-chip.disabled { background: var(--danger); color: white; }
+        .holiday-chip input { display: none; }
+        .weekday-check {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .weekday-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 15px;
+            border-radius: 10px;
+            background: #f0f0f0;
+            cursor: pointer;
+        }
+        .weekday-label.active { background: var(--primary); color: white; }
+        .tab-btn {
+            padding: 12px 25px;
+            border: none;
+            background: transparent;
+            color: #666;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab-btn.active { border-color: var(--primary); color: var(--primary); }
+        .tabs { display: flex; border-bottom: 2px solid #e0e0e0; margin-bottom: 25px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title"><i class="fas fa-plug me-2"></i>智能电控</h1>
+                <p class="text-muted mb-0">物联网设备定时开关控制 · 节假日配置</p>
+            </div>
+            <div>
+                <a href="aiot_index.html" class="btn btn-outline-secondary">
+                    <i class="fas fa-home me-1"></i>返回主页
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card">
+                    <h5 class="card-title"><i class="fas fa-plug me-2"></i>设备列表</h5>
+                    <div id="deviceList">
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-spinner fa-spin me-2"></i>加载中...
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="tabs">
+                        <button class="tab-btn active" onclick="switchTab('timing')">定时配置</button>
+                        <button class="tab-btn" onclick="switchTab('holiday')">节假日配置</button>
+                        <button class="tab-btn" onclick="switchTab('devices')">设备管理</button>
+                    </div>
+
+                    <!-- 定时配置 -->
+                    <div id="timing-tab">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">选择设备</label>
+                                <select class="form-select" id="timingDevice">
+                                    <option value="">请选择设备</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">定时类型</label>
+                                <select class="form-select" id="timingType" onchange="toggleTimingType()">
+                                    <option value="daily">按天循环</option>
+                                    <option value="weekly">按星期循环</option>
+                                    <option value="once">单次执行</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="dailyTiming" class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">开启时间</label>
+                                <input type="time" class="form-control" id="dailyOnTime" value="08:00">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">关闭时间</label>
+                                <input type="time" class="form-control" id="dailyOffTime" value="22:00">
+                            </div>
+                        </div>
+
+                        <div id="weeklyTiming" style="display:none;">
+                            <div class="mb-3">
+                                <label class="form-label">选择星期</label>
+                                <div class="weekday-check">
+                                    <label class="weekday-label"><input type="checkbox" name="weekday" value="1"> 一</label>
+                                    <label class="weekday-label"><input type="checkbox" name="weekday" value="2"> 二</label>
+                                    <label class="weekday-label"><input type="checkbox" name="weekday" value="3"> 三</label>
+                                    <label class="weekday-label"><input type="checkbox" name="weekday" value="4"> 四</label>
+                                    <label class="weekday-label"><input type="checkbox" name="weekday" value="5"> 五</label>
+                                    <label class="weekday-label"><input type="checkbox" name="weekday" value="6"> 六</label>
+                                    <label class="weekday-label"><input type="checkbox" name="weekday" value="0"> 日</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">开启时间</label>
+                                    <input type="time" class="form-control" id="weeklyOnTime" value="08:00">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">关闭时间</label>
+                                    <input type="time" class="form-control" id="weeklyOffTime" value="22:00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="onceTiming" style="display:none;">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">日期</label>
+                                    <input type="date" class="form-control" id="onceDate">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">开启时间</label>
+                                    <input type="time" class="form-control" id="onceOnTime" value="08:00">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">动作</label>
+                                    <select class="form-select" id="onceAction">
+                                        <option value="on">开启</option>
+                                        <option value="off">关闭</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <button class="btn btn-primary" onclick="saveTiming()">
+                                <i class="fas fa-save me-2"></i>保存定时配置
+                            </button>
+                            <button class="btn btn-outline-danger ms-2" onclick="clearTiming()">
+                                <i class="fas fa-trash me-2"></i>清除定时
+                            </button>
+                        </div>
+
+                        <h6 class="mt-4 mb-3">当前定时列表</h6>
+                        <table class="time-table" id="timingList">
+                            <thead>
+                                <tr>
+                                    <th>设备</th>
+                                    <th>类型</th>
+                                    <th>时间</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <!-- 节假日配置 -->
+                    <div id="holiday-tab" style="display:none;">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>设置节假日特殊策略，节假日当天将按配置的规则执行，不受定时计划影响
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">添加节假日</label>
+                                <input type="date" class="form-control" id="holidayDate">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">节假日动作</label>
+                                <select class="form-select" id="holidayAction">
+                                    <option value="on">开启</option>
+                                    <option value="off">关闭</option>
+                                    <option value="skip">跳过（不执行）</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="addHoliday()">
+                            <i class="fas fa-plus me-2"></i>添加节假日
+                        </button>
+
+                        <h6 class="mt-4 mb-3">已设置的节假日</h6>
+                        <div id="holidayList"></div>
+                    </div>
+
+                    <!-- 设备管理 -->
+                    <div id="devices-tab" style="display:none;">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">设备名称</label>
+                                <input type="text" class="form-control" id="newDeviceName" placeholder="如：高一13班空调">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">涂鸦设备ID</label>
+                                <input type="text" class="form-control" id="newDeviceId" placeholder="Device ID">
+                            </div>
+                        </div>
+                        <button class="btn btn-success" onclick="addDevice()">
+                            <i class="fas fa-plus me-2"></i>添加设备
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+        let devices = [];
+        let timings = [];
+        let holidays = [];
+
+        // 页面加载
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDevices();
+            loadTimings();
+            loadHolidays();
+            loadDevicesSelect();
+        });
+
+        // 切换标签页
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('[id$="-tab"]').forEach(div => div.style.display = 'none');
+            event.target.classList.add('active');
+            document.getElementById(tab + '-tab').style.display = 'block';
+        }
+
+        // 切换定时类型
+        function toggleTimingType() {
+            const type = document.getElementById('timingType').value;
+            document.getElementById('dailyTiming').style.display = type === 'daily' ? 'flex' : 'none';
+            document.getElementById('weeklyTiming').style.display = type === 'weekly' ? 'block' : 'none';
+            document.getElementById('onceTiming').style.display = type === 'once' ? 'block' : 'none';
+        }
+
+        // 星期选择
+        document.querySelectorAll('.weekday-label').forEach(label => {
+            label.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const checkbox = this.querySelector('input');
+                checkbox.checked = !checkbox.checked;
+            });
+        });
+
+        // 加载设备
+        async function loadDevices() {
+            try {
+                const res = await fetch(API_BASE + '/api/aiot/iot/devices');
+                const data = await res.json();
+                devices = data.devices || [];
+                renderDevices();
+            } catch(e) {
+                console.error('加载设备失败', e);
+            }
+        }
+
+        // 渲染设备列表
+        function renderDevices() {
+            const list = document.getElementById('deviceList');
+            if (!devices.length) {
+                list.innerHTML = '<div class="text-center text-muted py-4"><i class="fas fa-plug me-2"></i>暂无设备</div>';
+                return;
+            }
+            list.innerHTML = devices.map(d => `
+                <div class="device-card ${d.online ? 'active' : 'inactive'}" onclick="selectDevice('${d.id}')">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="device-name">${d.name}</div>
+                            <small class="text-muted">${d.id}</small>
+                        </div>
+                        <span class="device-status ${d.online ? 'status-on' : 'status-off'}">
+                            ${d.online ? '在线' : '离线'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 选择设备
+        function selectDevice(id) {
+            document.querySelectorAll('.device-card').forEach(c => c.classList.remove('selected'));
+            // 远程控制
+            fetch(API_BASE + '/api/aiot/iot/control', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({device_id: id, action: 'toggle'})
+            }).then(r => r.json()).then(data => {
+                if (data.success) loadDevices();
+            });
+        }
+
+        // 加载设备选择
+        function loadDevicesSelect() {
+            const select = document.getElementById('timingDevice');
+            select.innerHTML = '<option value="">请选择设备</option>' + 
+                devices.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+        }
+
+        // 加载定时配置
+        async function loadTimings() {
+            try {
+                const res = await fetch(API_BASE + '/api/aiot/iot/timing');
+                const data = await res.json();
+                timings = data.timings || [];
+                renderTimings();
+            } catch(e) {
+                console.error('加载定时失败', e);
+            }
+        }
+
+        // 渲染定时列表
+        function renderTimings() {
+            const tbody = document.querySelector('#timingList tbody');
+            if (!timings.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">暂无定时配置</td></tr>';
+                return;
+            }
+            tbody.innerHTML = timings.map(t => `
+                <tr>
+                    <td>${t.device_name}</td>
+                    <td>${t.type === 'daily' ? '按天' : t.type === 'weekly' ? '按星期' : '单次'}</td>
+                    <td>${t.on_time || ''} - ${t.off_time || ''}</td>
+                    <td>${t.enabled ? '启用' : '禁用'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTiming('${t.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 保存定时配置
+        async function saveTiming() {
+            const deviceId = document.getElementById('timingDevice').value;
+            const type = document.getElementById('timingType').value;
+            
+            if (!deviceId) {
+                alert('请选择设备');
+                return;
+            }
+
+            const timing = {
+                device_id: deviceId,
+                type: type,
+                enabled: true
+            };
+
+            if (type === 'daily') {
+                timing.on_time = document.getElementById('dailyOnTime').value;
+                timing.off_time = document.getElementById('dailyOffTime').value;
+            } else if (type === 'weekly') {
+                timing.weekdays = Array.from(document.querySelectorAll('input[name="weekday"]:checked')).map(c => c.value);
+                timing.on_time = document.getElementById('weeklyOnTime').value;
+                timing.off_time = document.getElementById('weeklyOffTime').value;
+            } else {
+                timing.date = document.getElementById('onceDate').value;
+                timing.action = document.getElementById('onceAction').value;
+                timing.time = document.getElementById('onceOnTime').value;
+            }
+
+            try {
+                const res = await fetch(API_BASE + '/api/aiot/iot/timing', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(timing)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('保存成功');
+                    loadTimings();
+                } else {
+                    alert('保存失败：' + data.message);
+                }
+            } catch(e) {
+                alert('保存失败');
+            }
+        }
+
+        // 清除定时
+        async function clearTiming() {
+            if (!confirm('确定要清除所有定时配置吗？')) return;
+            // TODO: 调用清除API
+            alert('定时已清除');
+            loadTimings();
+        }
+
+        // 删除定时
+        async function deleteTiming(id) {
+            if (!confirm('确定要删除这条定时吗？')) return;
+            // TODO: 调用删除API
+            loadTimings();
+        }
+
+        // 加载节假日
+        async function loadHolidays() {
+            // TODO: 从API加载
+            renderHolidays();
+        }
+
+        // 渲染节假日
+        function renderHolidays() {
+            const list = document.getElementById('holidayList');
+            if (!holidays.length) {
+                list.innerHTML = '<div class="text-muted">暂无节假日配置</div>';
+                return;
+            }
+            list.innerHTML = holidays.map(h => `
+                <span class="holiday-chip ${h.action === 'on' ? 'enabled' : h.action === 'off' ? 'disabled' : ''}" onclick="deleteHoliday('${h.date}')">
+                ${h.date} (${h.action === 'on' ? '开' : h.action === 'off' ? '关' : '跳过'})
+                <i class="fas fa-times ms-2"></i>
+            </span>
+            `).join('');
+        }
+
+        // 添加节假日
+        async function addHoliday() {
+            const date = document.getElementById('holidayDate').value;
+            const action = document.getElementById('holidayAction').value;
+            
+            if (!date) {
+                alert('请选择日期');
+                return;
+            }
+
+            // TODO: 保存到API
+            holidays.push({date, action});
+            renderHolidays();
+            document.getElementById('holidayDate').value = '';
+        }
+
+        // 删除节假日
+        function deleteHoliday(date) {
+            if (!confirm('确定要删除 ' + date + ' 的配置吗？')) return;
+            holidays = holidays.filter(h => h.date !== date);
+            renderHolidays();
+        }
+
+        // 添加设备
+        async function addDevice() {
+            const name = document.getElementById('newDeviceName').value;
+            const deviceId = document.getElementById('newDeviceId').value;
+            
+            if (!name || !deviceId) {
+                alert('请填写设备名称和ID');
+                return;
+            }
+
+            try {
+                const res = await fetch(API_BASE + '/api/aiot/iot/devices', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({name, device_id: deviceId})
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('添加成功');
+                    loadDevices();
+                    document.getElementById('newDeviceName').value = '';
+                    document.getElementById('newDeviceId').value = '';
+                } else {
+                    alert('添加失败');
+                }
+            } catch(e) {
+                alert('添加失败');
+            }
+        }
+    </script>
+</body>
+</html>
+

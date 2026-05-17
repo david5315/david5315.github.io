@@ -1,0 +1,470 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>AI视觉物联网控制系统 · 50大高价值应用场景</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: #f5f7fb;
+            color: #1a2639;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* 头部区域 */
+        .hero {
+            background: linear-gradient(135deg, #0b1e3d 0%, #1b3b5c 100%);
+            color: white;
+            border-radius: 2.5rem;
+            padding: 3.5rem 2rem;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 50%;
+            top: -100px;
+            right: -80px;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+            bottom: -60px;
+            left: -40px;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero .subtitle {
+            font-size: 1.25rem;
+            font-weight: 400;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero .badge-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 1.8rem 0 0.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 0.45rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        /* 介绍卡片 */
+        .intro-card {
+            background: white;
+            border-radius: 2rem;
+            padding: 2rem 2.5rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .intro-text {
+            flex: 2;
+            min-width: 280px;
+        }
+
+        .intro-text h2 {
+            font-size: 1.8rem;
+            font-weight: 650;
+            margin-bottom: 1rem;
+            color: #0b1e3d;
+        }
+
+        .intro-text p {
+            color: #334155;
+            margin-bottom: 0.8rem;
+            font-size: 1.05rem;
+        }
+
+        .highlight {
+            background: #e9f2ff;
+            border-left: 4px solid #2563eb;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            color: #1e3a8a;
+            font-weight: 500;
+        }
+
+        .stat-badge {
+            background: #f0f9ff;
+            padding: 0.3rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            color: #0369a1;
+            font-size: 0.95rem;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        /* 筛选栏 */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin: 1.2rem 0 2rem;
+            align-items: center;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 0.55rem 1.3rem;
+            border-radius: 30px;
+            font-weight: 550;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            background: #ffffff;
+        }
+
+        .filter-btn:hover {
+            border-color: #2563eb;
+            color: #1e40af;
+            background: #f0f7ff;
+        }
+
+        .filter-btn.active {
+            background: #0b1e3d;
+            border-color: #0b1e3d;
+            color: white;
+            box-shadow: 0 8px 18px -6px rgba(11, 30, 61, 0.4);
+        }
+
+        .counter {
+            margin-left: auto;
+            font-weight: 600;
+            color: #1e293b;
+            background: #f1f5f9;
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* 场景网格 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0 3rem;
+        }
+
+        .scene-card {
+            background: white;
+            border-radius: 1.8rem;
+            padding: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s, box-shadow 0.25s;
+            border: 1px solid #f0f3f8;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scene-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 22px 35px -10px rgba(0, 0, 0, 0.1);
+            border-color: #dbeafe;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+        }
+
+        .scene-icon {
+            font-size: 2rem;
+            background: #f1f5f9;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 18px;
+        }
+
+        .category-tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            padding: 0.25rem 0.7rem;
+            border-radius: 20px;
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        .scene-title {
+            font-weight: 680;
+            font-size: 1.15rem;
+            margin: 0.6rem 0 0.5rem;
+            color: #0f172a;
+        }
+
+        .scene-desc {
+            color: #475569;
+            font-size: 0.92rem;
+            flex: 1;
+        }
+
+        .scene-number {
+            position: absolute;
+            top: 1rem;
+            right: 1.2rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        /* 不同类别标签颜色微调 */
+        .tag-family {
+            background: #fce7f3;
+            color: #9d174d;
+        }
+        .tag-retail {
+            background: #fff7ed;
+            color: #9a3412;
+        }
+        .tag-industry {
+            background: #f3f0ff;
+            color: #4c1d95;
+        }
+        .tag-agriculture {
+            background: #ecfdf5;
+            color: #065f46;
+        }
+        .tag-healthcare {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+        .tag-office {
+            background: #f0f9ff;
+            color: #075985;
+        }
+        .tag-transport {
+            background: #fffbea;
+            color: #854d0e;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 640px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .intro-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 主视觉 -->
+        <section class="hero">
+            <h1>🧠 AI视觉 · 物联网电源控制</h1>
+            <p class="subtitle">监控摄像头智能分析画面 → 实时控制物联网设备电源 / 开关<br>从被动录像到主动干预，挖掘超过120个场景，精选50大高价值项目</p>
+            <div class="badge-group">
+                <span class="badge">🔌 智能插座/继电器控制</span>
+                <span class="badge">📹 边缘AI视频分析</span>
+                <span class="badge">🌐 物联网设备直控</span>
+                <span class="badge">⚡ 毫秒级联动</span>
+                <span class="badge">🏭 工业级可靠性</span>
+            </div>
+        </section>
+
+        <!-- 技术简介 -->
+        <div class="intro-card">
+            <div class="intro-text">
+                <h2>📋 项目核心逻辑</h2>
+                <p><span class="stat-badge">视觉感知</span> 摄像头实时捕捉画面 → <span class="stat-badge">AI分析</span> 目标检测、行为识别、状态判断 → <span class="stat-badge">规则引擎</span> 匹配控制策略 → <span class="stat-badge">物联执行</span> 通过智能插座/继电器模块/物联网协议直接控制设备电源或开关状态。</p>
+                <div class="highlight">
+                    ✅ 既可间接控制传统电器（通断电），也可直接控制智能物联网设备（支持WiFi/Zigbee/Modbus等）。系统已挖掘超过120个细分应用场景，以下精选<b>50个最具商业价值</b>的项目。
+                </div>
+            </div>
+        </div>
+
+        <!-- 筛选器 -->
+        <div class="filter-bar" id="filterBar">
+            <button class="filter-btn active" data-filter="all">🔍 全部场景</button>
+            <button class="filter-btn" data-filter="family">🏠 智慧家庭</button>
+            <button class="filter-btn" data-filter="retail">🛒 商业零售</button>
+            <button class="filter-btn" data-filter="industry">⚙️ 工业制造</button>
+            <button class="filter-btn" data-filter="agriculture">🌾 农业养殖</button>
+            <button class="filter-btn" data-filter="healthcare">⚕️ 医疗健康</button>
+            <button class="filter-btn" data-filter="office">💼 办公教育</button>
+            <button class="filter-btn" data-filter="transport">🚆 交通能源</button>
+            <span class="counter" id="sceneCounter">显示 50 个场景</span>
+        </div>
+
+        <!-- 场景卡片网格 -->
+        <div class="grid" id="sceneGrid">
+            <!-- 动态由js生成，以便筛选，但也可以静态写好加data属性 -->
+        </div>
+
+        <footer>
+            <p>© 2026 AI视觉物联控制系统 · 50个高价值应用场景介绍 | 基于实际需求挖掘，适用于安防、节能、自动化、智能家居等行业</p>
+        </footer>
+    </div>
+
+    <script>
+        // 场景数据：标题、描述、图标、类别（family, retail, industry, agriculture, healthcare, office, transport）、标签中文
+        const scenes = [
+            { title: "老人跌倒自动报警与断电保护", desc: "检测老人跌倒姿态，立即呼叫紧急联系人并切断周边非必要电器电源，防止二次伤害。", icon: "👴", category: "family", tag: "家庭安全" },
+            { title: "儿童攀爬窗户自动锁窗", desc: "识别小孩靠近窗户或阳台并试图攀爬，自动关闭电动窗锁或触发纱窗电机锁定。", icon: "👶", category: "family", tag: "家庭安全" },
+            { title: "水龙头忘关溢水关阀", desc: "视觉识别地面溢水或水槽持续溢流，联动电动球阀自动关闭总水阀。", icon: "💧", category: "family", tag: "家庭安全" },
+            { title: "厨房火灾/干烧自动断气", desc: "检测灶台火焰异常、锅具烧干冒烟，自动切断燃气电磁阀或电磁炉电源。", icon: "🔥", category: "family", tag: "家庭安全" },
+            { title: "开窗时空调自动断电", desc: "识别窗户打开且空调运行，延时后自动关闭空调电源或切换至送风模式。", icon: "🪟", category: "family", tag: "节能管理" },
+            { title: "夜间走廊精准视觉灯控", desc: "AI区分人与宠物，人过开灯、人走灯灭，避免宠物误触发，比红外更精准。", icon: "💡", category: "family", tag: "节能管理" },
+            { title: "宠物进入禁区超声波驱赶", desc: "识别猫狗进入沙发、厨房等禁止区域，自动开启超声波驱赶器电源。", icon: "🐕", category: "family", tag: "宠物管理" },
+            { title: "雨天自动关窗电机", desc: "室外摄像头识别下雨或雨滴，联动关窗电机，保护室内物品。", icon: "🌧️", category: "family", tag: "家庭安全" },
+            { title: "婴儿哭闹自动摇篮白噪音", desc: "婴儿监控检测哭声，自动启动电动摇篮、播放白噪音或轻音乐。", icon: "🍼", category: "family", tag: "婴幼看护" },
+            { title: "门口人脸识别门控", desc: "识别已授权家庭成员或快递员，自动释放智能门锁电源或开启大门。", icon: "🚪", category: "family", tag: "智能门禁" },
+            { title: "家庭火灾烟雾关燃气总阀", desc: "AI视觉检测室内火焰或浓烟，立即切断燃气管道电磁阀并打开排风扇。", icon: "🧯", category: "family", tag: "家庭安全" },
+            { title: "商店打烊入侵报警锁门", desc: "夜间识别店内可疑人员，自动报警并切断非必要照明，同时锁定卷帘门电源。", icon: "🏪", category: "retail", tag: "零售安防" },
+            { title: "生鲜冷柜门未关报警保护", desc: "识别卧式冷柜门未闭合，发出声光报警并联动冷柜制冷保护模式。", icon: "🧊", category: "retail", tag: "冷链管理" },
+            { title: "无人超市盗窃行为锁门", desc: "识别恶意藏匿商品、未付款离店，触发闸机锁闭并报警。", icon: "🛒", category: "retail", tag: "零售安防" },
+            { title: "展厅客户停留触发广告屏", desc: "检测顾客在某展品前停留超过N秒，自动开启对应介绍屏幕或唤醒服务机器人。", icon: "🖥️", category: "retail", tag: "智慧营销" },
+            { title: "餐厅后厨未戴帽/口罩断电", desc: "识别厨师未规范佩戴，联动切断对应灶具电源或电磁炉，规范食品安全。", icon: "👨‍🍳", category: "retail", tag: "食品安全" },
+            { title: "酒店客房入住自动供电", desc: "识别客人入住进入房间，自动开启空调、照明、电视插座电源。识别退房离开，延时切断。", icon: "🏨", category: "retail", tag: "酒店节能" },
+            { title: "收银排队过长开启备用收银", desc: "视觉计数排队>5人，自动点亮备用收银台指示灯并推送通知。", icon: "🧾", category: "retail", tag: "零售运营" },
+            { title: "贵重展品触摸告警断电", desc: "检测到有人触摸展柜或展品，触发振动报警并切断展台照明电源警示。", icon: "🏛️", category: "retail", tag: "文博安防" },
+            { title: "工厂危险区域误入紧急停机", desc: "识别人员进入机器人工作区或冲压危险区，50ms内切断设备动力电源。", icon: "⚠️", category: "industry", tag: "工业安全" },
+            { title: "传送带异物自动分拣剔除", desc: "AI识别大块异物或异色物体，控制气动推杆/挡板电源，精准剔除。", icon: "📦", category: "industry", tag: "智能制造" },
+            { title: "视觉缺陷检测剔除不良品", desc: "检测产品外观缺陷，控制分拣机构电源剔除次品。", icon: "🔍", category: "industry", tag: "质量检测" },
+            { title: "机房火灾/冒烟切断机柜电", desc: "热成像或烟雾识别，自动切断对应机柜PDU电源并启动气体灭火。", icon: "🖧", category: "industry", tag: "数据中心" },
+            { title: "实验室气体泄漏切断阀门", desc: "识别有色气体泄漏或火焰，自动切断气路电磁阀，打开防爆风机。", icon: "🧪", category: "industry", tag: "实验室安全" },
+            { title: "工地安全帽识别闸机控制", desc: "未戴安全帽人员禁止进入工地，闸机保持锁定。", icon: "⛑️", category: "industry", tag: "工地管理" },
+            { title: "危化品仓库泄漏全屋断电", desc: "检测液体泄漏或挥发烟雾，立即切断非本安电路并强力排风。", icon: "☣️", category: "industry", tag: "危化管理" },
+            { title: "设备冒火花自动断电灭火", desc: "高频闪烁识别电火花，毫秒级切断该区域总电源并启动灭火装置。", icon: "⚡", category: "industry", tag: "工业安全" },
+            { title: "工厂照明按人员分区控制", desc: "视觉定位人员位置，自动开启所在区域照明，无人区域自动熄灯。", icon: "🏭", category: "industry", tag: "节能管理" },
+            { title: "鱼塘浮头缺氧自动增氧", desc: "识别鱼群浮头行为，自动开启增氧机电源，避免泛塘。", icon: "🐟", category: "agriculture", tag: "水产养殖" },
+            { title: "温室高温自动遮阳通风", desc: "温度+视觉判断作物状态，自动开启遮阳电机、风机水帘电源。", icon: "🌡️", category: "agriculture", tag: "设施农业" },
+            { title: "猪只打架自动喷水干预", desc: "识别猪只激烈打斗，启动上方喷水电磁阀，分散注意力。", icon: "🐖", category: "agriculture", tag: "畜牧养殖" },
+            { title: "鸡群状态异常调光照通风", desc: "分析鸡群活跃度、扎堆情况，自动调整光照强度和通风设备。", icon: "🐔", category: "agriculture", tag: "禽类养殖" },
+            { title: "挤奶机视觉自动启动", desc: "检测奶牛进入挤奶位并静止，自动启动挤奶设备。", icon: "🐄", category: "agriculture", tag: "畜牧养殖" },
+            { title: "果园虫害识别精准喷药", desc: "AI识别叶片虫害特征，控制对应区域的喷药电磁阀，精准施药。", icon: "🍎", category: "agriculture", tag: "精准农业" },
+            { title: "作物萎蔫视觉判断灌溉", desc: "视觉分析叶片下垂、土壤颜色，自动开启滴灌电磁阀补水。", icon: "🌱", category: "agriculture", tag: "智慧灌溉" },
+            { title: "病人坠床自动呼叫断电", desc: "病房监控检测病人坠床或异常离床，呼叫护士站并切断附近非医疗电器。", icon: "🛌", category: "healthcare", tag: "病人安全" },
+            { title: "输液完毕自动关泵", desc: "视觉监测输液袋/瓶液面，液体流尽自动关闭输液泵并通知。", icon: "💉", category: "healthcare", tag: "智慧病房" },
+            { title: "新生儿室未授权闯入锁门", desc: "识别非授权人员进入，立即锁定区域门禁并触发安保。", icon: "👶", category: "healthcare", tag: "婴儿安全" },
+            { title: "精神科自残行为切断风险电源", desc: "识别自伤行为，切断该病房非安全电器并呼叫约束。", icon: "🧠", category: "healthcare", tag: "精神科安防" },
+            { title: "药房偷药锁定柜门", desc: "识别偷窃管制药品行为，触发磁力锁锁住药柜并报警。", icon: "💊", category: "healthcare", tag: "药品管理" },
+            { title: "手术室未消毒禁入控制", desc: "识别人员未按消毒流程进入手术室区域，门禁保持锁定。", icon: "🏥", category: "healthcare", tag: "手术安全" },
+            { title: "办公室下班无人自动断电", desc: "区域视觉检测最后一人离开，自动切断照明、空调、插座电源。", icon: "💼", category: "office", tag: "办公节能" },
+            { title: "智能教室无人断电", desc: "教室监控识别无学生后，自动关闭多媒体、灯光、空调电源。", icon: "🏫", category: "office", tag: "校园节能" },
+            { title: "共享工位电源视觉控制", desc: "检测到人员入座自动通电，离开后延时断电，实现工位电源管理。", icon: "🪑", category: "office", tag: "共享办公" },
+            { title: "会议室无人关投影仪", desc: "会议室监控识别人员全部离场，自动关闭投影仪、幕布电机和灯光。", icon: "📽️", category: "office", tag: "办公节能" },
+            { title: "考场作弊屏蔽器电源控制", desc: "检测到作弊行为（如拿出手机），自动激活该区域信号屏蔽器电源。", icon: "📵", category: "office", tag: "教育安防" },
+            { title: "隧道火灾自动喷淋排风", desc: "摄像头识别隧道内明火或浓烟，自动启动喷淋泵和射流风机电源。", icon: "🚇", category: "transport", tag: "隧道安全" },
+            { title: "桥梁结冰启动融雪装置", desc: "视觉识别桥面结冰或积雪，自动接通融雪电缆或喷洒融雪剂泵。", icon: "🌉", category: "transport", tag: "道路安全" },
+            { title: "公交站人多启动空调亭", desc: "识别候车亭人群密度>某值，自助开启空调风扇/暖风机电源。", icon: "🚌", category: "transport", tag: "公共交通" },
+            { title: "光伏板脏污自动清洗", desc: "无人机或固定摄像头识别光伏板积灰、鸟粪，启动清洗机器人行走和喷水。", icon: "☀️", category: "transport", tag: "新能源运维" },
+            { title: "地铁站台越线锁定屏蔽门", desc: "识别乘客越过黄线或进入轨道区域，立即锁定屏蔽门并广播警告。", icon: "🚉", category: "transport", tag: "轨交安全" }
+        ];
+
+        // 确保正好50个，如果不够可补充，但当前数据为50条
+        function renderScenes(filter = 'all') {
+            const grid = document.getElementById('sceneGrid');
+            const filtered = filter === 'all' ? scenes : scenes.filter(s => s.category === filter);
+            grid.innerHTML = filtered.map((scene, idx) => {
+                // 类别对应的标签样式类
+                const tagClass = `category-tag tag-${scene.category}`;
+                return `
+                <div class="scene-card" data-category="${scene.category}">
+                    <span class="scene-number">#${idx + 1}</span>
+                    <div class="card-header">
+                        <div class="scene-icon">${scene.icon}</div>
+                        <span class="${tagClass}">${scene.tag}</span>
+                    </div>
+                    <h3 class="scene-title">${scene.title}</h3>
+                    <p class="scene-desc">${scene.desc}</p>
+                </div>`;
+            }).join('');
+            document.getElementById('sceneCounter').textContent = `显示 ${filtered.length} 个场景`;
+        }
+
+        // 筛选按钮事件
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const filter = this.dataset.filter;
+                renderScenes(filter);
+            });
+        });
+
+        // 初始渲染
+        renderScenes('all');
+    </script>
+</body>
+</html>
+

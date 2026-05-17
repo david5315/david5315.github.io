@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>提示词模板管理 - 课堂互动教学</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+        
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #eaeaea;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .admin-badge {
+            background-color: #e74c3c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-left: 8px;
+        }
+        
+        .user-profile-link {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .user-profile-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            text-decoration: underline;
+        }
+
+        .file-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .file-table th, .file-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .file-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        .dir-icon {
+            color: #f39c12;
+            margin-right: 8px;
+        }
+        .file-icon {
+            color: #3498db;
+            margin-right: 8px;
+        }
+        .checkbox-col {
+            width: 30px;
+        }
+        .actions-col {
+            width: 280px;
+        }
+        .public-badge {
+            background-color: #28a745;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        .shared-badge {
+            background-color: #17a2b8;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        .private-badge {
+            background-color: #6c757d;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        .private-student-badge {
+            background-color: #fd7e14;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        .global-student-badge {
+            background-color: #20c997;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin: 2px;
+        }
+
+        #teacher-selector {
+            color: #fff;
+            background-color: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            padding: 4px 8px;
+            margin-right: 10px;
+        }
+        #teacher-selector option {
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        .folder-card {
+            transition: transform 0.3s;
+            height: 100%;
+            position: relative;
+        }
+        .folder-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+        .folder-icon {
+            font-size: 2.5rem;
+            color: #f39c12;
+        }
+        .folder-checkbox {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+        }
+
+        .pagination-info {
+            line-height: 2rem;
+        }
+
+        .area-card {
+            margin-bottom: 30px;
+        }
+        .area-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .area-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        .area-toolbar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .attr-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .attr-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .name-link {
+            color: #007bff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .name-link:hover {
+            text-decoration: underline;
+        }
+        .name-link .fas {
+            margin-right: 5px;
+        }
+
+        .generate-btn-group {
+            gap: 1.5rem !important;
+        }
+
+        .breadcrumb-link {
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .breadcrumb-link:hover {
+            text-decoration: underline;
+        }
+        .breadcrumb-separator {
+            margin: 0 5px;
+            color: #6c757d;
+        }
+
+        .template-card {
+            margin-bottom: 20px;
+        }
+        .template-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .badge-subject {
+            background-color: #3498db;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-right: 5px;
+        }
+        .badge-difficulty {
+            background-color: #2ecc71;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+        .btn-group-sm .btn {
+            margin-right: 2px;
+        }
+        .template-toolbar {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        #expiry-display,
+        #remaining-display,
+        #refresh-all-btn {
+            display: none !important;
+        }
+
+        .folder-item {
+            cursor: pointer;
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .folder-item:hover {
+            background-color: #f8f9fa;
+        }
+        .folder-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+        .folder-name i {
+            color: #f39c12;
+        }
+        .file-name i {
+            color: #3498db;
+        }
+        .select-folder-btn, .select-file-btn {
+            padding: 2px 8px;
+        }
+        .clickable-input {
+            cursor: pointer;
+            background-color: #fff;
+        }
+        .clickable-input:hover {
+            border-color: #3498db;
+            background-color: #f8f9fa;
+        }
+        
+        /* 根目录警告样式 */
+        .root-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none;
+        }
+        .root-warning i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#" id="help-trigger">
+                    <i class="fas fa-chalkboard-teacher me-2"></i>
+                    互动教学发布系统说明
+                </a>
+                
+                <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+                    <a class="btn btn-outline-light btn-sm me-2" href="teacher.html">
+                        <i class="fas fa-folder-open me-1"></i> 我的网站群
+                    </a>
+                    <a class="btn btn-outline-light btn-sm me-2" href="pubshare.html">
+                        <i class="fas fa-globe me-1"></i> 公开资源
+                    </a>
+                    <a class="btn btn-outline-light btn-sm me-2" href="private_students.html" id="private-students-link" style="display: none;">
+                        <i class="fas fa-user-graduate me-1"></i> 学生管理
+                    </a>
+                    <a class="btn btn-outline-light btn-sm me-2" href="admin_management.html" id="admin-link" style="display: none;">
+                        <i class="fas fa-user-shield me-1"></i> 全局管理
+                    </a>
+                    
+                    <a class="btn btn-outline-light btn-sm me-2" href="data_viewer.html">
+                        <i class="fas fa-database me-1"></i> 数据管理
+                    </a>
+                    <a class="btn btn-outline-light btn-sm me-2 active" href="ai_prompt_templates.html">
+                        <i class="fas fa-file-code me-1"></i> 模板管理
+                    </a>
+
+                    <select id="teacher-selector" class="form-select form-select-sm me-2" style="display: none; width: auto;">
+                        <option value="">加载中...</option>
+                    </select>
+
+                    <span class="navbar-text me-3" id="account-info" style="display: none;">
+                        <i class="fas fa-calendar-alt"></i> 有效期: <span id="expiry-display"></span>
+                        <i class="fas fa-tachometer-alt ms-2"></i> 剩余额度: <span id="remaining-display"></span>
+                    </span>
+
+                    <span class="navbar-text me-3">
+                        <i class="fas fa-user me-1"></i>
+                        <span id="current-user-display" class="user-profile-link">教师用户</span>
+                    </span>
+                    
+                    <button id="logout-btn" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-sign-out-alt me-1"></i> 退出
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mt-4">
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="global-prompt" placeholder="输入需求，例如：生成一个学生信息收集表单...">
+                        <button class="btn btn-success" id="global-generate-image"><i class="fas fa-image me-1"></i>生成图片</button>
+                        <button class="btn btn-warning ms-3" id="global-generate-video"><i class="fas fa-video me-1"></i>生成视频</button>
+                        <button class="btn btn-success ms-3" id="global-generate-page"><i class="fas fa-magic me-1"></i>一键生成网页</button>
+                        <a class="btn btn-outline-info ms-3" id="deepseek-help-link" href="deepseek.html">
+                            <i class="fas fa-robot me-1"></i> DeepSeek生成网页
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 文件夹选择区域 -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text">当前任务文件夹</span>
+                        <input type="text" class="form-control clickable-input" id="current-task-folder" readonly placeholder="请选择任务文件夹">
+                        <button class="btn btn-outline-primary" type="button" id="select-task-folder-btn">
+                            <i class="fas fa-folder-open me-1"></i>选择
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text">附加参考文件</span>
+                        <input type="text" class="form-control clickable-input" id="selected-file-display" readonly placeholder="选择要参考的网页或资料">
+                        <button class="btn btn-outline-secondary" type="button" id="clear-file-btn" title="清除选择">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模板管理工具栏 -->
+            <div class="template-toolbar">
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <label for="subject-filter" class="me-2">学科筛选：</label>
+                    <select id="subject-filter" class="form-select form-select-sm d-inline-block w-auto">
+                        <option value="">全部</option>
+                    </select>
+                    <button class="btn btn-sm btn-outline-secondary" id="filter-regular-btn">常规题型模板</button>
+                    <button class="btn btn-sm btn-outline-secondary" id="filter-mixed-btn">混合题型模板</button>
+                    <button class="btn btn-sm btn-outline-secondary" id="filter-interactive-btn">特殊互动模板</button>
+                    <button class="btn btn-sm btn-outline-secondary" id="filter-data-btn">数据采集分析模板</button>
+                </div>
+                <button class="btn btn-primary" id="add-template-btn" style="display: none;"><i class="fas fa-plus me-2"></i>新增模板</button>
+            </div>
+
+            <div class="row" id="template-list">
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">加载中...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 使用说明模态框 -->
+    <div class="modal fade" id="helpModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-question-circle me-2 text-primary"></i>模板管理使用说明</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <p class="mb-2">本页面管理AI提示词模板，方便快速生成网页。</p>
+                    </div>
+                    <ol class="list-group list-group-numbered mb-3">
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>筛选模板</strong><br>使用学科筛选下拉框或点击四个分类按钮（常规题型、混合题型、特殊互动、数据采集）快速筛选对应模板。</div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>使用模板</strong><br>点击模板卡片上的"使用"按钮，模板内容将自动填入上方输入框，便于后续生成。</div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>复制模板</strong><br>点击"复制"按钮可将模板内容复制到剪贴板，供其他用途。</div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>管理员操作</strong><br>管理员可见编辑和删除按钮，可修改模板信息或删除模板；点击"新增模板"按钮添加新模板。</div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>教师选择器（管理员）</strong><br>管理员可在导航栏选择任意教师，选择任务文件夹和生成网页将基于所选教师的目录。</div>
+                        </li>
+                    </ol>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增/编辑模板模态框 -->
+    <div class="modal fade" id="templateModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="templateModalTitle">新增模板</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="templateForm">
+                        <input type="hidden" id="template-id">
+                        <div class="mb-3">
+                            <label for="template-name" class="form-label">模板名称 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="template-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="template-subject" class="form-label">学科</label>
+                            <input type="text" class="form-control" id="template-subject" placeholder="例如：语文、数学">
+                        </div>
+                        <div class="mb-3">
+                            <label for="template-difficulty" class="form-label">难度</label>
+                            <select class="form-select" id="template-difficulty">
+                                <option value="简单">简单</option>
+                                <option value="中等" selected>中等</option>
+                                <option value="较难">较难</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="template-category" class="form-label">模板类别</label>
+                            <select class="form-select" id="template-category">
+                                <option value="regular">常规题型模板</option>
+                                <option value="mixed">混合题型模板</option>
+                                <option value="interactive">特殊互动模板</option>
+                                <option value="data">数据采集分析模板</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="template-description" class="form-label">描述</label>
+                            <textarea class="form-control" id="template-description" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="template-content" class="form-label">模板内容 <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="template-content" rows="8" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="save-template-btn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 生成网页模态框 -->
+    <div class="modal fade" id="generatePageModalTpl" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-magic me-2 text-success"></i>AI生成互动网页</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">保存路径</label>
+                        <input type="text" class="form-control bg-light" id="generate-page-folder-tpl" readonly placeholder="自动使用所选文件夹">
+                        <div class="form-text">基于您在"当前任务文件夹"中选择的路径。</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">文件名</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="generate-page-filename-tpl" placeholder="文件名（可修改）">
+                            <button class="btn btn-outline-secondary" type="button" id="smart-name-btn-tpl">智能命名</button>
+                        </div>
+                        <div class="form-text" id="filename-warning-tpl" style="color: #856404; background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 4px; padding: 5px; margin-top: 5px; display: none;">
+                            <i class="fas fa-exclamation-triangle me-1"></i> 文件名包含空格或特殊字符，后端可能会自动转换，建议使用字母、数字、下划线和中横线。
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><a href="ai_prompt_templates.html" target="_blank">AI提示词（查看模板复制提示词）</a></label>
+                        <textarea class="form-control" id="generate-page-prompt-tpl" rows="4" placeholder="请输入您的需求（手动填写或分析文件里的提示词等内容）"></textarea>
+                    </div>
+                    <div class="mb-4 form-check">
+                        <input type="checkbox" class="form-check-input" id="include-submissions-tpl">
+                        <label class="form-check-label" for="include-submissions-tpl">
+                            包含已提交数据（将当前任务的所有提交数据嵌入提示词，供 AI 生成深度分析报告数据大屏）
+                        </label>
+                    </div>
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        确认后，AI将根据提示词生成网页，并自动保存在所选文件夹内。
+                    </div>
+                    <div class="alert alert-secondary" role="alert" id="selected-ref-files-info-tpl">
+                        模板页面不支持参考文件。
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-success" id="confirm-generate-page-btn-tpl">
+                        <i class="fas fa-magic me-2"></i>确认生成
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文件夹选择模态框 -->
+    <div class="modal fade" id="folderSelectorModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-folder-open me-2 text-warning"></i>选择任务文件夹</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div id="folder-breadcrumb" class="small text-muted"></div>
+                            <button class="btn btn-sm btn-outline-secondary" id="folder-go-up" disabled>
+                                <i class="fas fa-level-up-alt"></i> 上级
+                            </button>
+                        </div>
+                        <div id="folder-list-container" style="max-height: 400px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 4px;">
+                            <div class="text-center py-4" id="folder-loading" style="display: none;">
+                                <i class="fas fa-spinner fa-spin me-2"></i>加载中...
+                            </div>
+                            <div id="folder-items" class="list-group list-group-flush"></div>
+                            <div id="folder-empty" class="text-center text-muted py-4" style="display: none;">
+                                此文件夹为空
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 根目录警告提示 -->
+                    <div id="root-warning" class="root-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>根目录不能作为任务文件夹！</strong> 请选择一个子文件夹作为任务目录，或先在"我的网站群"页面新建一个任务文件夹后再选择。
+                    </div>
+                    <div class="alert alert-info small">
+                        <i class="fas fa-info-circle me-2"></i>
+                        点击文件夹名称进入子目录，点击文件夹右侧的"选择"按钮直接选中该文件夹。
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="select-current-folder-btn" disabled>选择当前文件夹</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文件选择模态框 -->
+    <div class="modal fade" id="fileSelectorModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-file me-2 text-primary"></i>选择附加文件</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div id="file-breadcrumb" class="small text-muted"></div>
+                            <button class="btn btn-sm btn-outline-secondary" id="file-go-up" disabled>
+                                <i class="fas fa-level-up-alt"></i> 上级
+                            </button>
+                        </div>
+                        <div id="file-list-container" style="max-height: 400px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 4px;">
+                            <div class="text-center py-4" id="file-loading" style="display: none;">
+                                <i class="fas fa-spinner fa-spin me-2"></i>加载中...
+                            </div>
+                            <div id="file-items" class="list-group list-group-flush"></div>
+                            <div id="file-empty" class="text-center text-muted py-4" style="display: none;">
+                                此文件夹为空
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-info small">
+                        <i class="fas fa-info-circle me-2"></i>
+                        点击文件夹名称进入子目录，点击文件右侧"选择"按钮选中该文件（仅支持文本类文件，如 .txt, .html, .json 等）。
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ==================== 全局变量 ====================
+        const API_BASE = window.location.origin + '/api';
+        let currentUser = null;
+        let isAdmin = false;
+        let templates = [];
+        let allSubjects = new Set();
+        let currentSubjectFilter = '';
+        let currentCategoryFilter = '';
+        let selectedTaskFolder = '';
+        let selectedTeacher = '';
+        let selectedFilePath = '';
+
+        let folderSelector = {
+            currentPath: '',
+            teacher: ''
+        };
+
+        let fileSelector = {
+            currentPath: '',
+            teacher: ''
+        };
+
+        window.siteSetup = {};
+
+        // ==================== 登录状态管理 ====================
+        function checkLoginState() {
+            const token = localStorage.getItem('teacherToken');
+            const userStr = localStorage.getItem('teacherUser');
+            if (!token || !userStr) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            try {
+                return JSON.parse(userStr);
+            } catch (e) {
+                window.location.href = 'login.html';
+                return null;
+            }
+        }
+
+        function clearAllLoginState() {
+            localStorage.removeItem('teacherToken');
+            localStorage.removeItem('teacherUser');
+            sessionStorage.clear();
+            const cookies = document.cookie.split(";");
+            for (let cookie of cookies) {
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+            }
+        }
+
+        async function fetchUserProfile() {
+            try {
+                const res = await apiCall('/account/profile');
+                if (res.success && res.profile) {
+                    currentUser.user_key = res.profile.user_key;
+                    currentUser.name = res.profile.name;
+                    currentUser.subject = res.profile.subject;
+                    currentUser.phone = res.profile.phone;
+                    currentUser.email = res.profile.email;
+                    localStorage.setItem('teacherUser', JSON.stringify(currentUser));
+                }
+            } catch (error) {
+                console.warn('获取用户资料失败', error);
+            }
+        }
+
+        function updateUserDisplay(user) {
+            const userDisplay = document.getElementById('current-user-display');
+            if (userDisplay) {
+                let displayText = user.username;
+                if (user.isAdmin) {
+                    displayText += ' <span class="admin-badge">管理员</span>';
+                    isAdmin = true;
+                }
+                userDisplay.innerHTML = displayText;
+                userDisplay.style.cursor = 'pointer';
+                userDisplay.title = '点击查看个人资料';
+                userDisplay.addEventListener('click', function() {
+                    window.location.href = 'profile.html';
+                });
+            }
+            
+            const adminLink = document.getElementById('admin-link');
+            const privateStudentsLink = document.getElementById('private-students-link');
+            if (user.isAdmin) {
+                if (adminLink) adminLink.style.display = 'block';
+                if (privateStudentsLink) privateStudentsLink.style.display = 'none';
+            } else {
+                if (adminLink) adminLink.style.display = 'none';
+                if (privateStudentsLink) privateStudentsLink.style.display = 'block';
+            }
+
+            document.getElementById('add-template-btn').style.display = user.isAdmin ? 'inline-block' : 'none';
+        }
+
+        async function loadTeacherSelector() {
+            const selector = document.getElementById('teacher-selector');
+            if (!selector) return;
+
+            if (!isAdmin) {
+                selector.style.display = 'none';
+                selectedTeacher = currentUser.username;
+                return;
+            }
+
+            try {
+                const teachersRes = await apiCall('/admin/teachers');
+                if (teachersRes.success && teachersRes.teachers) {
+                    const teacherList = teachersRes.teachers;
+                    selector.innerHTML = '';
+                    
+                    if (teacherList.length === 0) {
+                        selector.style.display = 'none';
+                        showToast('warning', '没有找到任何教师账户');
+                        selectedTeacher = currentUser.username;
+                        return;
+                    }
+
+                    teacherList.forEach(t => {
+                        const option = document.createElement('option');
+                        option.value = t.username;
+                        option.textContent = `${t.name || t.username} (${t.username})${t.username === currentUser.username ? ' (当前)' : ''}`;
+                        selector.appendChild(option);
+                    });
+                    
+                    selector.style.display = 'inline-block';
+                    selectedTeacher = currentUser.username;
+                    selector.value = selectedTeacher;
+                    
+                    selector.removeEventListener('change', handleTeacherChange);
+                    selector.addEventListener('change', handleTeacherChange);
+                } else {
+                    selector.style.display = 'none';
+                    selectedTeacher = currentUser.username;
+                }
+            } catch (error) {
+                console.error('加载教师列表失败', error);
+                selector.style.display = 'none';
+                selectedTeacher = currentUser.username;
+            }
+        }
+
+        function handleTeacherChange(e) {
+            selectedTeacher = e.target.value;
+            selectedTaskFolder = '';
+            document.getElementById('current-task-folder').value = '';
+            selectedFilePath = '';
+            document.getElementById('selected-file-display').value = '';
+            folderSelector.currentPath = '';
+            folderSelector.teacher = selectedTeacher;
+            fileSelector.currentPath = '';
+            fileSelector.teacher = selectedTeacher;
+            showToast('info', `已切换到教师：${selectedTeacher}`);
+        }
+
+        // 获取当前面包屑根节点显示名称
+        function getCurrentTeacherDisplayName() {
+            if (isAdmin && selectedTeacher) {
+                const selector = document.getElementById('teacher-selector');
+                if (selector && selector.selectedIndex >= 0) {
+                    const selectedOption = selector.options[selector.selectedIndex];
+                    if (selectedOption && selectedOption.text) {
+                        return selectedOption.text + ' 根目录';
+                    }
+                }
+                return selectedTeacher + ' 根目录';
+            } else if (currentUser) {
+                if (currentUser.name) {
+                    return `${currentUser.name} (${currentUser.username}) 根目录`;
+                } else {
+                    return `${currentUser.username} 根目录`;
+                }
+            }
+            return '根目录';
+        }
+
+        async function apiCall(endpoint, options = {}) {
+            try {
+                if (options.body && typeof options.body === 'object') {
+                    options.body = JSON.stringify(options.body);
+                    options.headers = options.headers || {};
+                    options.headers['Content-Type'] = 'application/json';
+                }
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    credentials: 'include',
+                    ...options
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('API调用失败:', error);
+                throw error;
+            }
+        }
+
+        async function loadSiteSetup() {
+            try {
+                const res = await apiCall('/site-setup');
+                if (res.success) {
+                    window.siteSetup = res.site_setup || {};
+                }
+            } catch (e) {
+                console.error('加载站点配置失败', e);
+            }
+        }
+
+        async function loadTemplates() {
+            const container = document.getElementById('template-list');
+            container.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">加载中...</span></div></div>';
+            try {
+                const res = await apiCall('/page-templates');
+                if (res.success) {
+                    templates = res.pageTemplates || [];
+                    renderTemplates();
+                    updateSubjectFilter();
+                } else {
+                    container.innerHTML = '<div class="col-12 text-center text-danger py-5">加载模板失败</div>';
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="col-12 text-center text-danger py-5">网络错误，请刷新重试</div>';
+            }
+        }
+
+        function updateSubjectFilter() {
+            allSubjects.clear();
+            templates.forEach(t => {
+                if (t.subject) allSubjects.add(t.subject);
+            });
+            const filterSelect = document.getElementById('subject-filter');
+            const currentValue = filterSelect.value;
+            filterSelect.innerHTML = '<option value="">全部</option>';
+            Array.from(allSubjects).sort().forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject;
+                option.textContent = subject;
+                filterSelect.appendChild(option);
+            });
+            if (currentValue && allSubjects.has(currentValue)) {
+                filterSelect.value = currentValue;
+            } else {
+                filterSelect.value = '';
+            }
+        }
+
+        function renderTemplates() {
+            const container = document.getElementById('template-list');
+            const subjectFilter = document.getElementById('subject-filter').value;
+            
+            let filtered = templates;
+            
+            if (subjectFilter && subjectFilter !== '全部') {
+                filtered = filtered.filter(t => t.subject === subjectFilter);
+            }
+            
+            if (currentCategoryFilter) {
+                filtered = filtered.filter(t => t.category === currentCategoryFilter);
+            }
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="col-12 text-center text-muted py-5">暂无模板，请管理员添加</div>';
+                return;
+            }
+            
+            let html = '';
+            filtered.forEach(template => {
+                const subject = template.subject || '通用';
+                const difficulty = template.difficulty || '中等';
+                const category = template.category || 'regular';
+                let categoryDisplay = '常规题型';
+                if (category === 'mixed') categoryDisplay = '混合题型';
+                else if (category === 'interactive') categoryDisplay = '特殊互动';
+                else if (category === 'data') categoryDisplay = '数据采集';
+                
+                const description = template.description || '';
+                const contentPreview = (template.content || '').substring(0, 200) + (template.content.length > 200 ? '...' : '');
+                html += `
+                    <div class="col-md-6">
+                        <div class="card template-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">${escapeHtml(template.name)}</h5>
+                                <div>
+                                    <span class="badge bg-info me-1">${escapeHtml(categoryDisplay)}</span>
+                                    ${isAdmin ? `
+                                        <button class="btn btn-sm btn-outline-warning edit-btn" data-id="${template.id}"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${template.id}"><i class="fas fa-trash"></i></button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p><span class="badge-subject">${escapeHtml(subject)}</span> <span class="badge-difficulty">${escapeHtml(difficulty)}</span></p>
+                                ${description ? `<p class="small text-muted">${escapeHtml(description)}</p>` : ''}
+                                <div class="template-content">${escapeHtml(contentPreview)}</div>
+                                <div class="mt-2 d-flex justify-content-end btn-group-sm">
+                                    <button class="btn btn-sm btn-outline-primary use-btn" data-content="${escapeHtml(template.content)}"><i class="fas fa-pencil-alt me-1"></i>使用</button>
+                                    <button class="btn btn-sm btn-outline-secondary copy-btn" data-content="${escapeHtml(template.content)}"><i class="fas fa-copy me-1"></i>复制</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+
+            document.querySelectorAll('.use-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const content = btn.dataset.content;
+                    document.getElementById('global-prompt').value = content;
+                    showToast('success', '模板内容已填入上方输入框');
+                });
+            });
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const content = btn.dataset.content;
+                    copyToClipboard(content).then(() => {
+                        showToast('success', '模板内容已复制到剪贴板');
+                    }).catch(() => {
+                        showToast('error', '复制失败，请手动复制');
+                    });
+                });
+            });
+            if (isAdmin) {
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.dataset.id;
+                        openEditModal(id);
+                    });
+                });
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.dataset.id;
+                        deleteTemplate(id);
+                    });
+                });
+            }
+        }
+
+        function escapeHtml(unsafe) {
+            if (!unsafe) return '';
+            return unsafe.replace(/[&<>"]/g, function(m) {
+                if(m === '&') return '&amp;';
+                if(m === '<') return '&lt;';
+                if(m === '>') return '&gt;';
+                if(m === '"') return '&quot;';
+                return m;
+            });
+        }
+
+        async function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(text);
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            }
+        }
+
+        function showToast(type, message) {
+            const container = document.querySelector('.toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0 show`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        document.getElementById('add-template-btn').addEventListener('click', () => {
+            if (!isAdmin) {
+                showToast('warning', '只有管理员可以新增模板');
+                return;
+            }
+            document.getElementById('templateModalTitle').innerText = '新增模板';
+            document.getElementById('template-id').value = '';
+            document.getElementById('template-name').value = '';
+            document.getElementById('template-subject').value = '';
+            document.getElementById('template-difficulty').value = '中等';
+            document.getElementById('template-category').value = 'regular';
+            document.getElementById('template-description').value = '';
+            document.getElementById('template-content').value = '';
+            new bootstrap.Modal(document.getElementById('templateModal')).show();
+        });
+
+        function openEditModal(id) {
+            const template = templates.find(t => t.id === id);
+            if (!template) return;
+            document.getElementById('templateModalTitle').innerText = '编辑模板';
+            document.getElementById('template-id').value = template.id;
+            document.getElementById('template-name').value = template.name || '';
+            document.getElementById('template-subject').value = template.subject || '';
+            document.getElementById('template-difficulty').value = template.difficulty || '中等';
+            document.getElementById('template-category').value = template.category || 'regular';
+            document.getElementById('template-description').value = template.description || '';
+            document.getElementById('template-content').value = template.content || '';
+            new bootstrap.Modal(document.getElementById('templateModal')).show();
+        }
+
+        async function deleteTemplate(id) {
+            if (!isAdmin) {
+                showToast('warning', '只有管理员可以删除模板');
+                return;
+            }
+            if (!confirm('确定要删除此模板吗？')) return;
+            try {
+                const res = await apiCall(`/page-templates/${id}`, { method: 'DELETE' });
+                if (res.success) {
+                    showToast('success', '模板删除成功');
+                    loadTemplates();
+                } else {
+                    showToast('error', res.message || '删除失败');
+                }
+            } catch (error) {
+                showToast('error', '网络错误');
+            }
+        }
+
+        document.getElementById('save-template-btn').addEventListener('click', async () => {
+            if (!isAdmin) {
+                showToast('warning', '只有管理员可以保存模板');
+                bootstrap.Modal.getInstance(document.getElementById('templateModal')).hide();
+                return;
+            }
+            const id = document.getElementById('template-id').value;
+            const name = document.getElementById('template-name').value.trim();
+            const subject = document.getElementById('template-subject').value.trim();
+            const difficulty = document.getElementById('template-difficulty').value;
+            const category = document.getElementById('template-category').value;
+            const description = document.getElementById('template-description').value.trim();
+            const content = document.getElementById('template-content').value.trim();
+
+            if (!name || !content) {
+                showToast('error', '模板名称和内容不能为空');
+                return;
+            }
+
+            const templateData = {
+                name,
+                subject,
+                difficulty,
+                category,
+                description,
+                content
+            };
+
+            try {
+                let res;
+                if (id) {
+                    res = await apiCall(`/page-templates/${id}`, {
+                        method: 'PUT',
+                        body: templateData
+                    });
+                } else {
+                    res = await apiCall('/page-templates', {
+                        method: 'POST',
+                        body: templateData
+                    });
+                }
+                if (res.success) {
+                    showToast('success', id ? '模板更新成功' : '模板创建成功');
+                    bootstrap.Modal.getInstance(document.getElementById('templateModal')).hide();
+                    loadTemplates();
+                } else {
+                    showToast('error', res.message || '操作失败');
+                }
+            } catch (error) {
+                showToast('error', '网络错误');
+            }
+        });
+
+        document.getElementById('subject-filter').addEventListener('change', function() {
+            currentSubjectFilter = this.value;
+            renderTemplates();
+        });
+
+        document.getElementById('filter-regular-btn').addEventListener('click', () => {
+            currentCategoryFilter = 'regular';
+            document.getElementById('subject-filter').value = '';
+            renderTemplates();
+        });
+        document.getElementById('filter-mixed-btn').addEventListener('click', () => {
+            currentCategoryFilter = 'mixed';
+            document.getElementById('subject-filter').value = '';
+            renderTemplates();
+        });
+        document.getElementById('filter-interactive-btn').addEventListener('click', () => {
+            currentCategoryFilter = 'interactive';
+            document.getElementById('subject-filter').value = '';
+            renderTemplates();
+        });
+        document.getElementById('filter-data-btn').addEventListener('click', () => {
+            currentCategoryFilter = 'data';
+            document.getElementById('subject-filter').value = '';
+            renderTemplates();
+        });
+
+        // ==================== 文件夹选择器（增加根目录警告） ====================
+        function openFolderSelectorModal() {
+            if (!selectedTeacher) {
+                showToast('warning', '请先登录或选择教师');
+                return;
+            }
+            folderSelector.teacher = selectedTeacher;
+            folderSelector.currentPath = '';
+            loadFolderList('');
+            new bootstrap.Modal(document.getElementById('folderSelectorModal')).show();
+        }
+
+        async function loadFolderList(path) {
+            const loading = document.getElementById('folder-loading');
+            const itemsDiv = document.getElementById('folder-items');
+            const emptyDiv = document.getElementById('folder-empty');
+            const goUpBtn = document.getElementById('folder-go-up');
+            const selectCurrentBtn = document.getElementById('select-current-folder-btn');
+            const rootWarning = document.getElementById('root-warning');
+
+            loading.style.display = 'block';
+            itemsDiv.innerHTML = '';
+            emptyDiv.style.display = 'none';
+            selectCurrentBtn.disabled = true;
+            rootWarning.style.display = 'none';
+
+            try {
+                const res = await apiCall(`/teacher/files?path=${encodeURIComponent(path)}&teacher=${folderSelector.teacher}`);
+                if (res.success) {
+                    const folders = res.items.filter(item => item.type === 'dir');
+                    renderFolderList(folders, path);
+                    goUpBtn.disabled = (path === '');
+                    
+                    // 判断当前路径是否为根目录
+                    const isRoot = (path === '');
+                    if (isRoot) {
+                        // 根目录：禁用"选择当前文件夹"按钮，显示警告
+                        selectCurrentBtn.disabled = true;
+                        rootWarning.style.display = 'block';
+                    } else {
+                        // 子文件夹：启用"选择当前文件夹"按钮，隐藏警告
+                        selectCurrentBtn.disabled = false;
+                        rootWarning.style.display = 'none';
+                    }
+                } else {
+                    showToast('error', '加载文件夹列表失败');
+                    emptyDiv.style.display = 'block';
+                    emptyDiv.innerText = '加载失败';
+                }
+            } catch (error) {
+                showToast('error', '网络错误');
+                emptyDiv.style.display = 'block';
+                emptyDiv.innerText = '加载失败';
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        function renderFolderList(folders, currentPath) {
+            const itemsDiv = document.getElementById('folder-items');
+            const emptyDiv = document.getElementById('folder-empty');
+            const breadcrumbDiv = document.getElementById('folder-breadcrumb');
+
+            if (folders.length === 0) {
+                emptyDiv.style.display = 'block';
+                itemsDiv.innerHTML = '';
+            } else {
+                emptyDiv.style.display = 'none';
+                let html = '';
+                folders.forEach(folder => {
+                    html += `
+                        <div class="folder-item">
+                            <div class="folder-name" onclick="enterFolder('${folder.path}')">
+                                <i class="fas fa-folder"></i>
+                                <span>${escapeHtml(folder.name)}</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary select-folder-btn" onclick="event.stopPropagation(); selectFolder('${folder.path}')">选择</button>
+                        </div>
+                    `;
+                });
+                itemsDiv.innerHTML = html;
+            }
+
+            const displayName = getCurrentTeacherDisplayName();
+            let breadcrumbHtml = `<a class="breadcrumb-link" onclick="loadFolderList('')">${escapeHtml(displayName)}</a>`;
+            if (currentPath) {
+                const parts = currentPath.split('/');
+                let accumulated = '';
+                parts.forEach((part, index) => {
+                    accumulated += (index === 0 ? part : '/' + part);
+                    breadcrumbHtml += ` <span class="breadcrumb-separator">/</span> <a class="breadcrumb-link" onclick="loadFolderList('${accumulated}')">${part}</a>`;
+                });
+            }
+            breadcrumbDiv.innerHTML = breadcrumbHtml;
+        }
+
+        window.enterFolder = function(path) {
+            folderSelector.currentPath = path;
+            loadFolderList(path);
+        };
+
+        document.getElementById('folder-go-up').addEventListener('click', () => {
+            if (!folderSelector.currentPath) return;
+            const parts = folderSelector.currentPath.split('/');
+            parts.pop();
+            const parentPath = parts.join('/');
+            folderSelector.currentPath = parentPath;
+            loadFolderList(parentPath);
+        });
+
+        window.selectFolder = function(path) {
+            // 检查是否为空路径（根目录）
+            if (!path || path.trim() === '') {
+                showToast('warning', '根目录不能作为任务文件夹，请选择一个子文件夹');
+                return;
+            }
+            selectedTaskFolder = path;
+            document.getElementById('current-task-folder').value = path;
+            fileSelector.currentPath = path;
+            bootstrap.Modal.getInstance(document.getElementById('folderSelectorModal')).hide();
+        };
+
+        // 选择当前文件夹按钮点击事件
+        document.getElementById('select-current-folder-btn').addEventListener('click', () => {
+            if (!folderSelector.currentPath || folderSelector.currentPath.trim() === '') {
+                showToast('warning', '根目录不能作为任务文件夹，请进入一个子文件夹后再选择');
+                return;
+            }
+            selectedTaskFolder = folderSelector.currentPath;
+            document.getElementById('current-task-folder').value = folderSelector.currentPath;
+            fileSelector.currentPath = folderSelector.currentPath;
+            bootstrap.Modal.getInstance(document.getElementById('folderSelectorModal')).hide();
+        });
+
+        document.getElementById('select-task-folder-btn').addEventListener('click', openFolderSelectorModal);
+
+        // ==================== 文件选择器逻辑 ====================
+        document.getElementById('selected-file-display').addEventListener('click', openFileSelectorModal);
+        document.getElementById('clear-file-btn').addEventListener('click', () => {
+            selectedFilePath = '';
+            document.getElementById('selected-file-display').value = '';
+        });
+
+        function openFileSelectorModal() {
+            if (!selectedTeacher) {
+                showToast('warning', '请先选择教师');
+                return;
+            }
+            fileSelector.teacher = selectedTeacher;
+            if (!fileSelector.currentPath) {
+                fileSelector.currentPath = selectedTaskFolder || '';
+            }
+            loadFileList(fileSelector.currentPath);
+            new bootstrap.Modal(document.getElementById('fileSelectorModal')).show();
+        }
+
+        async function loadFileList(path) {
+            const loading = document.getElementById('file-loading');
+            const itemsDiv = document.getElementById('file-items');
+            const emptyDiv = document.getElementById('file-empty');
+            const goUpBtn = document.getElementById('file-go-up');
+            const breadcrumbDiv = document.getElementById('file-breadcrumb');
+
+            loading.style.display = 'block';
+            itemsDiv.innerHTML = '';
+            emptyDiv.style.display = 'none';
+
+            try {
+                const res = await apiCall(`/teacher/files?path=${encodeURIComponent(path)}&teacher=${fileSelector.teacher}`);
+                if (res.success) {
+                    renderFileList(res.items, path);
+                    goUpBtn.disabled = (path === '');
+                } else {
+                    showToast('error', '加载文件列表失败');
+                    emptyDiv.style.display = 'block';
+                    emptyDiv.innerText = '加载失败';
+                }
+            } catch (error) {
+                showToast('error', '网络错误');
+                emptyDiv.style.display = 'block';
+                emptyDiv.innerText = '加载失败';
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        function renderFileList(items, currentPath) {
+            const itemsDiv = document.getElementById('file-items');
+            const emptyDiv = document.getElementById('file-empty');
+            const breadcrumbDiv = document.getElementById('file-breadcrumb');
+
+            const folders = items.filter(item => item.type === 'dir');
+            const files = items.filter(item => item.type === 'file');
+
+            if (folders.length === 0 && files.length === 0) {
+                emptyDiv.style.display = 'block';
+                itemsDiv.innerHTML = '';
+            } else {
+                emptyDiv.style.display = 'none';
+                let html = '';
+
+                folders.forEach(folder => {
+                    html += `
+                        <div class="folder-item">
+                            <div class="folder-name" onclick="enterFileFolder('${folder.path}')">
+                                <i class="fas fa-folder"></i>
+                                <span>${escapeHtml(folder.name)}</span>
+                            </div>
+                            <span class="text-muted small">文件夹</span>
+                        </div>
+                    `;
+                });
+
+                const allowedExts = ['.html', '.htm', '.txt', '.md', '.csv', '.js', '.css', '.json', '.xml'];
+                files.forEach(file => {
+                    const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+                    if (!allowedExts.includes(ext)) return;
+                    html += `
+                        <div class="folder-item">
+                            <div class="file-name">
+                                <i class="fas fa-file"></i>
+                                <span>${escapeHtml(file.name)}</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary select-file-btn" onclick="selectFile('${file.path}')">选择</button>
+                        </div>
+                    `;
+                });
+
+                itemsDiv.innerHTML = html;
+            }
+
+            let breadcrumbHtml = '<a class="breadcrumb-link" onclick="loadFileList(\'\')">根目录</a>';
+            if (currentPath) {
+                const parts = currentPath.split('/');
+                let accumulated = '';
+                parts.forEach((part, index) => {
+                    accumulated += (index === 0 ? part : '/' + part);
+                    breadcrumbHtml += ` <span class="breadcrumb-separator">/</span> <a class="breadcrumb-link" onclick="loadFileList('${accumulated}')">${part}</a>`;
+                });
+            }
+            breadcrumbDiv.innerHTML = breadcrumbHtml;
+        }
+
+        window.enterFileFolder = function(path) {
+            fileSelector.currentPath = path;
+            loadFileList(path);
+        };
+
+        window.selectFile = function(path) {
+            selectedFilePath = path;
+            document.getElementById('selected-file-display').value = path;
+            bootstrap.Modal.getInstance(document.getElementById('fileSelectorModal')).hide();
+        };
+
+        document.getElementById('file-go-up').addEventListener('click', () => {
+            if (!fileSelector.currentPath) return;
+            const parts = fileSelector.currentPath.split('/');
+            parts.pop();
+            const parentPath = parts.join('/');
+            fileSelector.currentPath = parentPath;
+            loadFileList(parentPath);
+        });
+
+        // ==================== 全局生成按钮功能 ====================
+        document.getElementById('global-generate-image').addEventListener('click', () => {
+            if (!currentUser) { showToast('warning', '请先登录'); return; }
+            showToast('info', '图片生成功能请在"我的网站群"页面使用');
+        });
+        document.getElementById('global-generate-video').addEventListener('click', () => {
+            showToast('info', '视频生成功能请在"我的网站群"页面使用');
+        });
+        document.getElementById('global-generate-page').addEventListener('click', () => {
+            openGeneratePageModalForTemplates();
+        });
+
+        function openGeneratePageModalForTemplates() {
+            if (!selectedTaskFolder) {
+                showToast('warning', '请先选择一个任务文件夹');
+                return;
+            }
+            if (!selectedTeacher) {
+                showToast('warning', '未选择教师，请刷新页面');
+                return;
+            }
+            document.getElementById('generate-page-folder-tpl').value = selectedTaskFolder;
+            smartNameForTemplates();
+            document.getElementById('generate-page-prompt-tpl').value = document.getElementById('global-prompt').value;
+            document.getElementById('include-submissions-tpl').checked = false;
+            document.getElementById('filename-warning-tpl').style.display = 'none';
+            
+            if (selectedFilePath) {
+                document.getElementById('selected-ref-files-info-tpl').innerHTML = `<i class="fas fa-check-circle me-2 text-success"></i>已选择参考文件：📄 ${selectedFilePath}`;
+            } else {
+                document.getElementById('selected-ref-files-info-tpl').innerHTML = '<i class="fas fa-info-circle me-2"></i>未选择参考文件。您可以直接生成网页，或点击上方输入框选择文件。';
+            }
+            new bootstrap.Modal(document.getElementById('generatePageModalTpl')).show();
+        }
+
+        function smartNameForTemplates() {
+            const prompt = document.getElementById('generate-page-prompt-tpl').value.trim() || document.getElementById('global-prompt').value.trim();
+            const folderName = selectedTaskFolder.split('/').pop() || '任务';
+            const now = new Date();
+            const timestamp = now.getFullYear() +
+                String(now.getMonth() + 1).padStart(2, '0') +
+                String(now.getDate()).padStart(2, '0') + '_' +
+                String(now.getHours()).padStart(2, '0') +
+                String(now.getMinutes()).padStart(2, '0') +
+                String(now.getSeconds()).padStart(2, '0');
+            
+            if (!prompt) {
+                document.getElementById('generate-page-filename-tpl').value = `${folderName}_${timestamp}.html`;
+                return;
+            }
+            const words = prompt.match(/[\u4e00-\u9fa5a-zA-Z0-9]+/g) || [];
+            let fullText = words.join('');
+            let baseLen = Math.min(12, Math.max(6, fullText.length));
+            let baseName = fullText.slice(0, baseLen) || '新页面';
+            document.getElementById('generate-page-filename-tpl').value = `${folderName}_${baseName}_${timestamp}.html`;
+        }
+
+        document.getElementById('generate-page-filename-tpl').addEventListener('input', function() {
+            const fileName = this.value;
+            const safePattern = /^[\u4e00-\u9fa5a-zA-Z0-9_.-]+$/;
+            if (fileName && !safePattern.test(fileName)) {
+                document.getElementById('filename-warning-tpl').style.display = 'block';
+            } else {
+                document.getElementById('filename-warning-tpl').style.display = 'none';
+            }
+        });
+
+        document.getElementById('smart-name-btn-tpl').addEventListener('click', smartNameForTemplates);
+
+        document.getElementById('include-submissions-tpl').addEventListener('change', function() {
+            const promptTextarea = document.getElementById('generate-page-prompt-tpl');
+            if (this.checked) {
+                const appendText = '请基于当前任务的全部提交数据生成一份深度分析报告，包含数据摘要、关键指标统计、图表可视化、趋势分析，以及针对数据的文字解读和建议。报告要专业、美观。';
+                if (!promptTextarea.value.trim()) {
+                    promptTextarea.value = appendText;
+                } else {
+                    promptTextarea.value += '\n\n' + appendText;
+                }
+            }
+        });
+
+        document.getElementById('confirm-generate-page-btn-tpl').addEventListener('click', async function (e) {
+            const btn = e.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>生成中...';
+
+            try {
+                let prompt = document.getElementById('generate-page-prompt-tpl').value.trim();
+                if (!prompt) prompt = document.getElementById('global-prompt').value.trim();
+                if (!prompt) {
+                    showToast('error', '请输入提示词');
+                    return;
+                }
+
+                let targetFolder = selectedTaskFolder;
+                let fileName = document.getElementById('generate-page-filename-tpl').value.trim();
+                if (!fileName) {
+                    showToast('error', '文件名无效');
+                    return;
+                }
+
+                const referenceFiles = selectedFilePath ? [selectedFilePath] : [];
+
+                const response = await fetch(`${API_BASE}/ai/generate-page`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        prompt, 
+                        targetFolder, 
+                        fileName, 
+                        referenceFiles,
+                        teacher: selectedTeacher
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showToast('success', `网页已保存到 ${result.fileUrl}`);
+                    bootstrap.Modal.getInstance(document.getElementById('generatePageModalTpl')).hide();
+                } else {
+                    showToast('error', result.message || '生成失败，请稍后重试');
+                }
+            } catch (error) {
+                console.error('❌ 生成网页时出错:', error);
+                showToast('error', '网络错误或服务器异常，请检查控制台');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            clearAllLoginState();
+            window.location.href = 'login.html';
+        });
+
+        document.getElementById('help-trigger').addEventListener('click', (e) => {
+            e.preventDefault();
+            new bootstrap.Modal(document.getElementById('helpModal')).show();
+        });
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = checkLoginState();
+            if (!user) return;
+            currentUser = user;
+            isAdmin = user.isAdmin || false;
+            updateUserDisplay(user);
+
+            await fetchUserProfile();
+
+            try {
+                const testResponse = await apiCall('/current');
+                if (!testResponse || !testResponse.success) {
+                    alert('登录状态已过期，请重新登录');
+                    clearAllLoginState();
+                    window.location.href = 'login.html';
+                    return;
+                }
+            } catch (error) {
+                alert('网络连接失败，请检查网络');
+                return;
+            }
+
+            await loadSiteSetup();
+            await loadTeacherSelector();
+            loadTemplates();
+        });
+    </script>
+</body>
+</html>

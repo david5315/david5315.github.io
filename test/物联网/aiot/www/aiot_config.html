@@ -1,0 +1,814 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务配置管理 - 智慧校园多模态分析</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border: none;
+            background: rgba(255, 255, 255, 0.98);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 15px 15px 0 0 !important;
+            font-weight: 600;
+        }
+        .top-nav { margin-bottom: 20px; }
+        .top-nav .btn { margin-right: 10px; }
+        
+        /* 表格样式 */
+        .table-responsive {
+            max-height: 375px;
+            overflow-y: auto;
+        }
+        .table {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+        }
+        .table thead th {
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            padding: 10px 6px;
+            font-weight: 600;
+            color: #495057;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .table tbody td {
+            padding: 8px 6px;
+            vertical-align: middle;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        .table tbody tr.active {
+            background-color: #e7f1ff;
+        }
+        
+        /* 列宽控制 */
+        .col-task { width: 140px; }
+        .col-location { width: 180px; }
+        .col-time { width: 160px; }
+        .col-period { width: 60px; text-align: center; }
+        .col-switch { width: 55px; text-align: center; }
+        .col-test { width: 55px; text-align: center; }
+        .col-log { width: 55px; text-align: center; }
+        .col-actions { width: 70px; text-align: center; }
+        
+        /* 文本截断 */
+        .text-truncate-2 {
+            max-width: 130px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+        }
+        .text-truncate-3 {
+            max-width: 170px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+        }
+        
+        /* 开关样式 */
+        .form-switch .form-check-input {
+            width: 30px;
+            height: 17px;
+            cursor: pointer;
+        }
+        .form-switch .form-check-input:checked {
+            background-color: #2ecc71;
+            border-color: #2ecc71;
+        }
+        .form-switch .form-check-label {
+            font-size: 0.75rem;
+        }
+        
+        /* 详情面板 */
+        .detail-row {
+            margin-bottom: 15px;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        .detail-value {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .classroom-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .classroom-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-nav">
+            <a href="index.html" class="btn btn-light"><i class="fas fa-home me-1"></i> 首页</a>
+            <a href="aiot_index.html" class="btn btn-light"><i class="fas fa-th-large me-1"></i> 管理首页</a>
+            <a href="aiot_config.html" class="btn btn-primary"><i class="fas fa-tasks me-1"></i> 任务配置</a>
+            <a href="aiot_config_add.html" class="btn btn-success"><i class="fas fa-plus me-1"></i> 新增任务</a>
+            <a href="aiot_log.html" class="btn btn-info"><i class="fas fa-file-alt me-1"></i> 日志查看</a>
+            <a href="aiot_stats.html" class="btn btn-success"><i class="fas fa-chart-bar me-1"></i> 统计分析</a>
+            <a href="aiot_admin.html" class="btn btn-danger admin-only"><i class="fas fa-cog me-1"></i> 调试管理</a>
+            <a href="aiot_params.html" class="btn btn-success"><i class="fas fa-database me-1"></i> 参数配置</a>
+            <a href="aiot_broadcast.html" class="btn btn-info"><i class="fas fa-broadcast-tower me-1"></i> 智能广播</a>
+            <a href="aiot_electric.html" class="btn btn-secondary"><i class="fas fa-plug me-1"></i> 智能电控</a>
+            <a href="aiot_iot_data.html" class="btn btn-info"><i class="fas fa-database me-1"></i> 物联网实验</a>
+            <button id="logoutBtn" class="btn btn-secondary" style="float: right;"><i class="fas fa-sign-out-alt me-1"></i> 退出</button>
+        </div>
+
+        <!-- 任务列表表格 -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-list me-2"></i>计划任务列表</span>
+                <div>
+                    <a href="aiot_config_add.html" class="btn btn-sm btn-success">
+                        <i class="fas fa-plus me-1"></i> 新增任务
+                    </a>
+                    <button class="btn btn-sm btn-light" onclick="loadTasks()">
+                        <i class="fas fa-sync-alt me-1"></i> 刷新
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th class="col-task">任务名称</th>
+                                <th class="col-location">点位</th>
+                                <th class="col-time">时段</th>
+                                <th class="col-period">周期</th>
+                                <th class="col-switch">任务</th>
+                                <th class="col-switch">语音</th>
+                                <th class="col-switch">群消息</small></th>
+                                <th class="col-switch">企微</small></th>
+                                <th class="col-switch">飞书</small></th>
+                                <th class="col-switch">短信</th>
+                                <th class="col-switch">物联网</th>
+                                <th class="col-test">测试</th>
+                                <th class="col-log">日志</th>
+                                <th class="col-actions">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="taskList">
+                            <tr>
+                                <td colspan="13" class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status"></div>
+                                    <p class="mt-3">正在加载任务配置...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 选中任务的详细配置 -->
+        <div class="card" id="detailCard" style="display: none;">
+            <div class="card-header">
+                <i class="fas fa-cog me-2"></i>任务配置详情 - <span id="detailTaskName"></span>
+            </div>
+            <div class="card-body">
+                <div id="taskDetailContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = window.location.origin;
+        let allTasks = [];
+        let selectedTaskId = null;
+        let currentUser = null;
+
+        // 检查登录状态
+        function checkAuth() {
+            const userStr = localStorage.getItem('teacherUser');
+            if (!userStr) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            const user = JSON.parse(userStr);
+            currentUser = user;
+            if (user.role === 'admin') {
+                document.body.classList.add('admin');
+            }
+            return user;
+        }
+
+        // 提取时间字符串用于排序
+        function extractStartTime(timeRange) {
+            if (!timeRange || timeRange === '-') return '99:99:99';
+            const parts = timeRange.split('-');
+            return parts[0] || '99:99:99';
+        }
+
+        // 排序任务列表
+        function sortTasks(tasks) {
+            return tasks.sort((a, b) => {
+                const aEnabled = a.enabled ? 1 : 0;
+                const bEnabled = b.enabled ? 1 : 0;
+                
+                if (aEnabled !== bEnabled) {
+                    return bEnabled - aEnabled;
+                }
+                
+                const scheduleA = a.schedule || {};
+                const scheduleB = b.schedule || {};
+                const timeA = extractStartTime(scheduleA.time || '-');
+                const timeB = extractStartTime(scheduleB.time || '-');
+                
+                return timeA.localeCompare(timeB);
+            });
+        }
+
+        // 加载任务列表
+        async function loadTasks() {
+            const taskListEl = document.getElementById('taskList');
+            taskListEl.innerHTML = '<tr><td colspan="12" class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-3">正在加载任务配置...</p></td></tr>';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/aiot/tasks`);
+                const data = await response.json();
+                
+                if (!data.success) throw new Error(data.message || '加载失败');
+                
+                allTasks = data.tasks || [];
+                
+                if (allTasks.length === 0) {
+                    taskListEl.innerHTML = '<tr><td colspan="14" class="text-center py-5"><div class="alert alert-warning mb-0"><i class="fas fa-exclamation-triangle me-2"></i>暂无任务配置，请</div></td></tr>';
+                    return;
+                }
+
+                const sortedTasks = sortTasks([...allTasks]);
+
+                let html = '';
+                sortedTasks.forEach(task => {
+                    const schedule = task.schedule || {};
+                    const timeRange = schedule.time || '-';
+                    const frequency = parseInt(schedule.frequency || '300');
+                    const period = frequency === 0 ? '单次' : `${Math.floor(frequency/60)}分`;
+                    const classrooms = task.classrooms || [];
+                    const locationText = classrooms.length > 0 ? 
+                        `${classrooms[0]} 等${classrooms.length}个` : '-';
+                    const isActive = selectedTaskId == task.task_id ? 'active' : '';
+                    
+                    html += `
+                        <tr class="${isActive}" onclick="selectTask(${task.task_id})" style="cursor: pointer;">
+                            <td class="col-task" title="${task.task_name}">
+                                <span class="text-truncate-2">${task.task_name}</span>
+                            </td>
+                            <td class="col-location" title="${locationText}">
+                                <span class="text-truncate-3">${locationText}</span>
+                            </td>
+                            <td class="col-time">${timeRange}</td>
+                            <td class="col-period">${period}</td>
+                            <td class="col-switch" onclick="event.stopPropagation()">
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <input class="form-check-input" type="checkbox" 
+                                        ${task.enabled ? 'checked' : ''} 
+                                        onchange="toggleTaskEnabled(${task.task_id}, this.checked)">
+                                </div>
+                            </td>
+                            <td class="col-switch" onclick="event.stopPropagation()">
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <input class="form-check-input" type="checkbox" 
+                                        ${task.tts_enabled ? 'checked' : ''} 
+                                        onchange="toggleTTS(${task.task_id}, this.checked)">
+                                </div>
+                            </td>
+                            <td class="col-switch" onclick="event.stopPropagation()">
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <input class="form-check-input" type="checkbox" 
+                                        ${task.wechat_enabled ? 'checked' : ''} 
+                                        onchange="toggleWechat(${task.task_id}, this.checked)">
+                                </div>
+                            </td>
+                            <td class="col-switch" onclick="event.stopPropagation()">
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <input class="form-check-input" type="checkbox" 
+                                        ${task.wecom_bot_enabled ? 'checked' : ''} 
+                                        onchange="toggleWecomBot(${task.task_id}, this.checked)">
+                                </div>
+                            </td>
+                            <td class="col-switch" onclick="event.stopPropagation()">
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <input class="form-check-input" type="checkbox" 
+                                        ${task.feishu_bot_enabled ? 'checked' : ''} 
+                                        onchange="toggleFeishuBot(${task.task_id}, this.checked)">
+                                </div>
+                            </td>
+                            <td class="col-switch" onclick="event.stopPropagation()">
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <input class="form-check-input" type="checkbox" 
+                                        ${task.sms_enabled ? 'checked' : ''} 
+                                        onchange="toggleSMS(${task.task_id}, this.checked)">
+                                </div>
+                            </td>
+                            <td class="col-switch" onclick="event.stopPropagation()">
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <input class="form-check-input" type="checkbox" 
+                                        ${task.iot_enabled ? 'checked' : ''} 
+                                        onchange="toggleIOT(${task.task_id}, this.checked)">
+                                </div>
+                            </td>
+                            <td class="col-test text-center" onclick="event.stopPropagation()">
+                                <button class="btn btn-sm btn-warning" onclick="testTaskNow(${task.task_id}, '${task.task_name}')" title="立即测试">
+                                    <i class="fas fa-flask"></i>
+                                </button>
+                            </td>
+                            <td class="col-log text-center" onclick="event.stopPropagation()">
+                                <button class="btn btn-sm btn-info" onclick="viewTaskLogs(${task.task_id}, '${task.task_name}')" title="查看日志">
+                                    <i class="fas fa-file-alt"></i>
+                                </button>
+                            </td>
+                            <td class="col-actions" onclick="event.stopPropagation()">
+                                <button class="btn btn-sm btn-outline-warning" onclick="editTask(${task.task_id})" title="编辑">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteTask(${task.task_id})" title="删除">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                taskListEl.innerHTML = html;
+                
+                if (selectedTaskId) {
+                    const task = allTasks.find(t => t.task_id == selectedTaskId);
+                    if (task) renderTaskDetail(task);
+                }
+                
+            } catch (error) {
+                console.error('加载任务失败:', error);
+                taskListEl.innerHTML = `<tr><td colspan="14" class="text-center py-5"><div class="alert alert-danger mb-0"><i class="fas fa-exclamation-circle me-2"></i>加载任务配置失败：${error.message}</div></td></tr>`;
+            }
+        }
+
+        // 选择任务
+        function selectTask(taskId) {
+            selectedTaskId = taskId;
+            const task = allTasks.find(t => t.task_id == taskId);
+            if (task) {
+                renderTaskDetail(task);
+                document.getElementById('detailCard').style.display = 'block';
+                loadTasks();
+            }
+        }
+
+        // 渲染任务详情
+        function renderTaskDetail(task) {
+            const schedule = task.schedule || {};
+            const classrooms = task.classrooms || [];
+            
+            document.getElementById('detailTaskName').textContent = task.task_name;
+            
+            const html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <div class="detail-label"><i class="fas fa-id-card me-1"></i>任务 ID</div>
+                            <div class="detail-value">${task.task_id}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <div class="detail-label"><i class="fas fa-tasks me-1"></i>任务名称</div>
+                            <div class="detail-value">${task.task_name}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <div class="detail-label"><i class="fas fa-clock me-1"></i>执行时间</div>
+                            <div class="detail-value">${schedule.time || '未设置'}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <div class="detail-label"><i class="fas fa-hourglass-half me-1"></i>执行频率</div>
+                            <div class="detail-value">
+                                ${schedule.frequency == 0 ? '<span class="text-primary"><i class="fas fa-play me-1"></i>单次执行（失败时自动重试一次）</span>' : schedule.frequency + ' 秒 (' + Math.floor(schedule.frequency/60) + '分钟)'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label"><i class="fas fa-comment-dots me-1"></i>分析提示词</div>
+                    <div class="detail-value" style="white-space: pre-wrap; max-height: 200px; overflow-y: auto;">${task.prompt || '无'}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label"><i class="fas fa-building me-1"></i>监控教室（${classrooms.length}间）</div>
+                    <div class="detail-value">
+                        <div class="classroom-tags">
+                            ${classrooms.map(c => `<span class="classroom-tag">${c}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <div class="detail-label"><i class="fas fa-toggle-on me-1"></i>任务开关</div>
+                            <div class="detail-value">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" 
+                                        ${task.enabled ? 'checked' : ''} 
+                                        onchange="toggleTaskEnabled(${task.task_id}, this.checked)">
+                                    <label class="form-check-label">${task.enabled ? '已启用' : '已禁用'}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <div class="detail-label"><i class="fas fa-volume-up me-1"></i>语音播报（单机版电脑 TTS 声卡输出）</div>
+                            <div class="detail-value">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" 
+                                        ${task.tts_enabled ? 'checked' : ''} 
+                                        onchange="toggleTTS(${task.task_id}, this.checked)">
+                                    <label class="form-check-label">${task.tts_enabled ? '已启用' : '已禁用'}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="detail-row">
+                            <div class="detail-label"><i class="fab fa-weixin me-1"></i>企微群消息推送</div>
+                            <div class="detail-value">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" 
+                                        ${task.wechat_enabled ? 'checked' : ''} 
+                                        onchange="toggleWechat(${task.task_id}, this.checked)">
+                                    <label class="form-check-label">${task.wechat_enabled ? '已启用' : '已禁用'}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="detail-row">
+                            <div class="detail-label"><i class="fas fa-robot me-1"></i>企微机器人</div>
+                            <div class="detail-value">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" 
+                                        ${task.wecom_bot_enabled ? 'checked' : ''} 
+                                        onchange="toggleWecomBot(${task.task_id}, this.checked)">
+                                    <label class="form-check-label">${task.wecom_bot_enabled ? '已启用' : '已禁用'}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="detail-row">
+                            <div class="detail-label"><i class="fas fa-book me-1"></i>飞书机器人</div>
+                            <div class="detail-value">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" 
+                                        ${task.feishu_bot_enabled ? 'checked' : ''} 
+                                        onchange="toggleFeishuBot(${task.task_id}, this.checked)">
+                                    <label class="form-check-label">${task.feishu_bot_enabled ? '已启用' : '已禁用'}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <div class="detail-label"><i class="fas fa-sms me-1"></i>短信通知</div>
+                            <div class="detail-value">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" 
+                                        ${task.sms_enabled ? 'checked' : ''} 
+                                        onchange="toggleSMS(${task.task_id}, this.checked)">
+                                    <label class="form-check-label">${task.sms_enabled ? '已启用' : '已禁用'}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <div class="detail-label"><i class="fas fa-network-wired me-1"></i>物联网（智能音箱，智能插座，智能开关等设备）</div>
+                            <div class="detail-value">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" 
+                                        ${task.iot_enabled ? 'checked' : ''} 
+                                        onchange="toggleIOT(${task.task_id}, this.checked)">
+                                    <label class="form-check-label">${task.iot_enabled ? '已启用' : '已禁用'}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="btn-toolbar gap-2">
+                    <button class="btn btn-warning" onclick="editTask(${task.task_id})">
+                        <i class="fas fa-edit me-1"></i> 编辑任务
+                    </button>
+                    <button class="btn btn-primary" onclick="runTaskNow(${task.task_id})">
+                        <i class="fas fa-play me-1"></i> 立即执行 (测试一次)
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteTask(${task.task_id})">
+                        <i class="fas fa-trash me-1"></i> 删除任务
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('taskDetailContainer').innerHTML = html;
+        }
+
+        // 切换任务启用状态
+        async function toggleTaskEnabled(taskId, enable) {
+            try {
+                const response = await fetch(`${API_BASE}/api/aiot/task/${taskId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ enabled: enable })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    const task = allTasks.find(t => t.task_id == taskId);
+                    if (task) task.enabled = enable;
+                }
+            } catch (error) {
+                console.error('切换任务状态失败:', error);
+            }
+        }
+
+        // 切换 TTS
+        async function toggleTTS(taskId, enable) {
+            try {
+                const response = await fetch(`${API_BASE}/api/aiot/task/${taskId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tts_enabled: enable })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    const task = allTasks.find(t => t.task_id == taskId);
+                    if (task) task.tts_enabled = enable;
+                }
+            } catch (error) {
+                console.error('切换 TTS 失败:', error);
+            }
+        }
+
+        // 切换企业微信群推送
+        async function toggleWechat(taskId, enable) {
+            try {
+                const response = await fetch(`${API_BASE}/api/aiot/task/${taskId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ wechat_enabled: enable })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    const task = allTasks.find(t => t.task_id == taskId);
+                    if (task) task.wechat_enabled = enable;
+                }
+            } catch (error) {
+                console.error('切换企业微信群推送失败:', error);
+            }
+        }
+
+        // 切换企微机器人
+        async function toggleWecomBot(taskId, enable) {
+            try {
+                const response = await fetch(`${API_BASE}/api/aiot/task/${taskId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ wecom_bot_enabled: enable })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    const task = allTasks.find(t => t.task_id == taskId);
+                    if (task) task.wecom_bot_enabled = enable;
+                }
+            } catch (error) {
+                console.error('切换企微机器人失败:', error);
+            }
+        }
+
+        // 切换飞书机器人
+        async function toggleFeishuBot(taskId, enable) {
+            try {
+                const response = await fetch(`${API_BASE}/api/aiot/task/${taskId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ feishu_bot_enabled: enable })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    const task = allTasks.find(t => t.task_id == taskId);
+                    if (task) task.feishu_bot_enabled = enable;
+                }
+            } catch (error) {
+                console.error('切换飞书机器人失败:', error);
+            }
+        }
+
+        // 切换短信通知
+        async function toggleSMS(taskId, enable) {
+            try {
+                const response = await fetch(`${API_BASE}/api/aiot/task/${taskId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sms_enabled: enable })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    const task = allTasks.find(t => t.task_id == taskId);
+                    if (task) task.sms_enabled = enable;
+                }
+            } catch (error) {
+                console.error('切换短信通知失败:', error);
+            }
+        }
+
+        // 切换物联网设备
+        async function toggleIOT(taskId, enable) {
+            try {
+                const response = await fetch(`${API_BASE}/api/aiot/task/${taskId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ iot_enabled: enable })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    const task = allTasks.find(t => t.task_id == taskId);
+                    if (task) task.iot_enabled = enable;
+                }
+            } catch (error) {
+                console.error('切换物联网设备失败:', error);
+            }
+        }
+
+        // 编辑任务
+        function editTask(taskId) {
+            window.location.href = `aiot_config_add.html?edit=${taskId}`;
+        }
+
+        // 查看任务日志
+        function viewTaskLogs(taskId, taskName) {
+            // 跳转到日志页面，带上任务 ID 和任务名称参数
+            window.location.href = `aiot_log.html?task_id=${taskId}&task_name=${encodeURIComponent(taskName)}`;
+        }
+
+        // 立即执行（原函数保留）
+        async function runTaskNow(taskId) {
+            const task = allTasks.find(t => t.task_id == taskId);
+            if (!task) return;
+            if (!confirm(`确定要立即执行任务"${task.task_name}"吗？`)) return;
+            try {
+                const response = await fetch(`${API_BASE}/api/aiot/task/${taskId}/run`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert(`✅ 任务已开始执行\n\n${result.message || '请查看日志了解执行进度'}`);
+                } else {
+                    alert(`❌ 执行失败：${result.message}`);
+                }
+            } catch (error) {
+                alert(`❌ 执行失败：${error.message}`);
+            }
+        }
+
+        // 立即测试（单次执行，不受时段控制）
+        async function testTaskNow(taskId, taskName) {
+            if (!confirm(`⚠️ 立即测试任务"${taskName}"？\n\n将立即抓取所有配置的摄像头进行分析，并记录到日志中。\n\n此操作不受时段控制，点击后立即执行一次。`)) return;
+            
+            // 显示提示 - 告诉用户几分钟后查看日志
+            alert(`✅ 测试已启动！\n\n任务已开始执行，预计需要 3-5 分钟完成。\n\n请几分钟后前往"日志查看"页面查看执行结果。`);
+            
+            // 自动跳转到日志页面
+            setTimeout(() => {
+                window.location.href = 'aiot_log.html';
+            }, 1000);
+            
+            try {
+                // 后台执行测试
+                await fetch(`${API_BASE}/api/aiot/task/${taskId}/run`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+            } catch (error) {
+                console.error('测试启动失败:', error);
+            }
+        }
+
+        // 删除任务
+        async function deleteTask(taskId) {
+            if (!confirm('确定要删除此任务吗？此操作不可恢复！')) return;
+            try {
+                const response = await fetch(`${API_BASE}/api/aiot/task/${taskId}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('✅ 任务已删除');
+                    selectedTaskId = null;
+                    document.getElementById('detailCard').style.display = 'none';
+                    loadTasks();
+                } else {
+                    alert(`❌ 删除失败：${result.message}`);
+                }
+            } catch (error) {
+                alert(`❌ 删除失败：${error.message}`);
+            }
+        }
+
+        // 退出登录
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = checkAuth();
+            if (user) {
+                console.log('当前用户:', user.username, user.role);
+                loadTasks();
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+

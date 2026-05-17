@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课堂互动教学评测系统 - 个人资料</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+        }
+        
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: none;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 1.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 10px 20px;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .form-control {
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        }
+        
+        .profile-section {
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .profile-info {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .nav-tabs .nav-link {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+        
+        .toast {
+            min-width: 300px;
+            border-radius: 10px;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            margin: 0 auto 20px;
+        }
+        
+        .system-info {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .sms-code-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .countdown-timer {
+            color: var(--danger-color);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .subject-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 0.9rem;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .list-group-item.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .list-group-item:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0"><i class="fas fa-user-circle me-2"></i>个人资料管理</h4>
+                            <button id="back-to-teacher" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i> 返回工作台
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-4 text-center">
+                                <div class="profile-avatar" id="profile-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <h5 id="profile-display-name" class="mt-2">教师用户</h5>
+                                <p class="text-muted small" id="profile-username-display"></p>
+                                <div class="mt-3">
+                                    <!-- 新增管理私有学生按钮 -->
+                                    <a href="private_students.html" class="btn btn-outline-primary btn-sm me-2">
+                                        <i class="fas fa-user-graduate me-1"></i> 管理私有学生
+                                    </a>
+                                    <button class="btn btn-outline-secondary btn-sm" id="go-to-login">
+                                        <i class="fas fa-sign-in-alt me-1"></i> 重新登录
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" 
+                                                data-bs-target="#basic" type="button" role="tab">
+                                            <i class="fas fa-info-circle me-1"></i> 基本信息
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="security-tab" data-bs-toggle="tab" 
+                                                data-bs-target="#security" type="button" role="tab">
+                                            <i class="fas fa-lock me-1"></i> 安全设置
+                                        </button>
+                                    </li>
+                                </ul>
+                                
+                                <div class="tab-content p-3 border border-top-0 rounded-bottom">
+                                    <!-- 基本信息标签页 -->
+                                    <div class="tab-pane fade show active" id="basic" role="tabpanel">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="profile-info">
+                                                    <h6><i class="fas fa-id-card me-2"></i>账户信息</h6>
+                                                    <div class="mb-2">
+                                                        <strong>用户名：</strong>
+                                                        <span id="profile-username">-</span>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <strong>姓名：</strong>
+                                                        <span id="profile-name">-</span>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <strong>学科：</strong>
+                                                        <span id="profile-subject">-</span>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <strong>角色：</strong>
+                                                        <span id="profile-role">-</span>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <strong>注册时间：</strong>
+                                                        <span id="profile-created">-</span>
+                                                    </div>
+                                                    <!-- 新增：账号有效期 -->
+                                                    <div class="mb-2">
+                                                        <strong>账号有效期：</strong>
+                                                        <span id="profile-expiry">-</span>
+                                                    </div>
+                                                    <!-- 新增：剩余生成额度 -->
+                                                    <div class="mb-2">
+                                                        <strong>剩余生成额度：</strong>
+                                                        <span id="profile-remaining">-</span>
+                                                        <span id="profile-upgrade-btn-container" style="display: none;">
+                                                            <a href="payment.html" class="btn btn-sm btn-warning ms-2">充值开通</a>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="profile-info">
+                                                    <h6><i class="fas fa-edit me-2"></i>修改基本信息</h6>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">姓名</label>
+                                                        <input type="text" class="form-control" id="update-name" 
+                                                               placeholder="请输入姓名">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">手机号码</label>
+                                                        <input type="tel" class="form-control" id="update-phone" 
+                                                               placeholder="请输入手机号码">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">邮箱</label>
+                                                        <input type="email" class="form-control" id="update-email" 
+                                                               placeholder="请输入邮箱">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">学科</label>
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" id="update-subject" 
+                                                                   placeholder="请输入学科（如：数学、语文、英语等）">
+                                                            <button class="btn btn-outline-secondary" type="button" id="subject-select-btn">
+                                                                <i class="fas fa-list"></i> 选择
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <button type="button" class="btn btn-primary w-100" 
+                                                            id="update-profile-btn">
+                                                        <i class="fas fa-save me-1"></i> 保存修改
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 安全设置标签页 -->
+                                    <div class="tab-pane fade" id="security" role="tabpanel">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="profile-info">
+                                                    <h6><i class="fas fa-key me-2"></i>修改密码</h6>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">当前密码</label>
+                                                        <input type="password" class="form-control" id="current-password" 
+                                                               placeholder="请输入当前密码">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">新密码</label>
+                                                        <input type="password" class="form-control" id="update-new-password" 
+                                                               placeholder="请输入新密码">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">确认新密码</label>
+                                                        <input type="password" class="form-control" id="update-confirm-password" 
+                                                               placeholder="请再次输入新密码">
+                                                    </div>
+                                                    <button type="button" class="btn btn-warning w-100" 
+                                                            id="update-password-btn">
+                                                        <i class="fas fa-key me-1"></i> 修改密码
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="profile-info">
+                                                    <h6><i class="fas fa-mobile-alt me-2"></i>短信找回密码</h6>
+                                                    <div class="alert alert-info">
+                                                        <i class="fas fa-info-circle me-2"></i>
+                                                        如果您忘记了密码，可以通过手机短信找回密码
+                                                    </div>
+                                                    <button type="button" class="btn btn-outline-info w-100" 
+                                                            data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">
+                                                        <i class="fas fa-mobile-alt me-1"></i> 短信找回密码
+                                                    </button>
+                                                    
+                                                    <div class="mt-4">
+                                                        <h6><i class="fas fa-shield-alt me-2"></i>安全提示</h6>
+                                                        <ul class="list-unstyled small text-muted">
+                                                            <li><i class="fas fa-check text-success me-2"></i> 定期更换密码</li>
+                                                            <li><i class="fas fa-check text-success me-2"></i> 不要共享账号</li>
+                                                            <li><i class="fas fa-check text-success me-2"></i> 使用复杂密码</li>
+                                                            <li><i class="fas fa-check text-success me-2"></i> 及时更新个人信息</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button id="logout-btn" class="btn btn-outline-danger">
+                                <i class="fas fa-sign-out-alt me-1"></i> 退出登录
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 系统信息 -->
+                <div class="system-info mt-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-info-circle me-2"></i>系统版本：v3.0.0</h6>
+                            <p class="small mb-0">© 南菁智慧教育</p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <p class="small mb-0">最后登录时间：<span id="last-login-time">-</span></p>
+                            <p class="small mb-0">IP地址：<span id="login-ip">-</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 学科选择模态框 -->
+    <div class="modal fade" id="subjectSelectModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-book me-2"></i>选择学科</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="search-subject" 
+                               placeholder="搜索学科...">
+                    </div>
+                    <div id="subject-list" class="list-group" style="max-height: 300px; overflow-y: auto;">
+                        <!-- 学科列表将通过JavaScript动态加载 -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="select-subject-btn">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 忘记密码模态框 -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-key me-2"></i>短信找回密码</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">用户名</label>
+                        <input type="text" class="form-control" id="forgot-username" placeholder="请输入您的用户名">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">手机号码</label>
+                        <input type="tel" class="form-control" id="forgot-phone" placeholder="请输入绑定的手机号">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">短信验证码</label>
+                        <div class="sms-code-container">
+                            <input type="text" class="form-control" id="sms-code" placeholder="6位验证码" maxlength="6">
+                            <button type="button" class="btn btn-outline-primary" id="send-sms-btn">
+                                发送验证码
+                            </button>
+                        </div>
+                        <div class="form-text">
+                            <span id="countdown" class="countdown-timer"></span>
+                            验证码有效期为5分钟
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">新密码</label>
+                        <input type="password" class="form-control" id="new-password" placeholder="请输入新密码">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">确认新密码</label>
+                        <input type="password" class="form-control" id="confirm-password" placeholder="请再次输入新密码">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="reset-password-btn">重置密码</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 消息提示容器 -->
+    <div class="toast-container">
+        <div id="message-toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toast-message">操作成功</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        // API基础URL
+        const API_BASE = window.location.origin + '/api';
+        
+        // 全局变量
+        let currentUser = null;
+        let profileData = null;
+        let smsTimer = null;
+        let countdownSeconds = 0;
+
+        // 工具函数：显示消息
+        function showMessage(type, message) {
+            const toast = document.getElementById('message-toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            const colors = {
+                success: 'bg-success',
+                error: 'bg-danger',
+                warning: 'bg-warning',
+                info: 'bg-info'
+            };
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+            
+            toast.className = `toast align-items-center text-white ${colors[type] || 'bg-success'} border-0`;
+            toastMessage.innerHTML = `${icons[type] || ''} ${message}`;
+            
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
+
+        // 检查登录状态
+        function checkLoginState() {
+            const token = localStorage.getItem('teacherToken');
+            const userStr = localStorage.getItem('teacherUser');
+            if (!token || !userStr) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            try {
+                return JSON.parse(userStr);
+            } catch (e) {
+                window.location.href = 'login.html';
+                return null;
+            }
+        }
+
+        // 清除登录状态
+        function clearAllLoginState() {
+            localStorage.removeItem('teacherToken');
+            localStorage.removeItem('teacherUser');
+            sessionStorage.clear();
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i];
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+            }
+        }
+
+        // API调用（模拟，包含有效期和剩余额度字段）
+        async function apiCall(endpoint, options = {}) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+            if (endpoint === '/account/profile') {
+                // 模拟返回个人资料，添加 expiry_date 和 remaining_uses
+                return {
+                    success: true,
+                    profile: {
+                        username: currentUser?.username || 'teacher',
+                        name: '张老师',
+                        subject: '数学',
+                        phone: '13800000000',
+                        email: 'teacher@example.com',
+                        role: 'teacher',
+                        createdAt: '2025-01-01T00:00:00Z',
+                        lastLogin: '2025-02-28T10:00:00Z',
+                        loginIp: '192.168.1.1',
+                        expiry_date: '2025-12-31',           // 账号有效期
+                        remaining_uses: 10                     // 剩余额度（可改为0测试充值按钮）
+                    }
+                };
+            }
+            if (endpoint === '/account/profile' && options.method === 'POST') {
+                return { success: true, message: '资料更新成功' };
+            }
+            if (endpoint === '/account/password' && options.method === 'POST') {
+                return { success: true, message: '密码修改成功' };
+            }
+            if (endpoint === '/account/sms/send-code') {
+                const { phone } = JSON.parse(options.body);
+                if (phone) {
+                    return { success: true, message: '验证码已发送', simulation: true, code: '123456' };
+                }
+                return { success: false, message: '手机号不能为空' };
+            }
+            if (endpoint === '/account/sms/verify-code') {
+                const { code } = JSON.parse(options.body);
+                if (code === '123456') {
+                    return { success: true, reset_token: 'mock_token' };
+                }
+                return { success: false, message: '验证码错误' };
+            }
+            if (endpoint === '/account/sms/reset-password') {
+                return { success: true, message: '密码重置成功' };
+            }
+            return { success: true };
+        }
+
+        // 加载个人资料
+        async function loadProfileData() {
+            try {
+                const response = await apiCall('/account/profile');
+                if (response && response.success) {
+                    profileData = response.profile;
+                    updateProfileDisplay();
+                } else {
+                    showMessage('error', '加载个人资料失败');
+                }
+            } catch (error) {
+                showMessage('error', '加载个人资料失败');
+            }
+        }
+
+        function updateProfileDisplay() {
+            if (!profileData) return;
+            document.getElementById('profile-username').textContent = profileData.username || '-';
+            document.getElementById('profile-name').textContent = profileData.name || '-';
+            document.getElementById('profile-subject').textContent = profileData.subject || '未设置';
+            document.getElementById('profile-role').textContent = profileData.role === 'admin' ? '管理员' : '教师';
+            document.getElementById('profile-created').textContent = profileData.createdAt ? new Date(profileData.createdAt).toLocaleString() : '-';
+            document.getElementById('profile-display-name').textContent = profileData.name || profileData.username;
+            document.getElementById('profile-username-display').textContent = `@${profileData.username}`;
+            document.getElementById('update-name').value = profileData.name || '';
+            document.getElementById('update-phone').value = profileData.phone || '';
+            document.getElementById('update-email').value = profileData.email || '';
+            document.getElementById('update-subject').value = profileData.subject || '';
+            document.getElementById('last-login-time').textContent = profileData.lastLogin ? new Date(profileData.lastLogin).toLocaleString() : '-';
+            document.getElementById('login-ip').textContent = profileData.loginIp || '-';
+            
+            // 显示账号有效期（若无则显示“无限制”）
+            document.getElementById('profile-expiry').textContent = profileData.expiry_date || '无限制';
+
+            // 显示剩余额度，若为0则显示充值按钮
+            const remaining = profileData.remaining_uses;
+            const remainingSpan = document.getElementById('profile-remaining');
+            const upgradeContainer = document.getElementById('profile-upgrade-btn-container');
+            if (remaining === 0) {
+                remainingSpan.style.display = 'none';
+                upgradeContainer.style.display = 'inline';
+            } else {
+                remainingSpan.style.display = 'inline';
+                remainingSpan.textContent = remaining || '∞';   // 如果 remaining 为 undefined/null 显示无穷符号
+                upgradeContainer.style.display = 'none';
+            }
+
+            const avatar = document.getElementById('profile-avatar');
+            const firstName = (profileData.name || profileData.username || 'T').charAt(0).toUpperCase();
+            avatar.innerHTML = `<span style="font-size: 2rem;">${firstName}</span>`;
+        }
+
+        // 更新资料
+        async function updateProfile() {
+            const name = document.getElementById('update-name').value.trim();
+            const phone = document.getElementById('update-phone').value.trim();
+            const email = document.getElementById('update-email').value.trim();
+            const subject = document.getElementById('update-subject').value.trim();
+
+            if (!name) {
+                showMessage('error', '姓名不能为空');
+                return;
+            }
+
+            const updateBtn = document.getElementById('update-profile-btn');
+            updateBtn.disabled = true;
+            updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 保存中...';
+
+            const response = await apiCall('/account/profile', {
+                method: 'POST',
+                body: JSON.stringify({ name, phone, email, subject })
+            });
+
+            if (response.success) {
+                showMessage('success', response.message || '资料更新成功');
+                await loadProfileData();
+            } else {
+                showMessage('error', response.message || '更新失败');
+            }
+            updateBtn.disabled = false;
+            updateBtn.innerHTML = '<i class="fas fa-save me-1"></i> 保存修改';
+        }
+
+        // 修改密码
+        async function updatePassword() {
+            const current = document.getElementById('current-password').value;
+            const newPass = document.getElementById('update-new-password').value;
+            const confirm = document.getElementById('update-confirm-password').value;
+
+            if (!current || !newPass || !confirm) {
+                showMessage('error', '请填写所有密码字段');
+                return;
+            }
+            if (newPass !== confirm) {
+                showMessage('error', '两次新密码不一致');
+                return;
+            }
+            if (newPass.length < 6) {
+                showMessage('error', '新密码至少6位');
+                return;
+            }
+
+            const btn = document.getElementById('update-password-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 修改中...';
+
+            const response = await apiCall('/account/password', {
+                method: 'POST',
+                body: JSON.stringify({ old_password: current, new_password: newPass, confirm_password: confirm })
+            });
+
+            if (response.success) {
+                showMessage('success', response.message || '密码修改成功');
+                document.getElementById('current-password').value = '';
+                document.getElementById('update-new-password').value = '';
+                document.getElementById('update-confirm-password').value = '';
+            } else {
+                showMessage('error', response.message || '修改失败');
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-key me-1"></i> 修改密码';
+        }
+
+        // 短信找回密码相关
+        async function sendSmsCode() {
+            const username = document.getElementById('forgot-username').value.trim();
+            const phone = document.getElementById('forgot-phone').value.trim();
+
+            if (!username || !phone) {
+                showMessage('error', '请填写用户名和手机号');
+                return;
+            }
+
+            const sendBtn = document.getElementById('send-sms-btn');
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发送中...';
+
+            const response = await apiCall('/account/sms/send-code', {
+                method: 'POST',
+                body: JSON.stringify({ username, phone })
+            });
+
+            if (response.success) {
+                showMessage('success', response.message || '验证码已发送');
+                if (response.simulation && response.code) {
+                    showMessage('info', `测试模式：验证码为 ${response.code}`);
+                }
+                startCountdown(300);
+            } else {
+                showMessage('error', response.message || '发送失败');
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '发送验证码';
+            }
+        }
+
+        function startCountdown(seconds) {
+            const sendBtn = document.getElementById('send-sms-btn');
+            const countdownEl = document.getElementById('countdown');
+            sendBtn.disabled = true;
+            countdownSeconds = seconds;
+            const timer = setInterval(() => {
+                const mins = Math.floor(countdownSeconds / 60);
+                const secs = countdownSeconds % 60;
+                countdownEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                if (countdownSeconds <= 0) {
+                    clearInterval(timer);
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = '发送验证码';
+                    countdownEl.textContent = '';
+                }
+                countdownSeconds--;
+            }, 1000);
+            smsTimer = timer;
+        }
+
+        async function resetPassword() {
+            const username = document.getElementById('forgot-username').value.trim();
+            const phone = document.getElementById('forgot-phone').value.trim();
+            const code = document.getElementById('sms-code').value.trim();
+            const newPass = document.getElementById('new-password').value;
+            const confirm = document.getElementById('confirm-password').value;
+
+            if (!username || !phone || !code || !newPass || !confirm) {
+                showMessage('error', '请填写所有信息');
+                return;
+            }
+            if (newPass !== confirm) {
+                showMessage('error', '两次密码不一致');
+                return;
+            }
+            if (newPass.length < 6) {
+                showMessage('error', '密码至少6位');
+                return;
+            }
+
+            const resetBtn = document.getElementById('reset-password-btn');
+            resetBtn.disabled = true;
+            resetBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 处理中...';
+
+            const verifyResponse = await apiCall('/account/sms/verify-code', {
+                method: 'POST',
+                body: JSON.stringify({ username, phone, code })
+            });
+
+            if (!verifyResponse.success) {
+                showMessage('error', verifyResponse.message || '验证码验证失败');
+                resetBtn.disabled = false;
+                resetBtn.innerHTML = '重置密码';
+                return;
+            }
+
+            const resetResponse = await apiCall('/account/sms/reset-password', {
+                method: 'POST',
+                body: JSON.stringify({
+                    username,
+                    phone,
+                    new_password: newPass,
+                    reset_token: verifyResponse.reset_token
+                })
+            });
+
+            if (resetResponse.success) {
+                showMessage('success', resetResponse.message || '密码重置成功');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal'));
+                modal.hide();
+                document.getElementById('forgot-username').value = '';
+                document.getElementById('forgot-phone').value = '';
+                document.getElementById('sms-code').value = '';
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-password').value = '';
+                if (smsTimer) clearInterval(smsTimer);
+                document.getElementById('send-sms-btn').disabled = false;
+                document.getElementById('send-sms-btn').innerHTML = '发送验证码';
+                document.getElementById('countdown').textContent = '';
+            } else {
+                showMessage('error', resetResponse.message || '重置失败');
+            }
+            resetBtn.disabled = false;
+            resetBtn.innerHTML = '重置密码';
+        }
+
+        // 学科选择相关
+        async function loadSubjects() {
+            return ['语文', '数学', '英语', '物理', '化学', '生物', '政治', '历史', '地理', '信息技术', '通用技术', '体育', '音乐', '美术'];
+        }
+
+        function populateSubjectList(subjects) {
+            const subjectListEl = document.getElementById('subject-list');
+            subjectListEl.innerHTML = '';
+            subjects.forEach(subject => {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'list-group-item list-group-item-action';
+                item.textContent = subject;
+                item.dataset.subject = subject;
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('#subject-list .list-group-item').forEach(el => el.classList.remove('active'));
+                    item.classList.add('active');
+                });
+                subjectListEl.appendChild(item);
+            });
+        }
+
+        function initSubjectSelection() {
+            const subjectSelectBtn = document.getElementById('subject-select-btn');
+            const subjectInput = document.getElementById('update-subject');
+            const selectSubjectBtn = document.getElementById('select-subject-btn');
+            const searchSubjectInput = document.getElementById('search-subject');
+
+            subjectSelectBtn.addEventListener('click', async () => {
+                const subjects = await loadSubjects();
+                populateSubjectList(subjects);
+                const currentSubject = subjectInput.value;
+                if (currentSubject) {
+                    setTimeout(() => {
+                        document.querySelectorAll('#subject-list .list-group-item').forEach(el => {
+                            if (el.dataset.subject === currentSubject) {
+                                el.classList.add('active');
+                                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        });
+                    }, 100);
+                }
+                new bootstrap.Modal(document.getElementById('subjectSelectModal')).show();
+            });
+
+            selectSubjectBtn.addEventListener('click', () => {
+                const selected = document.querySelector('#subject-list .list-group-item.active');
+                if (selected) {
+                    subjectInput.value = selected.dataset.subject;
+                    bootstrap.Modal.getInstance(document.getElementById('subjectSelectModal')).hide();
+                } else {
+                    showMessage('warning', '请选择一个学科');
+                }
+            });
+
+            searchSubjectInput.addEventListener('input', (e) => {
+                const searchText = e.target.value.toLowerCase();
+                document.querySelectorAll('#subject-list .list-group-item').forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    item.style.display = text.includes(searchText) ? 'block' : 'none';
+                });
+            });
+        }
+
+        // 退出登录
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                clearAllLoginState();
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 页面导航
+        function goToTeacherDashboard() {
+            window.location.href = 'teacher.html';
+        }
+
+        function goToLogin() {
+            window.location.href = 'login.html';
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            currentUser = checkLoginState();
+            if (!currentUser) return;
+
+            await loadProfileData();
+            initSubjectSelection();
+
+            document.getElementById('logout-btn').addEventListener('click', logout);
+            document.getElementById('back-to-teacher').addEventListener('click', goToTeacherDashboard);
+            document.getElementById('go-to-login').addEventListener('click', goToLogin);
+            document.getElementById('update-profile-btn').addEventListener('click', updateProfile);
+            document.getElementById('update-password-btn').addEventListener('click', updatePassword);
+
+            // 忘记密码模态框事件
+            document.getElementById('send-sms-btn').addEventListener('click', sendSmsCode);
+            document.getElementById('reset-password-btn').addEventListener('click', resetPassword);
+
+            // 模态框关闭时清理倒计时
+            document.getElementById('forgotPasswordModal').addEventListener('hidden.bs.modal', function() {
+                if (smsTimer) clearInterval(smsTimer);
+                document.getElementById('send-sms-btn').disabled = false;
+                document.getElementById('send-sms-btn').innerHTML = '发送验证码';
+                document.getElementById('countdown').textContent = '';
+            });
+
+            document.getElementById('subjectSelectModal').addEventListener('hidden.bs.modal', function() {
+                document.getElementById('search-subject').value = '';
+            });
+        });
+    </script>
+</body>
+</html>

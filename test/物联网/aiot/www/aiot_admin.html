@@ -1,0 +1,518 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试管理 - AIoT 智慧校园</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --info: #17a2b8;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border: none;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 1.5rem;
+            border-radius: 20px 20px 0 0 !important;
+        }
+        .top-nav { margin-bottom: 20px; }
+        .top-nav .btn { margin-right: 10px; }
+        .chat-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #aaa;
+        }
+        .status-dot.connected { background: #2ecc71; }
+        
+        /* 聊天样式 */
+        .nav-tabs {
+            border-bottom: none;
+            margin: 0 20px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 10px 0 10px;
+            border-radius: 10px 10px 0 0;
+        }
+        .nav-tabs .nav-link {
+            border: none;
+            color: rgba(255,255,255,0.6);
+            font-weight: 700;
+            padding: 12px 24px;
+            margin-right: 8px;
+            border-radius: 10px 10px 0 0;
+            transition: all 0.3s;
+            background: rgba(0,0,0,0.2);
+            font-size: 0.95rem;
+        }
+        .nav-tabs .nav-link.active {
+            color: #fff;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+            max-height: 400px;
+        }
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        .message.user { flex-direction: row-reverse; }
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .message.bot .message-avatar { background: linear-gradient(135deg, var(--primary), var(--secondary)); }
+        .message.user .message-avatar { background: linear-gradient(135deg, var(--success), #27ae60); }
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .message.user .message-content {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        .message-time {
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 5px;
+            text-align: right;
+        }
+        .chat-input {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+        .quick-questions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            background: rgba(102, 126, 234, 0.05);
+            padding: 12px;
+            border-radius: 12px;
+        }
+        .quick-label {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.85em;
+        }
+        .quick-question-btn {
+            padding: 8px 14px;
+            border: 2px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .quick-question-btn:hover {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        .tab-content {
+            display: flex;
+            flex-direction: column;
+        }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+        
+        /* 快捷操作 */
+        .test-section {
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background: #fafafa;
+        }
+        .test-section h5 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <div class="top-nav">
+            <a href="index.html" class="btn btn-light"><i class="fas fa-home me-1"></i> 首页</a>
+            <a href="aiot_index.html" class="btn btn-light"><i class="fas fa-th-large me-1"></i> 管理首页</a>
+            <a href="aiot_config.html" class="btn btn-success"><i class="fas fa-tasks me-1"></i> 任务配置</a>
+            <a href="aiot_config_add.html" class="btn btn-success"><i class="fas fa-plus me-1"></i> 新增任务</a>
+            <a href="aiot_log.html" class="btn btn-info"><i class="fas fa-file-alt me-1"></i> 日志查看</a>
+            <a href="aiot_admin.html" class="btn btn-danger"><i class="fas fa-cog me-1"></i> 调试管理</a>
+            <a href="aiot_params.html" class="btn btn-success"><i class="fas fa-database me-1"></i> 参数配置</a>
+            <a href="aiot_broadcast.html" class="btn btn-info"><i class="fas fa-broadcast-tower me-1"></i> 智能广播</a>
+            <a href="aiot_electric.html" class="btn btn-secondary"><i class="fas fa-plug me-1"></i> 智能电控</a>
+            <button id="logoutBtn" class="btn btn-secondary" style="float: right;"><i class="fas fa-sign-out-alt me-1"></i> 退出</button>
+        </div>
+
+        <!-- 快捷操作 -->
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-bolt me-2"></i>快捷操作</h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <button class="btn btn-primary w-100" onclick="quickAction('test_wechat')">
+                            <i class="fas fa-weixin me-1"></i> 测试企微推送
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-success w-100" onclick="quickAction('test_sms')">
+                            <i class="fas fa-sms me-1"></i> 测试短信通知
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-info w-100" onclick="quickAction('test_iot')">
+                            <i class="fas fa-lightbulb me-1"></i> 测试物联网设备
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-warning w-100" onclick="quickAction('capture_test')">
+                            <i class="fas fa-camera me-1"></i> 测试抓图分析
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="aiot_manual_light.html" class="btn btn-danger w-100">
+                            <i class="fas fa-bolt me-1"></i> 手动无人灯监测
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-secondary w-100" onclick="quickAction('aiot_control')">
+                            <i class="fas fa-robot me-1"></i> 测试 AIoT 全链控制
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI 对话 -->
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-comments me-2"></i>AI 对话</h4>
+                <div class="chat-status">
+                    <span class="status-dot connected"></span>
+                    <span>已连接</span>
+                </div>
+            </div>
+            
+            <!-- 选项卡 -->
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#wecom-chat">
+                        <i class="fab fa-weixin me-1"></i> 企业微信
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#feishu-chat">
+                        <i class="fas fa-feishu me-1"></i> 飞书
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#sms-chat">
+                        <i class="fas fa-sms me-1"></i> 短信
+                    </button>
+                </li>
+            </ul>
+
+            <!-- 选项卡内容 -->
+            <div class="tab-content">
+                <!-- 企业微信对话 -->
+                <div class="tab-pane active" id="wecom-chat">
+                    <div class="chat-messages" id="wecomMessages">
+                        <div class="message bot">
+                            <div class="message-avatar">AI</div>
+                            <div class="message-content">
+                                <div>您好！我是 AIoT 智能助手</div>
+                                <div class="message-time">仅显示最近20条消息</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <div class="quick-questions">
+                            <span class="quick-label">快捷问题:</span>
+                            <button class="quick-question-btn" onclick="sendQuickMessage('wecom', '高一13班教室里现在有几个学生？')">📊 人数统计</button>
+                            <button class="quick-question-btn" onclick="sendQuickMessage('wecom', '校门口目前交通情况怎样？')">🚗 交通情况</button>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="wecomInput" placeholder="输入消息..." onkeypress="handleKeyPress(event, 'wecom')">
+                            <button class="btn btn-primary" onclick="sendMessage('wecom')">
+                                <i class="fas fa-paper-plane"></i> 发送
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 飞书对话 -->
+                <div class="tab-pane" id="feishu-chat">
+                    <div class="chat-messages" id="feishuMessages">
+                        <div class="message bot">
+                            <div class="message-avatar">AI</div>
+                            <div class="message-content">
+                                <div>您好！我是 AIoT 智能助手</div>
+                                <div class="message-time">仅显示最近20条消息</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <div class="quick-questions">
+                            <span class="quick-label">快捷问题:</span>
+                            <button class="quick-question-btn" onclick="sendQuickMessage('feishu', '高一13班教室里现在有几个学生？')">📊 人数统计</button>
+                            <button class="quick-question-btn" onclick="sendQuickMessage('feishu', '校门口目前交通情况怎样？')">🚗 交通情况</button>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="feishuInput" placeholder="输入消息..." onkeypress="handleKeyPress(event, 'feishu')">
+                            <button class="btn btn-primary" onclick="sendMessage('feishu')">
+                                <i class="fas fa-paper-plane"></i> 发送
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 短信对话 -->
+                <div class="tab-pane" id="sms-chat">
+                    <div class="chat-messages" id="smsMessages">
+                        <div class="message bot">
+                            <div class="message-avatar">AI</div>
+                            <div class="message-content">
+                                <div>您好！我是 AIoT 智能助手</div>
+                                <div class="message-time">仅显示最近20条消息</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <div class="quick-questions">
+                            <span class="quick-label">快捷问题:</span>
+                            <button class="quick-question-btn" onclick="sendQuickMessage('sms', '高一13班教室里现在有几个学生？')">📊 人数统计</button>
+                            <button class="quick-question-btn" onclick="sendQuickMessage('sms', '校门口目前交通情况怎样？')">🚗 交通情况</button>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="smsInput" placeholder="输入消息..." onkeypress="handleKeyPress(event, 'sms')">
+                            <button class="btn btn-primary" onclick="sendMessage('sms')">
+                                <i class="fas fa-paper-plane"></i> 发送
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = window.location.origin;
+        
+        // 发送消息
+        async function sendMessage(platform) {
+            const input = document.getElementById(platform + 'Input');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addMessage(platform, message, 'user');
+            input.value = '';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/aiot/chat`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message: message, platform: platform})
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    addMessage(platform, data.reply || data.message, 'bot');
+                } else {
+                    addMessage(platform, '错误: ' + data.message, 'bot');
+                }
+            } catch (error) {
+                addMessage(platform, '错误: ' + error.message, 'bot');
+            }
+        }
+        
+        // 快捷问题
+        function sendQuickMessage(platform, question) {
+            document.getElementById(platform + 'Input').value = question;
+            sendMessage(platform);
+        }
+        
+        // 键盘回车
+        function handleKeyPress(event, platform) {
+            if (event.key === 'Enter') sendMessage(platform);
+        }
+        
+        // 添加消息到界面
+        function addMessage(platform, text, sender) {
+            const container = document.getElementById(platform + 'Messages');
+            const time = new Date().toLocaleTimeString('zh-CN');
+            
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message ' + sender;
+            msgDiv.innerHTML = `
+                <div class="message-avatar">${sender === 'user' ? '你' : 'AI'}</div>
+                <div class="message-content">
+                    <div>${text}</div>
+                    <div class="message-time">${time}</div>
+                </div>
+            `;
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        // 加载历史消息（默认最近3条）
+        let msgHistory = [];
+        async function loadHistory(platform) {
+            try {
+                const response = await fetch(`${API_BASE}/api/callback/messages?limit=100`);
+                const data = await response.json();
+                
+                if (data.success && data.messages) {
+                    msgHistory = data.messages.filter(m => m.platform === platform).slice(-3);
+                    msgHistory.reverse();
+                    
+                    const container = document.getElementById(platform + 'Messages');
+                    container.innerHTML = '';
+                    msgHistory.forEach(msg => {
+                        addMessage(platform, msg.content, msg.is_from_bot ? 'bot' : 'user');
+                    });
+                }
+            } catch (error) {
+                console.error('加载历史失败:', error);
+            }
+        }
+        
+        // 加载更多历史
+        async function loadMoreHistory(platform) {
+            try {
+                const response = await fetch(`${API_BASE}/api/callback/messages?limit=100`);
+                const data = await response.json();
+                
+                if (data.success && data.messages) {
+                    const allMsgs = data.messages.filter(m => m.platform === platform);
+                    const currentCount = msgHistory.length;
+                    const newMsgs = allMsgs.slice(Math.max(0, currentCount - 3), currentCount);
+                    newMsgs.reverse();
+                    
+                    msgHistory = allMsgs.slice(-3);
+                    
+                    const container = document.getElementById(platform + 'Messages');
+                    newMsgs.forEach(msg => {
+                        const oldFirst = container.firstChild;
+                        addMessage(platform, msg.content, msg.is_from_bot ? 'bot' : 'user');
+                        if (oldFirst) container.insertBefore(container.lastChild, oldFirst);
+                    });
+                }
+            } catch (error) {
+                console.error('加载更多失败:', error);
+            }
+        }
+        
+        // 切换选项卡时加载历史
+        document.querySelectorAll('.nav-tabs .nav-link').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function() {
+                const target = this.dataset.bsTarget.replace('#', '');
+                loadHistory(target.replace('-chat', ''));
+            });
+        });
+        
+        // 初始化
+        loadHistory('wecom');
+        async function quickAction(action) {
+            if (action === 'test_wechat') {
+                const msg = prompt('请输入测试消息：', '测试消息');
+                if (msg) {
+                    await fetch(`${API_BASE}/api/aiot/push/wechat`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({message: msg})
+                    });
+                    alert('已发送');
+                }
+            } else if (action === 'test_sms') {
+                const phone = prompt('请输入手机号：', '13815120911');
+                const msg = prompt('请输入短信内容：', '测试');
+                if (phone && msg) {
+                    await fetch(`${API_BASE}/api/aiot/push/sms`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({phone: phone, message: msg})
+                    });
+                    alert('已发送');
+                }
+            } else if (action === 'test_iot') {
+                alert('将打开IoT控制面板...');
+            } else if (action === 'capture_test') {
+                alert('将打开抓图分析界面...');
+            } else if (action === 'aiot_control') {
+                alert('将打开AIoT全链控制界面...');
+            }
+        }
+        
+        // 检查登录
+        function checkAuth() {
+            const userStr = localStorage.getItem('teacherUser');
+            if (!userStr) {
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // 退出
+        function logout() {
+            if (confirm('确定要退出吗？')) {
+                localStorage.removeItem('teacherUser');
+                window.location.href = 'login.html';
+            }
+        }
+        
+        checkAuth();
+        document.getElementById('logoutBtn').onclick = logout;
+    </script>
+</body>
+</html>
+
+
+

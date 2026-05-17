@@ -1,0 +1,864 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💡 无人灯监测日志系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card .icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        .stat-card .label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .stat-card .trend {
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        .trend.up { color: #dc3545; }
+        .trend.down { color: #28a745; }
+        
+        .charts-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .chart-card h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .filters-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .table-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .table-header h3 {
+            color: #333;
+            font-size: 18px;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        th {
+            background: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        td {
+            font-size: 14px;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-normal {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-event {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status-failed {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        .page-btn {
+            padding: 8px 16px;
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .page-btn:hover,
+        .page-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+        .empty-state .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>💡 无人灯监测日志系统</h1>
+            <p>江苏省南菁高级中学 | 实时监控 | 智能分析 | 节能统计</p>
+        </div>
+        
+        <!-- 统计卡片 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="icon">📊</div>
+                <div class="number" id="totalChecks">-</div>
+                <div class="label">总检查次数</div>
+                <div class="trend" id="checksTrend">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">⚠️</div>
+                <div class="number" id="totalEvents">-</div>
+                <div class="label">发现问题</div>
+                <div class="trend" id="eventsTrend">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">✅</div>
+                <div class="number" id="successRate">-</div>
+                <div class="label">处理成功率</div>
+                <div class="trend" id="successTrend">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">💰</div>
+                <div class="number" id="energySaved">-</div>
+                <div class="label">节约电费（元）</div>
+                <div class="trend" id="energyTrend">-</div>
+            </div>
+        </div>
+        
+        <!-- 图表区域 -->
+        <div class="charts-section">
+            <div class="chart-card">
+                <h3>📈 近 30 天事件趋势</h3>
+                <canvas id="trendChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>🏫 问题教室 TOP10</h3>
+                <canvas id="classroomChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- 筛选器 -->
+        <div class="filters-section">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>📅 日期范围</label>
+                    <input type="date" id="dateStart">
+                </div>
+                <div class="filter-group">
+                    <label>至</label>
+                    <input type="date" id="dateEnd">
+                </div>
+                <div class="filter-group">
+                    <label>🏫 教室</label>
+                    <select id="classroomFilter">
+                        <option value="">全部教室</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>📋 状态</label>
+                    <select id="statusFilter">
+                        <option value="">全部状态</option>
+                        <option value="normal">正常</option>
+                        <option value="event">发现问题</option>
+                        <option value="failed">处理失败</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-actions">
+                <button class="btn btn-primary" onclick="applyFilters()">🔍 应用筛选</button>
+                <button class="btn btn-secondary" onclick="resetFilters()">🔄 重置</button>
+                <button class="btn btn-secondary" onclick="exportData()">📥 导出数据</button>
+                <button class="btn btn-secondary" onclick="clearLogs()" style="background:#dc3545;">🗑️ 清空日志</button>
+            </div>
+        </div>
+        
+        <!-- 数据表格 -->
+        <div class="table-section">
+            <div class="table-header">
+                <h3>📋 详细记录</h3>
+                <span id="recordCount">共 0 条记录</span>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>日期时间</th>
+                            <th>教室</th>
+                            <th>班级</th>
+                            <th>状态</th>
+                            <th>AI 分析</th>
+                            <th>执行动作</th>
+                            <th>通知</th>
+                            <th>抓图</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logTableBody">
+                        <tr><td colspan="7" class="loading">正在加载数据</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 全局状态 ==========
+        let allLogs = [];
+        let filteredLogs = [];
+        let currentPage = 1;
+        const pageSize = 20;
+        
+        // ========== 初始化 ==========
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 设置默认日期范围（最近 30 天）
+            const today = new Date();
+            const thirtyDaysAgo = new Date(today - 30 * 24 * 60 * 60 * 1000);
+            document.getElementById('dateStart').value = thirtyDaysAgo.toISOString().split('T')[0];
+            document.getElementById('dateEnd').value = today.toISOString().split('T')[0];
+            
+            // 加载数据
+            await loadLogs();
+        });
+        
+        // ========== 数据加载 ==========
+        async function loadLogs() {
+            try {
+                // 模拟数据（实际应该从 API 加载）
+                const response = await fetch('/api/logs/light/recent?days=30');
+                const data = await response.json();
+                
+                if (data.success) {
+                    allLogs = data.logs || [];
+                    filteredLogs = [...allLogs];
+                    updateStats();
+                    renderTable();
+                    renderCharts();
+                    populateClassroomFilter();
+                } else {
+                    // 使用示例数据
+                    loadSampleData();
+                }
+            } catch (error) {
+                console.error('加载日志失败:', error);
+                loadSampleData();
+            }
+        }
+        
+        // 示例数据（用于演示）
+        function loadSampleData() {
+            const sampleLogs = [];
+            const classrooms = ['高一 13 班', '高一 14 班', '高一 15 班', '高一 09 班', '高一 10 班'];
+            const now = new Date();
+            
+            for (let i = 0; i < 150; i++) {
+                const date = new Date(now - i * 24 * 60 * 60 * 1000);
+                const hasEvent = Math.random() < 0.15;
+                const timestamp = date.toISOString().replace(/[-:T]/g, '').split('.')[0];
+                const imgHash = Math.random().toString(36).substring(2, 10);
+                
+                sampleLogs.push({
+                    id: `${date.toISOString().split('T')[0]}_${classrooms[i % 5]}`,
+                    timestamp: date.toISOString(),
+                    date: date.toISOString().split('T')[0],
+                    time: date.toTimeString().split(' ')[0],
+                    classroom: classrooms[i % 5],
+                    classname: `中大楼 ${201 + i % 5}`,
+                    teacher: '宋华忠',
+                    analysis: {
+                        has_person: !hasEvent,
+                        light_on: hasEvent,
+                        raw_result: hasEvent ? '没有人，灯开着' : '有人，灯开着'
+                    },
+                    action: {
+                        type: hasEvent ? 'turn_off_light' : 'none',
+                        success: hasEvent && Math.random() > 0.05,
+                        message: hasEvent ? '✅ 已关灯' : '-'
+                    },
+                    notification: {
+                        sms_sent: hasEvent,
+                        teacher_phone: '13815120911'
+                    },
+                    screenshot: {
+                        local_path: `captures_ai/高一${13 + i % 5}班_${timestamp}.jpg`,
+                        // 使用真实的 QuickForge 上传路径格式
+                        quickforge_url: `/templates/aiot-nj/uploads/无人灯检测/${timestamp}_${imgHash}.jpg`
+                    },
+                    tags: hasEvent ? ['无人灯', '已处理'] : ['正常']
+                });
+            }
+            
+            allLogs = sampleLogs;
+            filteredLogs = sampleLogs;
+            updateStats();
+            renderTable();
+            renderCharts();
+            populateClassroomFilter();
+        }
+        
+        // ========== 统计更新 ==========
+        function updateStats() {
+            const total = filteredLogs.length;
+            const events = filteredLogs.filter(log => log.tags.includes('无人灯')).length;
+            const success = filteredLogs.filter(log => log.action.success).length;
+            const eventRate = total > 0 ? ((events / total) * 100).toFixed(1) : 0;
+            const successRate = events > 0 ? ((success / events) * 100).toFixed(1) : 100;
+            const energySaved = (events * 0.5 * 30 * 0.8).toFixed(0); // 估算
+            
+            document.getElementById('totalChecks').textContent = total;
+            document.getElementById('totalEvents').textContent = events;
+            document.getElementById('successRate').textContent = successRate + '%';
+            document.getElementById('energySaved').textContent = '¥' + energySaved;
+            
+            // 趋势（简化版）
+            document.getElementById('checksTrend').textContent = '较上周 +5%';
+            document.getElementById('eventsTrend').textContent = '较上周 -12%';
+            document.getElementById('successTrend').textContent = '较上周 +2%';
+            document.getElementById('energyTrend').textContent = '较上月 +8%';
+        }
+        
+        // ========== 表格渲染 ==========
+        function renderTable() {
+            const tbody = document.getElementById('logTableBody');
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = filteredLogs.slice(start, end);
+            
+            document.getElementById('recordCount').textContent = `共 ${filteredLogs.length} 条记录`;
+            
+            if (pageData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <div class="icon">📭</div>
+                            <p>没有找到符合条件的记录</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = pageData.map(log => {
+                const statusClass = log.tags.includes('无人灯') ? 
+                    (log.action.success ? 'status-event' : 'status-failed') : 'status-normal';
+                const statusText = log.tags.includes('无人灯') ? 
+                    (log.action.success ? '发现问题' : '处理失败') : '正常';
+                
+                // 图片缩略图
+                let imgSrc = null;
+                if (log.screenshot) {
+                    // 优先使用 base64 数据（API 直接返回）
+                    if (log.screenshot.base64) {
+                        imgSrc = log.screenshot.base64;
+                    } else if (log.screenshot.quickforge_url) {
+                        // 降级到 QuickForge URL（9992 端口）
+                        imgSrc = `http://10.130.161.253:9992${log.screenshot.quickforge_url}`;
+                    } else if (log.screenshot.local_path) {
+                        // 降级到本地路径
+                        const imgName = log.screenshot.local_path.split(/[\\/]/).pop();
+                        imgSrc = `${API_BASE}/uploads/无人灯检测/${imgName}`;
+                    }
+                }
+                
+                // 如果还是没有图片，使用占位图
+                const imgHtml = imgSrc ? 
+                    `<img src="${imgSrc}" alt="抓图" style="width:80px;height:60px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="viewImage('${imgSrc}')" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjZjVmNWY1Ii8+PHRleHQgeD0iNTAlJSIgeT0iNTAlJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzk5OSI+5Lq65Y2XI9wv4bmA44CA57uG44CB5Yqg5YiwPC90ZXh0Pjwvc3ZnPg=='">` :
+                    `<span style="color:#ccc;">无图片</span>`;
+                
+                return `
+                    <tr>
+                        <td>${log.date} ${log.time}</td>
+                        <td>${log.classroom}</td>
+                        <td>${log.classname}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>${log.analysis.raw_result}</td>
+                        <td>${log.action.message}</td>
+                        <td>${log.notification.sms_sent ? '📱 短信' : '-'}</td>
+                        <td>${imgHtml}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+            renderPagination();
+        }
+        
+        // ========== 分页渲染 ==========
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredLogs.length / pageSize);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    html += `<span style="padding: 8px;">...</span>`;
+                }
+            }
+            
+            pagination.innerHTML = html;
+        }
+        
+        function goToPage(page) {
+            currentPage = page;
+            renderTable();
+        }
+        
+        // ========== 筛选器 ==========
+        function populateClassroomFilter() {
+            const classrooms = [...new Set(allLogs.map(log => log.classroom))];
+            const select = document.getElementById('classroomFilter');
+            select.innerHTML = '<option value="">全部教室</option>' +
+                classrooms.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+        
+        function applyFilters() {
+            const dateStart = document.getElementById('dateStart').value;
+            const dateEnd = document.getElementById('dateEnd').value;
+            const classroom = document.getElementById('classroomFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            
+            filteredLogs = allLogs.filter(log => {
+                if (dateStart && log.date < dateStart) return false;
+                if (dateEnd && log.date > dateEnd) return false;
+                if (classroom && log.classroom !== classroom) return false;
+                
+                if (status === 'normal' && log.tags.includes('无人灯')) return false;
+                if (status === 'event' && !log.tags.includes('无人灯')) return false;
+                if (status === 'failed' && (!log.tags.includes('无人灯') || log.action.success)) return false;
+                
+                return true;
+            });
+            
+            currentPage = 1;
+            updateStats();
+            renderTable();
+        }
+        
+        function resetFilters() {
+            document.getElementById('dateStart').value = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            document.getElementById('dateEnd').value = new Date().toISOString().split('T')[0];
+            document.getElementById('classroomFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            applyFilters();
+        }
+        
+        // ========== 图表渲染 ==========
+        let trendChartInstance = null;
+        let classroomChartInstance = null;
+        
+        function renderCharts() {
+            renderTrendChart();
+            renderClassroomChart();
+        }
+        
+        function renderTrendChart() {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            
+            // 按日期分组统计
+            const dateMap = {};
+            filteredLogs.forEach(log => {
+                if (!dateMap[log.date]) dateMap[log.date] = { total: 0, events: 0 };
+                dateMap[log.date].total++;
+                if (log.tags.includes('无人灯')) dateMap[log.date].events++;
+            });
+            
+            const dates = Object.keys(dateMap).sort();
+            const eventData = dates.map(d => dateMap[d].events);
+            
+            if (trendChartInstance) trendChartInstance.destroy();
+            
+            trendChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: '无人灯事件',
+                        data: eventData,
+                        borderColor: '#ff6384',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: true }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    }
+                }
+            });
+        }
+        
+        function renderClassroomChart() {
+            const ctx = document.getElementById('classroomChart').getContext('2d');
+            
+            // 按教室统计
+            const classroomMap = {};
+            filteredLogs.forEach(log => {
+                if (!classroomMap[log.classroom]) classroomMap[log.classroom] = 0;
+                if (log.tags.includes('无人灯')) classroomMap[log.classroom]++;
+            });
+            
+            // 排序取 TOP10
+            const sorted = Object.entries(classroomMap)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+            
+            const classrooms = sorted.map(x => x[0]);
+            const counts = sorted.map(x => x[1]);
+            
+            if (classroomChartInstance) classroomChartInstance.destroy();
+            
+            classroomChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: classrooms,
+                    datasets: [{
+                        label: '事件次数',
+                        data: counts,
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: '#ff6384',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    }
+                }
+            });
+        }
+        
+        // ========== 导出功能 ==========
+        function exportData() {
+            const csv = [
+                ['日期', '时间', '教室', '班级', '状态', 'AI 分析', '执行动作', '通知'],
+                ...filteredLogs.map(log => [
+                    log.date,
+                    log.time,
+                    log.classroom,
+                    log.classname,
+                    log.tags.includes('无人灯') ? (log.action.success ? '发现问题' : '处理失败') : '正常',
+                    log.analysis.raw_result,
+                    log.action.message,
+                    log.notification.sms_sent ? '短信' : '-'
+                ])
+            ].map(row => row.join(',')).join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `无人灯日志_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+        
+        // ========== 图片查看 ==========
+        function viewImage(imgSrc) {
+            console.log('查看图片:', imgSrc);
+            
+            // 创建模态框查看大图
+            const modal = document.createElement('div');
+            modal.id = 'imageModal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.95);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                cursor: pointer;
+                flex-direction: column;
+            `;
+            
+            // 加载提示
+            const loadingText = document.createElement('div');
+            loadingText.textContent = '加载中...';
+            loadingText.style.cssText = `
+                color: white;
+                font-size: 18px;
+                margin-bottom: 20px;
+            `;
+            modal.appendChild(loadingText);
+            
+            const img = document.createElement('img');
+            img.src = imgSrc;
+            img.style.cssText = `
+                max-width: 90%;
+                max-height: 85%;
+                object-fit: contain;
+                box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            `;
+            
+            // 图片加载成功
+            img.onload = () => {
+                loadingText.style.display = 'none';
+            };
+            
+            // 图片加载失败
+            img.onerror = () => {
+                loadingText.textContent = '❌ 图片加载失败';
+                loadingText.style.cssText += `
+                    color: #ff6b6b;
+                    font-size: 24px;
+                `;
+                img.style.display = 'none';
+                
+                // 显示错误详情
+                const errorDetail = document.createElement('div');
+                errorDetail.textContent = `URL: ${imgSrc}`;
+                errorDetail.style.cssText = `
+                    color: #999;
+                    font-size: 12px;
+                    margin-top: 10px;
+                    max-width: 80%;
+                    word-break: break-all;
+                `;
+                modal.appendChild(errorDetail);
+            };
+            
+            modal.appendChild(img);
+            document.body.appendChild(modal);
+            
+            // 点击关闭
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            };
+            
+            // ESC 键关闭
+            const escHandler = (e) => {
+                if (e.key === 'Escape') {
+                    document.body.removeChild(modal);
+                    document.removeEventListener('keydown', escHandler);
+                }
+            };
+            document.addEventListener('keydown', escHandler);
+        }
+        
+        // ========== 清空日志 ==========
+        function clearLogs() {
+            if (!confirm('⚠️ 确定要清空所有日志数据吗？\n\n此操作不可恢复，请谨慎操作！')) {
+                return;
+            }
+            
+            // 调用 API 清空日志
+            fetch('/api/logs/light/clear', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ 日志已清空！');
+                    location.reload();
+                } else {
+                    alert('❌ 清空失败：' + (data.message || '未知错误'));
+                }
+            })
+            .catch(err => {
+                // API 不可用时，清空本地数据
+                allLogs = [];
+                filteredLogs = [];
+                updateStats();
+                renderTable();
+                alert('⚠️ API 不可用，已清空本地显示数据（服务器数据未清空）');
+            });
+        }
+    </script>
+</body>
+</html>
+
+

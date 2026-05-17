@@ -1,0 +1,691 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>快铸网站AI版 · 轻量教学发布工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', sans-serif;
+        }
+        body {
+            background: linear-gradient(145deg, #f0f4fb 0%, #ffffff 100%);
+            color: #1f2a44;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 3rem 3rem 2rem 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0,20,50,0.25);
+            padding: 3rem 2.5rem;
+        }
+        h1 {
+            font-size: 3.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0b2b5c, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 0.25rem;
+        }
+        .subhead {
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: #2c3e70;
+            border-left: 5px solid #3b82f6;
+            padding-left: 1.25rem;
+            margin-bottom: 2rem;
+            margin-top: 0.5rem;
+        }
+        .badge {
+            display: inline-block;
+            background: #e9efff;
+            color: #1e3a8a;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+            border: 1px solid #b3ccff;
+            margin-bottom: 2rem;
+        }
+        .intro-card {
+            background: #ffffffd9;
+            border-radius: 2rem;
+            padding: 2rem 2.2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 8px 20px rgba(0,37,85,0.08);
+            border: 1px solid rgba(59,130,246,0.15);
+        }
+        .intro-card p {
+            font-size: 1.2rem;
+            color: #1e2b4f;
+            max-width: 900px;
+        }
+        .edition-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0 2.5rem;
+        }
+        .edition-card {
+            background: white;
+            border-radius: 2rem;
+            padding: 2rem 1.8rem;
+            box-shadow: 0 20px 35px -8px rgba(0,35,80,0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s;
+            border: 1px solid #ffffff50;
+        }
+        .edition-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 45px -12px #0b2b5c33;
+        }
+        .campus {
+            border-top: 6px solid #2563eb;
+        }
+        .teacher {
+            border-top: 6px solid #38bdf8;
+        }
+        .edition-card h3 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .campus h3 span {
+            background: #1e3a8a;
+            color: white;
+            font-size: 0.9rem;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            vertical-align: middle;
+        }
+        .edition-card .tagline {
+            font-weight: 600;
+            color: #0f2b62;
+            margin: 1.2rem 0 0.8rem;
+            font-size: 1.1rem;
+        }
+        .edition-card ul {
+            list-style: none;
+        }
+        .edition-card li {
+            margin-bottom: 0.7rem;
+            padding-left: 1.8rem;
+            position: relative;
+        }
+        .edition-card li::before {
+            content: "✓";
+            color: #2563eb;
+            font-weight: 700;
+            position: absolute;
+            left: 0;
+        }
+        .contact-tech {
+            background: #f2f6ff;
+            border-radius: 1.5rem;
+            padding: 1.2rem 1.8rem;
+            margin: 2rem 0 2.5rem;
+            border-left: 6px solid #2563eb;
+            font-weight: 500;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .contact-tech a {
+            background: #1e3a8a;
+            color: white;
+            padding: 0.7rem 2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+            box-shadow: 0 6px 14px #1e3a8a40;
+        }
+        .contact-tech a:hover {
+            background: #2563eb;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
+            margin: 2.5rem 0 3rem;
+        }
+        .feature-item {
+            background: white;
+            border-radius: 1.8rem;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 10px 25px -10px #0f2b6230;
+            border: 1px solid #e2edff;
+        }
+        .feature-item .emoji {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+        }
+        .feature-item h4 {
+            font-size: 1.4rem;
+            margin-bottom: 0.7rem;
+            color: #0b2b5c;
+        }
+        .feature-item p {
+            color: #2e3e6b;
+        }
+        .steps {
+            background: #f8fbff;
+            border-radius: 2.5rem;
+            padding: 2.5rem;
+            margin: 2.8rem 0;
+        }
+        .steps h3 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #0b2b5c;
+            margin-bottom: 1.5rem;
+        }
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            background: white;
+            padding: 1.2rem 2rem;
+            border-radius: 3rem;
+            box-shadow: 0 5px 15px #cbd5e180;
+        }
+        .step-num {
+            background: #2563eb;
+            color: white;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+        .step-content {
+            flex: 1;
+        }
+        .step-content code {
+            background: #e9efff;
+            padding: 0.3rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            color: #0b2b5c;
+            border: 1px solid #b1cbff;
+        }
+        .url-example {
+            background: #0b2b5c;
+            color: #cdfffc;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-family: monospace;
+            display: inline-block;
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+        }
+        .data-dir {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1rem 0 0.2rem;
+        }
+        .dir-badge {
+            background: #172554;
+            color: white;
+            border-radius: 20px;
+            padding: 0.25rem 1rem;
+            font-size: 0.9rem;
+            font-family: monospace;
+        }
+        .notes {
+            background: #ffffff;
+            border-radius: 2rem;
+            padding: 2rem 2.2rem;
+            margin: 2.5rem 0;
+            border: 1px dashed #3b82f6;
+        }
+        .notes h4 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        .notes ul {
+            columns: 2 240px;
+            column-gap: 2.5rem;
+            list-style: none;
+        }
+        .notes li {
+            margin-bottom: 1rem;
+            padding-left: 1.8rem;
+            position: relative;
+            break-inside: avoid;
+        }
+        .notes li::before {
+            content: "•";
+            color: #2563eb;
+            font-weight: 700;
+            font-size: 1.8rem;
+            position: absolute;
+            left: 0;
+            top: -8px;
+        }
+        .why-choose {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.8rem;
+            margin: 2rem 0 1.5rem;
+        }
+        .why-card {
+            background: #e7f0fe;
+            border-radius: 2rem;
+            padding: 1.8rem 1.5rem;
+            text-align: center;
+        }
+        .why-card .big-icon {
+            font-size: 2.3rem;
+            margin-bottom: 0.5rem;
+        }
+        .why-card h5 {
+            font-size: 1.3rem;
+            color: #0f2b62;
+        }
+        .footer-note {
+            margin-top: 3rem;
+            padding-top: 1.8rem;
+            border-top: 2px solid #cfdfff;
+            text-align: center;
+            color: #2c3e70;
+            font-size: 0.95rem;
+        }
+        .footer-note a {
+            color: #1e3a8a;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        /* 二维码样式优化: 合适大小 + 可点击效果 */
+        .qr-img {
+            width: 110px;
+            height: auto;
+            cursor: pointer;
+            border-radius: 16px;
+            box-shadow: 0 6px 14px rgba(0, 20, 40, 0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s;
+            vertical-align: middle;
+            display: inline-block;
+            background: white;
+            padding: 4px;
+        }
+        .qr-img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 轻量级全屏看图模态框 (最简单实现) */
+        .lightbox-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .lightbox-image {
+            max-width: 92vw;
+            max-height: 92vh;
+            object-fit: contain;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px black;
+            cursor: default;
+            animation: fadeInScale 0.2s ease-out;
+            background: white;
+            padding: 6px;
+            background-color: #fefefe;
+        }
+        .close-lightbox {
+            position: absolute;
+            top: 28px;
+            right: 32px;
+            color: white;
+            font-size: 42px;
+            font-weight: 400;
+            font-family: system-ui, monospace;
+            cursor: pointer;
+            background: rgba(0,0,0,0.5);
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .close-lightbox:hover {
+            background: rgba(255,50,50,0.8);
+            transform: scale(1.05);
+        }
+        
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.94);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* 辅助提示文字 */
+        .qr-hint {
+            font-size: 0.7rem;
+            color: #2c3e70;
+            margin-left: 6px;
+            display: inline-block;
+            vertical-align: middle;
+            background: #eef3ff;
+            border-radius: 30px;
+            padding: 0.2rem 0.7rem;
+        }
+        
+        @media (max-width: 600px) {
+            .container { padding: 1.8rem 1.2rem; }
+            h1 { font-size: 2.5rem; }
+            .step-item { flex-direction: column; align-items: flex-start; }
+            .qr-img { width: 90px; }
+            .close-lightbox { top: 16px; right: 16px; width: 44px; height: 44px; font-size: 34px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 标题区 -->
+    <div class="badge">⚡ 单个可执行文件 · 免数据库 · 开源免费</div>
+    <h1>快铸网站工具</h1>
+    <div class="subhead">快速发布人机交互网页的AI智能体 · 一键部署 · 自动收集数据</div>
+
+    <!-- 简介卡片 -->
+    <div class="intro-card">
+        <p>📦 这是一个微型网站服务器，您只需把做好的网页文件放到指定文件夹，学生即可访问并提交答案，所有数据自动保存在服务器。无需后端代码、不用数据库，可以用一句话生成交互页面。</p>
+    </div>
+
+    <!-- 版本对比：校园版 / 开源版-->
+    <div style="margin-bottom: 1rem;">
+        <span style="font-weight: 600; font-size: 1.4rem; color: #0b2b5c;">📌 校园版 · 开源版</span>
+    </div>
+    <div class="edition-grid">
+        <!-- 校园版卡片 -->
+        <div class="edition-card campus">
+            <h3>校园版 <span>支持公网部署</span></h3>
+            <p style="color:#2a3f7a; min-height: 3rem;">多用户 · 多级级联管理 · 适合复杂组织</p> 
+            <ul>
+                 <li>支持多用户、多级部署，统一管控</li>
+                <li>功能与官网完全一致，权限决定界面</li>
+               <li> 校园版可兼做学校网盘，学生可见共享文件。</li>
+                <li>校园版登录后能使用内置AI一键生成网页。</li>
+            </ul>
+        <div style="margin-top: 2rem;">
+                <a href="http://quickforge.cn/templates/teach/%E8%BD%AF%E4%BB%B6%E4%B8%8B%E8%BD%BD/%E5%BF%AB%E9%93%B8%E7%BD%91%E7%AB%99%E6%A0%A1%E5%9B%AD%E7%89%88.zip" style="background: #2563eb; color: white; padding: 0.6rem 1.8rem; border-radius: 40px; text-decoration: none; font-weight: 500; display: inline-block;">校园版下载 </a>     
+              </div>          
+        </div>
+        <!-- 极简版卡片 -->
+        <div class="edition-card teacher">
+            <h3>开源版</h3>
+            <p style="color:#2a3f7a; min-height: 3rem;">单机可执行文件 · 即下即用 · 数据本地保存</p> 
+            <ul>
+                <li>自制网页放入文件夹即可访问，数据提交功能需二次转换</li>
+                <li>官网生成的网页放入文件夹，无需转换即可提交数据</li>
+                 <li>免费开源，内置统计模板，可自建分析页 </li>
+                <li>开源版无需登录，没有教师和和学生管理功能 </li>
+            </ul>
+            <div style="margin-top: 2rem;">
+                <a href="http://quickforge.cn/templates/teach/%E8%BD%AF%E4%BB%B6%E4%B8%8B%E8%BD%BD/%E5%BF%AB%E9%93%B8%E7%BD%91%E7%AB%99%E6%9E%81%E7%AE%80%E7%89%88.rar" style="background: #2563eb; color: white; padding: 0.6rem 1.8rem; border-radius: 40px; text-decoration: none; font-weight: 500; display: inline-block;">开源版下载 </a>                 
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 核心功能三卡片 -->
+    <h2 style="font-size: 2rem; margin: 2.5rem 0 1rem;">✨ 核心功能</h2>
+    <div class="features-grid">
+        <div class="feature-item">
+            <div class="emoji">🚀</div>
+            <h4>一键发布</h4>
+            <p>将网页放入文件夹里，即可内网访问并提交和分析数据</p>
+        </div>
+        <div class="feature-item">
+            <div class="emoji">🤖</div>
+            <h4>AI 生成交互页</h4>
+            <p>用一句话描述，一键生成含提交/分析的网页，即变成数据收集工具</p>
+        </div>
+        <div class="feature-item">
+            <div class="emoji">📊</div>
+            <h4>自动收集 / 分析</h4>
+            <p>支持采集统计分析和数据管理，可生成全部数据的深度分析报告。</p>
+        </div>
+    </div>
+
+    <!-- 快速上手步骤 -->
+    <div class="steps">
+        <h3>⚡ 快速上手 </h3>
+        <div class="step-list">
+            <div class="step-item">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <strong>放置程序与网页</strong>
+                    <div>将 <code>APP.EXE</code> 放入一个文件夹，运行后系统自动按以下结构创建目录：</div>
+                    <pre style="background:#1a2639; color:#e2edff; padding:1rem; border-radius:1.5rem; margin-top:0.8rem; overflow-x:auto;">📁 你的程序目录/
+ ├── APP.EXE
+ ├── 📁 templates/
+ │    └── 📁 张三老师/          # 用户名
+ │         └── 📁 课堂练习一/    # 任务名
+ │              ├── index.html
+ │              ├── analysis.html
+ └── ... (首次运行自动生成 data和uploads文件夹)</pre>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <strong>启动服务</strong>
+                    <div>双击 <code>APP.EXE</code>，主界面登录后就是全功能校园版和官网一致，点击内网地址访问（如 <span class="url-example">http://192.168.1.100</span>）。</div>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <strong>学生访问</strong>
+                    <div>发送链接或浏览器输入：<code>http://电脑IP/用户名/任务名/页面.html</code></div>
+                    <div class="data-dir">
+                          <span class="dir-badge">局域网: http://192.168.1.100/张三老师/课堂练习一/index.html</span>
+                    </div>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                    <strong>查看数据</strong>
+                    <div>所有提交数据保存在<code>data</code> ，附件在 <code>uploads</code>文件夹里，可直接查看文件夹、访问内置采集统计页面、DeepSeek生成任务回收数据分析报告、自制的数据分析页面。</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 更多说明：数据存储 / AI生成 / 注意事项 -->
+    <div class="notes">
+        <h4>📁 一键生成网页 · DeepSeek生成网页 · 内置提示词模板库</h4>
+        <ul>
+             <li>一句话生成交互网页文件，交互网页自动发布。</li>
+            <li>已有单机版网页，选中后点击“一键生成网页”即可转为网络版。</li>
+            <li >每个任务一个文件夹，名称即为任务名。</li>
+            <li>内置统计分析，数据管理，DeepSeek官网生成。</li> 
+            <li>自动提交全部任务数据，生成深度分析报告。 </li>
+            <li>私有化全校共享网盘，文件夹属性设置游客可见。</li>
+        </ul>
+    </div>
+    <!-- 为什么选择 -->
+    <h2 style="font-size: 2rem; margin: 2rem 0 1rem;">🌟 为什么选择快铸网站工具？</h2>
+    <div class="why-choose">
+        <div class="why-card"><span class="big-icon">🪶</span><h5>零门槛</h5><p>无需编程基础，无需配置环境，双击即用</p></div>
+        <div class="why-card"><span class="big-icon">🔐</span><h5>本地化</h5><p>数据保存在您自己电脑，安全可控</p></div>
+        <div class="why-card"><span class="big-icon">🧩</span><h5>灵活扩展</h5><p>与AI结合，快速生成新交互页面</p></div>
+        <div class="why-card"><span class="big-icon">👥</span><h5>多用户支持</h5><p>一个程序服务多位老师，各自管理任务</p></div>
+    </div>
+
+    <!-- 结尾口号 + 联系 (含二维码优化：合适尺寸 + 点击全图) -->
+    <div style="background: linear-gradient(120deg, #e6f0ff, #ffffff); border-radius: 3rem; padding: 2rem; text-align: center; margin-top: 3rem;">
+        <p style="font-size: 1.8rem; font-weight: 600; color: #0f2b62;">福利彩蛋，限时免费!现在就把您的想法变成可互动的网页吧！</p>
+        <p style="margin: 1rem 0 0.5rem;">本地部署校园版的生成网页额度用完了，重新登录官网即可满血复活。</p> 
+        <p style="margin: 1rem 0 0.5rem;">本地部署的校园版使用官网临时密钥生成网页，如需在本地生成图片、视频，或者使用本地模型、私有密钥，请联系技术支持获取授权。</p>
+        <div style="margin-top: 1.6rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 1.2rem;">
+            <a href="mailto:53157652@qq.com" style="background: #2563eb; color: white; padding: 0.8rem 2.2rem; border-radius: 60px; text-decoration: none; font-weight: 600; box-shadow: 0 5px 12px rgba(37,99,235,0.3);">📧 技术支持</a>  
+            
+            <!-- 二维码图片：调整合适大小 + 点击显示全图 + 提示 -->
+            <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,240,0.5); padding: 0 0.8rem 0 0.5rem; border-radius: 60px;">
+                <img id="techQrImg" class="qr-img" src="/img/j.png" alt="快铸技术支持二维码，点击查看大图" title="点击查看高清二维码">
+                <span class="qr-hint">📱 扫码咨询</span>
+            </div>
+        </div>
+        <!-- 额外小提示 强化可用性 -->
+        <p style="font-size: 0.75rem; margin-top: 1rem; opacity: 0.7;">* 点击二维码图片即可放大查看原图</p>
+    </div>
+
+    <!-- footer -->
+    <div class="footer-note">
+        ⚡ 快铸网站工具 · 开源免费 · 单文件发布 · 让互动触手可及<br>
+        <span style="opacity: 0.7;">© 2025 快铸团队 ·  </span>
+    </div>
+</div>
+
+<!-- 极简全图查看模态框实现 (点击二维码全屏展示大图，再次点击任意位置关闭) -->
+<script>
+    (function() {
+        // 获取二维码图片元素
+        const qrImg = document.getElementById('techQrImg');
+        if (!qrImg) return;
+        
+        // 确保图片原始src存在，如果图片加载失败不影响体验，但模态窗仍会展示默认破损图，但保留功能正常。
+        // 设置合适尺寸已在css定义
+        // 点击显示全图
+        function showFullImage(imgSrc, altText) {
+            // 避免重复生成多个遮罩
+            const existingOverlay = document.querySelector('.lightbox-overlay');
+            if (existingOverlay) {
+                existingOverlay.remove();
+            }
+            
+            // 创建全屏遮罩层
+            const overlay = document.createElement('div');
+            overlay.className = 'lightbox-overlay';
+            overlay.setAttribute('role', 'dialog');
+            overlay.setAttribute('aria-label', '图片大图查看');
+            
+            // 创建图片容器 (大图)
+            const fullImg = document.createElement('img');
+            fullImg.src = imgSrc;
+            fullImg.alt = altText || '二维码大图';
+            fullImg.className = 'lightbox-image';
+            
+            // 创建关闭按钮 (X)
+            const closeBtn = document.createElement('div');
+            closeBtn.className = 'close-lightbox';
+            closeBtn.innerHTML = '✕';
+            closeBtn.setAttribute('aria-label', '关闭大图');
+            
+            // 添加到遮罩
+            overlay.appendChild(fullImg);
+            overlay.appendChild(closeBtn);
+            
+            // 点击遮罩关闭（点击背景图或空白区域关闭，但点击图片本身不关闭，提升体验）
+            overlay.addEventListener('click', function(e) {
+                // 如果点击的是图片本身，不关闭（防止误关闭，只通过点击背景、关闭按钮或外部触发关闭）
+                if (e.target === fullImg) {
+                    return;
+                }
+                // 关闭模态框
+                closeLightbox(overlay);
+            });
+            
+            // 关闭按钮单独绑定事件，防止冒泡
+            closeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                closeLightbox(overlay);
+            });
+            
+            // 按ESC键关闭
+            function handleKeydown(e) {
+                if (e.key === 'Escape' && document.body.contains(overlay)) {
+                    closeLightbox(overlay);
+                    document.removeEventListener('keydown', handleKeydown);
+                }
+            }
+            document.addEventListener('keydown', handleKeydown);
+            
+            // 关闭函数: 移除遮罩并清理键盘监听
+            function closeLightbox(element) {
+                if (element && element.parentNode) {
+                    element.remove();
+                }
+                document.removeEventListener('keydown', handleKeydown);
+                // 恢复body滚动（之前未锁滚动，无需强制解锁，但如果有锁定可解开，但未加overflow，也无大碍）
+                // 最好避免body滚动冲突，不做额外处理，保持简单
+            }
+            
+            // 可选：防止背景滚动（轻量但不影响体验，简单模式不强制锁body，用户可接受）
+            // 注入body时，为了防止滚动穿透，加上overflow:hidden 视觉更好
+            const originalOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+            overlay.addEventListener('remove', function() {
+                document.body.style.overflow = originalOverflow;
+            });
+            
+            document.body.appendChild(overlay);
+        }
+        
+        // 绑定点击事件
+        qrImg.addEventListener('click', function(e) {
+            e.stopPropagation();
+            let imgSrc = qrImg.getAttribute('src');
+            if (!imgSrc) {
+                // 防备无src占位情况
+                imgSrc = '/img/j.png';
+            }
+            const altText = qrImg.getAttribute('alt') || '技术支持二维码';
+            showFullImage(imgSrc, altText);
+        });
+        
+        // 对于图片加载失败不干扰显示，只是在模态框也会显示加载失败的样式（但依旧提供点击功能）
+        // 增加样式平滑，图片默认有了圆角和阴影
+    })();
+</script>
+</body>
+</html>

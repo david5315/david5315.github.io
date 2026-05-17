@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游客访问公开的网站，学生访问教师设置为公开的课堂教学网站。</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        body { background: #f5f5f5; padding: 20px; }
+        .logo-container {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .logo-container img {
+            width: 100%;        /* 填满列宽，使宽度与整行卡片总宽一致 */
+            height: auto;
+        }
+        .welcome-message {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        .welcome-message p {
+            color: #495057;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        .task-card { margin-bottom: 15px; }
+        .folder-icon {
+            font-size: 1.5rem;
+            color: #f39c12;
+        }
+        .teacher-name {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .task-name {
+            font-weight: 500;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- LOGO 区域：使用 col-12 占满整行，宽度与下方卡片行一致 -->
+        <div class="row">
+            <div class="col-9">
+                <div class="logo-container">
+                    <img src="/data/logo.png" alt="平台 LOGO">
+                </div>
+            </div>
+        </div>
+
+        <!-- 欢迎信息（另起一行，左对齐） -->
+        <div class="row">
+            <div class="col-9">
+                <div class="welcome-message">
+                    <p>这里汇聚了网站的公开教学资源，本次教学课程请同学们访问指定的内容，完成趣味互动体验、数据提交、作业练习。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 卡片列表：一行三个（col-md-4） -->
+        <div id="task-list" class="row"></div>
+    </div>
+
+    <script>
+        function escapeHtml(unsafe) {
+            return unsafe.replace(/[&<>"]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                if (m === '"') return '&quot;';
+                return m;
+            });
+        }
+
+        async function loadPublicTasks() {
+            try {
+                const res = await fetch('/api/public/tasks');
+                const data = await res.json();
+                if (data.success) {
+                    const container = document.getElementById('task-list');
+                    const tasks = data.tasks || [];
+                    if (tasks.length === 0) {
+                        container.innerHTML = '<p class="text-muted">暂无共享网站</p>';
+                        return;
+                    }
+
+                    // 构建所有路径的集合（格式：teacher/taskName）
+                    const allPaths = new Set(tasks.map(t => `${t.teacher}/${t.taskName}`));
+
+                    // 筛选出最高级公开文件夹：没有任何父级路径也在 allPaths 中
+                    const topLevelTasks = tasks.filter(task => {
+                        const pathParts = task.taskName.split('/');  // taskName 可能是多级路径，如 "数学/习题"
+                        // 检查从最浅层到倒数第二层的所有父级路径
+                        for (let i = 1; i < pathParts.length; i++) {
+                            const parentFolder = pathParts.slice(0, i).join('/');
+                            const parentPath = `${task.teacher}/${parentFolder}`;
+                            if (allPaths.has(parentPath)) {
+                                return false; // 有父级也被公开，跳过
+                            }
+                        }
+                        return true;
+                    });
+
+                    // 渲染筛选后的任务
+                    container.innerHTML = '';
+                    topLevelTasks.forEach(task => {
+                        const col = document.createElement('div');
+                        col.className = 'col-md-3 task-card';  // 一行三个
+                        col.innerHTML = `
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-folder-open folder-icon me-2"></i>
+                                        <span class="teacher-name">${escapeHtml(task.teacher)}</span>
+                                    </div>
+                                    <h6 class="task-name mt-2">
+                                        <a href="public_browse.html?path=${task.teacher}/${task.taskName}" class="stretched-link text-decoration-none">${escapeHtml(task.taskName)}</a>
+                                    </h6>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(col);
+                    });
+                }
+            } catch (e) {
+                console.error('加载共享网站失败', e);
+            }
+        }
+        loadPublicTasks();
+    </script>
+</body>
+</html>
