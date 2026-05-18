@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>升级会员 - 课堂互动教学评测系统</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border: none;
+            max-width: 500px;
+            margin: auto;
+        }
+        .card-header {
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 1.5rem;
+        }
+        .btn-success {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            border: none;
+        }
+        .btn-success:hover {
+            background: linear-gradient(to right, #27ae60, #2ecc71);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .qr-code {
+            max-width: 200px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .price-tag {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header text-center">
+                <h4><i class="fas fa-crown me-2"></i>升级为超级会员</h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <p class="lead">解锁全部 AI 功能，畅享无限创作</p>
+                    <div class="price-tag">¥99/ 年</div>
+                    <p class="text-muted">提供站内一键生成发布网页99个，不限次生成联网数据采集统计网页，不限次生成采集数据的AI分析报告，提供个人版和校园版的本地化部署软件，官网所有页面都可以下载后本地化部署，无须修改就可采集数据。</p>
+                </div>
+
+                <div class="alert alert-info" role="alert">
+                    <h5><i class="fas fa-info-circle me-2"></i>支付说明</h5>
+                    <p class="mb-0">请使用微信扫描二维码联系客服开通快铸AI会员服务</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="qr-code">
+                        <!-- 请将您的收款二维码图片命名为 qr_code.png 并放置在此目录下 -->
+                        <img src="img/qr_code.png" alt="收款二维码" class="img-fluid">
+                    </div>
+                    <p class="small text-muted">（请使用微信或支付宝扫码支付）</p>
+                </div>
+
+                <button id="pay-confirm-btn" class="btn btn-success w-100 mt-3">
+                    <i class="fas fa-check me-2"></i>我已知晓
+                </button>
+
+                <div class="text-center mt-3">
+                    <a href="teacher.html" class="text-decoration-none">返回工作台</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 消息提示容器 -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = window.location.origin + '/api';
+
+        function showToast(type, message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'warning'} border-0 show`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
+
+        document.getElementById('pay-confirm-btn').addEventListener('click', async function() {
+            const btn = this;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>处理中...';
+
+            try {
+                const response = await fetch(API_BASE + '/upgrade-to-qfuser', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('success', '升级成功！即将跳转...');
+                    setTimeout(() => {
+                        window.location.href = 'teacher.html';
+                    }, 2000);
+                } else {
+                    showToast('error', data.message || '升级失败，请稍后重试');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-check me-2"></i>我已支付';
+                }
+            } catch (error) {
+                showToast('error', '网络错误');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check me-2"></i>我已支付';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 智能数据管理 · 课堂互动</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <script src="js/chart.umd.min.js"></script>
+    <style>
+        body { background: #f5f7fa; padding: 20px; font-family: 'Segoe UI', Roboto, sans-serif; }
+        .question-options .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; }
+        .question-options .option-item { transition: all 0.2s; border-left: 3px solid #3498db !important; }
+        .question-options .option-item:hover { background: #e8f4f8 !important; transform: translateX(2px); }
+        .answer-stats .answer-text { max-width: 60%; }
+        .navbar-brand { font-weight: bold; color: #3498db !important; cursor: pointer; }
+        .admin-badge { background: #e74c3c; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.7rem; margin-left: 6px; }
+        .user-profile-link { color: white; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+        .user-profile-link:hover { text-decoration: underline; }
+        .nav-tabs .nav-link.active { font-weight: bold; border-bottom: 3px solid #3498db; }
+        .chart-container { background: white; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .slider-container { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+        .slider-container input { flex: 1; min-width: 200px; }
+        .question-pagination { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        .attachment-gallery { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px; }
+        .attachment-card { width: 140px; text-align: center; cursor: pointer; border: 1px solid #dee2e6; border-radius: 8px; padding: 8px; background: #fff; transition: transform 0.2s; }
+        .attachment-card:hover { transform: scale(1.02); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .attachment-thumb { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; background: #f0f0f0; }
+        .image-modal-img { max-width: 90vw; max-height: 80vh; }
+        .data-table { font-size: 0.9rem; }
+        .batch-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+        .pagination-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; flex-wrap: wrap; gap: 10px; }
+        .folder-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .folder-item:hover { background: #f8f9fa; }
+        .folder-name i { margin-right: 10px; color: #f39c12; }
+        .breadcrumb-link { color: #3498db; cursor: pointer; text-decoration: none; }
+        .breadcrumb-link:hover { text-decoration: underline; }
+        .breadcrumb-separator { margin: 0 5px; color: #6c757d; }
+        #task-folder-list-container { max-height: 450px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 8px; margin-top: 10px; }
+        .toast-container { z-index: 9999; }
+        .detail-json { background: #f8f9fa; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 0.85rem; max-height: 400px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+        .text-answer-preview { background: #fafafa; border-left: 4px solid #6c757d; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; max-height: 180px; overflow-y: auto; }
+        .badge-answer-type { background: #e9ecef; color: #2c3e50; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; font-weight: normal; margin-left: 8px; }
+        .field-hint { font-size: 0.8rem; color: #6c757d; margin-top: 4px; }
+        #teacher-selector { min-width: 150px; background-color: #fff; border: 1px solid #ced4da; }
+        .html-file-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #eee; }
+        .html-file-item:hover { background: #f8f9fa; }
+        .html-file-name i { margin-right: 10px; color: #3498db; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded mb-4 shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" id="help-trigger"><i class="fas fa-chalkboard-teacher me-2"></i>互动教学发布系统</a>
+            <div class="navbar-nav ms-auto d-flex flex-row align-items-center gap-2">
+                <a class="btn btn-outline-light btn-sm" href="teacher.html"><i class="fas fa-folder-open me-1"></i> 网站群</a>
+                <a class="btn btn-outline-light btn-sm" href="pubshare.html"><i class="fas fa-globe me-1"></i> 公开资源</a>
+                <a class="btn btn-outline-light btn-sm" href="private_students.html" id="private-students-link" style="display: none;"><i class="fas fa-user-graduate me-1"></i> 学生管理</a>
+                <a class="btn btn-outline-light btn-sm" href="admin_management.html" id="admin-link" style="display: none;"><i class="fas fa-user-shield me-1"></i> 全局管理</a>
+                <a class="btn btn-outline-light btn-sm active" href="data_viewer.html"><i class="fas fa-database me-1"></i> 数据管理</a>
+                <a class="btn btn-outline-light btn-sm" href="ai_prompt_templates.html"><i class="fas fa-file-code me-1"></i> 模板</a>
+                <select id="teacher-selector" class="form-select form-select-sm me-2" style="display: none; width: auto;"></select>
+                <span class="navbar-text"><span id="current-user-display" class="user-profile-link">教师用户</span></span>
+                <button id="logout-btn" class="btn btn-outline-light btn-sm"><i class="fas fa-sign-out-alt me-1"></i> 退出</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 任务选择行 -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <label class="form-label fw-bold"><i class="fas fa-folder-tree me-1 text-primary"></i> 选择数据任务文件夹</label>
+            <div class="input-group">
+                <input type="text" class="form-control bg-light" id="selected-task-folder" readonly placeholder="未选择任何任务">
+                <button class="btn btn-outline-primary" type="button" id="select-task-folder-btn"><i class="fas fa-folder-open me-1"></i>浏览</button>
+                <button class="btn btn-outline-secondary" type="button" id="clear-task-folder-btn" title="清除选择"><i class="fas fa-times"></i></button>
+                <button class="btn btn-outline-success" type="button" id="generate-questions-btn" style="display: none;"><i class="fas fa-robot me-1"></i>获取网页题干</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 数据展示卡片 -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <ul class="nav nav-tabs card-header-tabs" id="dataTabs" role="tablist">
+                <li class="nav-item"><button class="nav-link active" id="template-tab" data-bs-toggle="tab" data-bs-target="#template" type="button">📊 通用模板分析</button></li>
+                <li class="nav-item"><button class="nav-link" id="export-tab" data-bs-toggle="tab" data-bs-target="#export" type="button">📋 数据导出与管理</button></li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content">
+                <!-- 分析面板 -->
+                <div class="tab-pane fade show active" id="template" role="tabpanel">
+                    <div class="mb-3 text-muted" id="selected-task-title-template">未选择任务</div>
+                    <div class="chart-container">
+                        <h5><i class="fas fa-chart-line text-info"></i> 提交时间分布</h5>
+                        <div class="slider-container">
+                            <span class="fw-semibold">时间间隔：</span>
+                            <input type="range" id="time-interval-slider" min="1" max="86400" value="3600" step="1">
+                            <span id="interval-value" class="badge bg-secondary">3600 秒 (1小时)</span>
+                        </div>
+                        <canvas id="timelineChart" width="800" height="280" style="max-width:100%; height:auto;"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h5><i class="fas fa-chart-bar text-warning"></i> 题目答案分布 (智能识别字段)</h5>
+                        <div id="questions-container" class="mt-3"></div>
+                        <div id="question-pagination" class="question-pagination" style="display: none;"></div>
+                    </div>
+                    <div class="chart-container">
+                        <h5><i class="fas fa-images text-success"></i> 提交图片附件预览</h5>
+                        <div id="analysis-attachments" class="text-muted">暂无图片附件</div>
+                    </div>
+                </div>
+
+                <!-- 导出与管理面板 -->
+                <div class="tab-pane fade" id="export" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <span id="selected-task-title-export" class="text-muted">未选择任务</span>
+                        <div>
+                            <button class="btn btn-sm btn-success me-2" id="export-csv-btn" style="display: none;"><i class="fas fa-file-csv me-1"></i>导出CSV</button>
+                            <button class="btn btn-sm btn-primary" id="download-attachments-btn" style="display: none;"><i class="fas fa-download me-1"></i>下载全部附件</button>
+                        </div>
+                    </div>
+                    <div class="batch-bar">
+                        <div class="form-check"><input class="form-check-input" type="checkbox" id="select-all-checkbox"><label class="form-check-label">全选当前页</label></div>
+                        <button class="btn btn-danger btn-sm" id="batch-delete-btn" disabled><i class="fas fa-trash-alt me-1"></i>批量删除</button>
+                        <span id="selected-count" class="text-muted small">已选择 0 条</span>
+                    </div>
+                    <div id="submission-table-container"></div>
+                    <div class="pagination-controls" id="export-pagination" style="display: none;">
+                        <div>
+                            <button class="btn btn-sm btn-outline-secondary" id="prev-page-btn"><i class="fas fa-chevron-left"></i> 上一页</button>
+                            <span id="page-info" class="mx-2"></span>
+                            <button class="btn btn-sm btn-outline-secondary" id="next-page-btn">下一页 <i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div><select id="page-size-select" class="form-select form-select-sm" style="width: auto;"><option value="20">20条/页</option><option value="50">50条/页</option><option value="100">100条/页</option></select></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 任务文件夹选择器模态框 (修复) -->
+<div class="modal fade" id="taskFolderSelectorModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-folder-tree me-2"></i>选择任务文件夹</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="d-flex align-items-center justify-content-between mb-3 px-3 pt-3">
+                    <button class="btn btn-sm btn-outline-secondary" id="task-folder-go-up" disabled><i class="fas fa-arrow-up me-1"></i>上一级</button>
+                    <div id="task-folder-breadcrumb" class="breadcrumb"></div>
+                </div>
+                <div id="task-folder-loading" class="text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-2">加载中...</p></div>
+                <div id="task-folder-empty" class="text-center text-muted py-5" style="display: none;">暂无文件夹</div>
+                <div id="task-folder-items"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- HTML文件选择器模态框 (修复) -->
+<div class="modal fade" id="htmlFileSelectorModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fas fa-file-code me-2"></i>选择 HTML 文件</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="html-task-folder-display" class="alert alert-secondary small"></div>
+                <div id="html-file-list-container">
+                    <div id="html-file-loading" class="text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-2">加载中...</p></div>
+                    <div id="html-file-empty" class="text-center text-muted py-5" style="display: none;">暂无 HTML 文件</div>
+                    <ul class="list-group list-group-flush" id="html-file-items"></ul>
+                </div>
+                <div id="generate-options" style="display: none;">
+                    <div class="alert alert-info mb-3"><i class="fas fa-info-circle me-2"></i>请选择生成方式：</div>
+                    <div class="d-grid gap-2 mb-3">
+                        <button class="btn btn-primary btn-lg" id="ai-generate-btn" type="button"><i class="fas fa-robot me-2"></i>AI 智能生成<small class="d-block mt-1 text-white-50">使用 AI 大模型，更智能</small></button>
+                        <button class="btn btn-success btn-lg" id="local-generate-btn" type="button"><i class="fas fa-bolt me-2"></i>程序快速生成<small class="d-block mt-1 text-white-50">本地解析，速度快</small></button>
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fas fa-wand-magic-sparkles me-1"></i>自定义提示词（仅 AI 模式）:</label>
+                        <textarea class="form-control" id="custom-prompt-input" rows="2" placeholder="可选：输入自定义提示词..."></textarea>
+                    </div>
+                    <button class="btn btn-outline-secondary" id="back-to-file-list"><i class="fas fa-arrow-left me-1"></i>返回选择文件</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 图片查看模态框 -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">图片查看</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body text-center"><img id="modalImage" src="" alt="大图" class="image-modal-img"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 提交详情模态框 (修复) -->
+<div class="modal fade" id="submissionDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="fas fa-info-circle me-2"></i>提交记录详情</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="detail-content">
+                <!-- 动态填充详情 -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 帮助模态框 -->
+<div class="modal fade" id="helpModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white"><h5 class="modal-title"><i class="fas fa-question-circle me-2"></i>数据管理使用说明</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body"><p><strong>📌 智能识别字段</strong>：现在会自动发现问答题、代码、填空等非标准答案字段，并在题目分布中展示。</p><p><strong>📋 答案摘要</strong>：表格中的摘要列将包含所有非系统字段。</p><p><strong>🤖 获取网页题干</strong>：选择任务后点击右侧按钮，可选择一个HTML文件，AI将分析生成题目题干并保存到任务元数据中，便于数据分析展示。</p></div>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast 容器 -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+<script src="js/bootstrap.bundle.min.js"></script>
+<script>
+    (function(){
+        const API_BASE = window.location.origin + '/api';
+        let currentUser = null;
+        let isAdmin = false;
+        let currentTask = null;
+        let selectedTaskFolderPath = '';
+        let submissions = [];
+        let timelineChart = null;
+        let allQuestions = [];           
+        let currentQuestionPage = 1;
+        let questionsPerPage = 5;
+        let totalQuestionPages = 1;
+        let exportCurrentPage = 1;
+        let exportPageSize = 20;
+        let totalPages = 1;
+        let questionMap = {};            
+
+        // 新增变量
+        let htmlFileSelectorModal;
+        let currentBrowsePath = '';
+        let selectedHtmlFilePath = '';
+
+        const SYSTEM_FIELDS = new Set([
+            '_filename', '_server_timestamp', '_files', 'student_id', 'student_name','task_name',
+            'teacher', 'activity_id', 'answers', '_id', '_rev', 'type', 'timestamp'
+        ]);
+
+        let taskFolderModal, imageModal, helpModal, detailModal;
+
+        function showToast(type, message) {
+            const container = document.querySelector('.toast-container');
+            if (!container) { alert(`[${type}] ${message}`); return; }
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type==='error'?'danger':(type==='success'?'success':'warning')} border-0 show`;
+            toast.setAttribute('role','alert');
+            toast.innerHTML = `<div class="d-flex"><div class="toast-body">${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+            container.appendChild(toast);
+            setTimeout(()=>toast.remove(), 3000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+        }
+
+        async function apiCall(endpoint, options = {}) {
+            if (options.body && typeof options.body === 'object') {
+                options.body = JSON.stringify(options.body);
+                options.headers = { 'Content-Type': 'application/json', ...options.headers };
+            }
+            const res = await fetch(`${API_BASE}${endpoint}`, { credentials: 'include', ...options });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json();
+        }
+
+        function getEffectiveTeacher() {
+            if (isAdmin) {
+                const sel = document.getElementById('teacher-selector');
+                if (sel && sel.value) return sel.value.trim();
+                showToast('warning','请先选择一个教师账号');
+                return null;
+            }
+            return currentUser?.username || null;
+        }
+
+        function getAnswerValue(obj, fieldPath) {
+            if (!obj) return undefined;
+            if (fieldPath.includes('.')) {
+                const parts = fieldPath.split('.');
+                let val = obj;
+                for (let p of parts) {
+                    if (val && typeof val === 'object') val = val[p];
+                    else return undefined;
+                }
+                return val;
+            }
+            return obj[fieldPath];
+        }
+
+        function extractAllQuestionFields() {
+            const fieldSet = new Set();
+            submissions.forEach(sub => {
+                Object.keys(sub).forEach(key => {
+                    if (SYSTEM_FIELDS.has(key) || key.startsWith('_')) return;
+                    fieldSet.add(key);
+                });
+                if (sub.answers && typeof sub.answers === 'object') {
+                    Object.keys(sub.answers).forEach(k => fieldSet.add(`answers.${k}`));
+                }
+            });
+            return Array.from(fieldSet).sort((a,b) => {
+                const aIsAns = a.startsWith('answers.');
+                const bIsAns = b.startsWith('answers.');
+                if (aIsAns && !bIsAns) return -1;
+                if (!aIsAns && bIsAns) return 1;
+                return a.localeCompare(b);
+            });
+        }
+
+        function getAnswerSummary(sub) {
+            const parts = [];
+            if (sub.answers && typeof sub.answers === 'object') {
+                Object.entries(sub.answers).forEach(([k,v]) => {
+                    if (v === undefined || v === null) return;
+                    let strVal = typeof v === 'object' ? JSON.stringify(v) : String(v);
+                    parts.push(`${k}:${strVal.substring(0,40)}`);
+                });
+            }
+            Object.keys(sub).forEach(key => {
+                if (SYSTEM_FIELDS.has(key) || key.startsWith('_')) return;
+                let val = sub[key];
+                if (val === undefined || val === null) return;
+                let strVal = typeof val === 'object' ? JSON.stringify(val) : String(val);
+                parts.push(`${key}:${strVal.substring(0,40)}`);
+            });
+            let str = parts.join('; ');
+            if (!str) return '无答案字段';
+            return str.length > 120 ? str.slice(0,117)+'…' : str;
+        }
+
+        function checkLoginState() {
+            const userStr = localStorage.getItem('teacherUser');
+            if (!userStr) { window.location.href = 'login.html'; return null; }
+            try { return JSON.parse(userStr); } catch(e) { window.location.href = 'login.html'; return null; }
+        }
+
+        function clearAllLoginState() {
+            localStorage.removeItem('teacherToken'); localStorage.removeItem('teacherUser');
+            sessionStorage.clear();
+            document.cookie.split(";").forEach(c => { document.cookie = c.replace(/^ +/,"").replace(/=.*/, "=;expires="+new Date().toUTCString()+";path=/"); });
+        }
+
+        async function fetchUserProfile() {
+            try { const res = await apiCall('/account/profile'); if(res.success && res.profile) { Object.assign(currentUser, res.profile); localStorage.setItem('teacherUser', JSON.stringify(currentUser)); } } catch(e){}
+        }
+
+        function updateUserDisplay() {
+            const span = document.getElementById('current-user-display');
+            span.innerHTML = `${escapeHtml(currentUser.username)} ${isAdmin?'<span class="admin-badge">管理员</span>':''}`;
+            span.onclick = ()=> window.location.href='profile.html';
+            document.getElementById('admin-link').style.display = isAdmin ? 'inline-block' : 'none';
+            document.getElementById('private-students-link').style.display = 'inline-block';
+            if (isAdmin) loadTeacherSelector();
+            else document.getElementById('teacher-selector').style.display = 'none';
+        }
+
+        async function loadTeacherSelector() {
+            const selector = document.getElementById('teacher-selector');
+            if (!selector) return;
+            if (!isAdmin) { selector.style.display = 'none'; return; }
+            try {
+                const res = await apiCall('/admin/teachers');
+                if (res.success && res.teachers && res.teachers.length) {
+                    selector.innerHTML = '';
+                    res.teachers.forEach(t => { 
+                        const opt = document.createElement('option'); 
+                        opt.value = t.username; 
+                        opt.textContent = `${t.name||t.username} (${t.username})`; 
+                        selector.appendChild(opt); 
+                    });
+                    selector.style.display = 'inline-block';
+                    // 默认选择当前管理员自己
+                    if (currentUser && currentUser.username) {
+                        selector.value = currentUser.username;
+                    } else if (selector.options.length > 0) {
+                        selector.value = selector.options[0].value;
+                    }
+                } else {
+                    // 如果没有获取到教师列表，添加当前管理员作为选项
+                    selector.innerHTML = '';
+                    const opt = document.createElement('option');
+                    opt.value = currentUser?.username || 'admin';
+                    opt.textContent = `${currentUser?.name || currentUser?.username || 'admin'} (${currentUser?.username || 'admin'})`;
+                    selector.appendChild(opt);
+                    selector.style.display = 'inline-block';
+                    selector.disabled = true;
+                    showToast('warning', '没有找到任何教师账户');
+                }
+                selector.removeEventListener('change', handleTeacherChange);
+                selector.addEventListener('change', handleTeacherChange);
+            } catch (error) {
+                selector.innerHTML = '<option value="">加载失败</option>';
+                selector.style.display = 'inline-block';
+                selector.disabled = true;
+                showToast('error', '加载教师列表网络错误');
+            }
+        }
+
+        function handleTeacherChange() { clearTaskSelection(); }
+
+        // ---------- 任务文件夹选择 ----------
+        function openTaskFolderSelector() {
+            if (!getEffectiveTeacher()) return;
+            currentBrowsePath = '';
+            loadTaskFolderList('');
+            taskFolderModal.show();
+        }
+
+        async function loadTaskFolderList(path) {
+            const loading = document.getElementById('task-folder-loading'), itemsDiv = document.getElementById('task-folder-items'), emptyDiv = document.getElementById('task-folder-empty');
+            loading.style.display='block'; itemsDiv.innerHTML=''; emptyDiv.style.display='none';
+            const teacher = getEffectiveTeacher();
+            if(!teacher) { loading.style.display='none'; return; }
+            try {
+                const res = await apiCall(`/teacher/files?path=${encodeURIComponent(path)}&teacher=${teacher}`);
+                if(res.success) {
+                    const folders = res.items.filter(i=>i.type==='dir');
+                    renderTaskFolderList(folders, path);
+                    document.getElementById('task-folder-go-up').disabled = (path==='');
+                } else { emptyDiv.style.display='block'; emptyDiv.innerText = res.message||'加载失败'; }
+            } catch { emptyDiv.style.display='block'; emptyDiv.innerText='网络错误'; }
+            finally { loading.style.display='none'; }
+        }
+
+        function renderTaskFolderList(folders, currentPath) {
+            const itemsDiv = document.getElementById('task-folder-items'), emptyDiv = document.getElementById('task-folder-empty');
+            if(!folders.length) { emptyDiv.style.display='block'; itemsDiv.innerHTML=''; }
+            else {
+                emptyDiv.style.display='none';
+                itemsDiv.innerHTML = folders.map(f=>`
+                    <div class="folder-item">
+                        <div class="folder-name" onclick="window.enterTaskFolder('${f.path}')"><i class="fas fa-folder"></i> ${escapeHtml(f.name)}</div>
+                        <button class="btn btn-sm btn-outline-primary" onclick="window.selectTaskFolderFromModal('${f.path}')">选择</button>
+                    </div>`).join('');
+            }
+            let bread = '<a class="breadcrumb-link" onclick="window.loadTaskFolderList(\'\')">根目录</a>';
+            if(currentPath) {
+                let acc=''; currentPath.split('/').forEach((p,i)=>{
+                    acc += (i===0?p:'/'+p);
+                    bread += `<span class="breadcrumb-separator">/</span><a class="breadcrumb-link" onclick="window.loadTaskFolderList('${acc}')">${p}</a>`;
+                });
+            }
+            document.getElementById('task-folder-breadcrumb').innerHTML = bread;
+        }
+
+        window.loadTaskFolderList = loadTaskFolderList;
+        window.enterTaskFolder = (path) => { currentBrowsePath = path; loadTaskFolderList(path); };
+        window.selectTaskFolderFromModal = (path) => { selectTaskFolder(path); taskFolderModal.hide(); };
+
+        function selectTaskFolder(path) {
+            selectedTaskFolderPath = path;
+            const taskName = path.split('/').pop();
+            currentTask = path;
+            document.getElementById('selected-task-folder').value = path;
+            document.getElementById('selected-task-title-export').innerHTML = `<i class="fas fa-database"></i> 任务：${escapeHtml(taskName)}`;
+            document.getElementById('selected-task-title-template').innerHTML = `<i class="fas fa-chart-simple"></i> 当前任务：${escapeHtml(taskName)}`;
+            document.getElementById('generate-questions-btn').style.display = 'inline-block';
+            loadTaskData(path);
+        }
+
+        function clearTaskSelection() {
+            if(taskFolderModal) taskFolderModal.hide();
+            selectedTaskFolderPath = ''; currentTask = null; submissions = [];
+            allQuestions = []; currentQuestionPage=1; exportCurrentPage=1;
+            document.getElementById('selected-task-folder').value='';
+            document.getElementById('selected-task-title-export').innerHTML='未选择任务';
+            document.getElementById('selected-task-title-template').innerHTML='未选择任务';
+            document.getElementById('submission-table-container').innerHTML='<div class="text-center text-muted">暂无数据</div>';
+            document.getElementById('analysis-attachments').innerHTML='暂无图片附件';
+            document.getElementById('questions-container').innerHTML='';
+            if(timelineChart) { timelineChart.destroy(); timelineChart=null; }
+            document.getElementById('export-csv-btn').style.display='none';
+            document.getElementById('download-attachments-btn').style.display='none';
+            document.getElementById('export-pagination').style.display='none';
+            document.getElementById('generate-questions-btn').style.display = 'none';
+        }
+
+        async function loadTaskMeta() {
+            const teacher = getEffectiveTeacher(); if(!teacher||!currentTask) return;
+            try {
+                const res = await apiCall(`/teacher/tasks/${encodeURIComponent(currentTask)}?teacher=${teacher}`);
+                if(res.success && res.meta) {
+                    questionMap = res.meta.questions || {};
+                    questionMap.options = res.meta.options || {};
+                } else questionMap = {};
+            } catch { questionMap = {}; }
+        }
+
+        async function loadTaskData(activityId) {
+            const teacher = getEffectiveTeacher(); if(!teacher) return;
+            try {
+                const resp = await fetch(`${API_BASE}/submissions?teacher=${encodeURIComponent(teacher)}&activity_id=${encodeURIComponent(activityId)}&limit=1000`, {credentials:'include'});
+                const data = await resp.json();
+                if(data.success) {
+                    submissions = data.submissions || [];
+                    await loadTaskMeta();
+                    renderExportTable();
+                    renderTimelineChart();
+                    renderQuestionStats();    
+                    renderAttachmentsPreview();
+                    document.getElementById('export-csv-btn').style.display='inline-block';
+                    document.getElementById('download-attachments-btn').style.display='inline-block';
+                    if(!submissions.length) showToast('info','该任务暂无提交数据');
+                } else { submissions=[]; renderExportTable(); showToast('warning',data.message); }
+            } catch(e) { submissions=[]; renderExportTable(); showToast('error','加载失败'); }
+        }
+
+        function formatTimestamp(ts) {
+            try { let d = new Date(ts); return isNaN(d) ? ts : d.toLocaleString('zh-CN',{hour12:false}); } catch { return ts; }
+        }
+
+        function renderExportTable() {
+            const container = document.getElementById('submission-table-container');
+            if(!submissions.length) { container.innerHTML='<div class="text-center text-muted">暂无提交数据</div>'; document.getElementById('export-pagination').style.display='none'; return; }
+            totalPages = Math.ceil(submissions.length/exportPageSize);
+            if(exportCurrentPage>totalPages) exportCurrentPage=totalPages;
+            const start = (exportCurrentPage-1)*exportPageSize;
+            const pageData = submissions.slice(start, start+exportPageSize);
+            let html = `<div class="table-responsive"><table class="table table-bordered table-hover data-table"><thead class="table-light"><tr><th><input type="checkbox" id="select-all-page"></th><th>学生ID</th><th>姓名</th><th>提交时间</th><th>答案摘要</th><th>操作</th></tr></thead><tbody>`;
+            pageData.forEach(sub => {
+                const fn = sub._filename || '';
+                html += `<tr data-filename="${escapeHtml(fn)}"><td><input type="checkbox" class="row-checkbox" value="${escapeHtml(fn)}"></td>
+                        <td>${escapeHtml(sub.student_id||'?')}</td><td>${escapeHtml(sub.student_name||'')}</td><td>${formatTimestamp(sub._server_timestamp)}</td>
+                        <td><span title="${escapeHtml(JSON.stringify(sub))}" style="cursor:help;">${escapeHtml(getAnswerSummary(sub))}</span></td>
+                        <td><button class="btn btn-sm btn-outline-info detail-single" data-filename="${escapeHtml(fn)}"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm btn-outline-danger delete-single" data-filename="${escapeHtml(fn)}"><i class="fas fa-trash"></i></button></td></tr>`;
+            });
+            html += `</tbody></table></div>`; container.innerHTML = html;
+            document.getElementById('export-pagination').style.display='flex';
+            document.getElementById('page-info').innerText = `第 ${exportCurrentPage} / ${totalPages} 页`;
+            document.getElementById('prev-page-btn').onclick = ()=> { if(exportCurrentPage>1){ exportCurrentPage--; renderExportTable(); } };
+            document.getElementById('next-page-btn').onclick = ()=> { if(exportCurrentPage<totalPages){ exportCurrentPage++; renderExportTable(); } };
+            document.getElementById('page-size-select').onchange = (e)=> { exportPageSize=parseInt(e.target.value); exportCurrentPage=1; renderExportTable(); };
+            attachTableEvents();
+        }
+
+        function attachTableEvents() {
+            const selectAll = document.getElementById('select-all-page');
+            if(selectAll) selectAll.onclick = e => { document.querySelectorAll('.row-checkbox').forEach(cb=>cb.checked=e.target.checked); updateSelectedCount(); };
+            document.querySelectorAll('.row-checkbox').forEach(cb=>cb.addEventListener('change',updateSelectedCount));
+            document.querySelectorAll('.delete-single').forEach(btn=>btn.onclick=()=>{ const fn=btn.dataset.filename; if(fn&&confirm('删除记录？')) deleteSubmissions([fn]); });
+            document.querySelectorAll('.detail-single').forEach(btn=>btn.onclick=()=>{
+                const fn=btn.dataset.filename; const sub=submissions.find(s=>s._filename===fn);
+                if(sub) showSubmissionDetail(sub); else showToast('error','未找到');
+            });
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const cnt = document.querySelectorAll('.row-checkbox:checked').length;
+            document.getElementById('selected-count').innerText = `已选择 ${cnt} 条`;
+            document.getElementById('batch-delete-btn').disabled = cnt===0;
+        }
+
+        async function deleteSubmissions(filenames) {
+            const teacher = getEffectiveTeacher(); if(!teacher||!currentTask) return;
+            try {
+                const resp = await fetch(`${API_BASE}/submissions/delete`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({teacher, activity_id:currentTask, filenames}),credentials:'include'});
+                const data = await resp.json();
+                if(data.success) { showToast('success',`删除 ${data.deleted?.length||0} 条`); loadTaskData(currentTask); }
+                else showToast('error',data.message);
+            } catch(e) { showToast('error','删除失败'); }
+        }
+
+        function showSubmissionDetail(sub) {
+            const container = document.getElementById('detail-content');
+            let filesHtml = sub._files?.length ? sub._files.map(f=>`<div><a href="${f.url}" target="_blank">${escapeHtml(f.original_name)}</a></div>`).join('') : '<div class="text-muted">无附件</div>';
+            container.innerHTML = `<p><strong>学生ID：</strong> ${escapeHtml(sub.student_id)} ${sub.student_name?`(${escapeHtml(sub.student_name)})`:''}</p>
+                <p><strong>提交时间：</strong> ${formatTimestamp(sub._server_timestamp)}</p>
+                <h6>📝 答案字段</h6><div class="detail-json">${escapeHtml(JSON.stringify(sub, (k,v)=> SYSTEM_FIELDS.has(k)||k.startsWith('_')?undefined:v ,2))}</div>
+                <h6>📎 附件</h6>${filesHtml}`;
+            detailModal.show();
+        }
+
+        function renderTimelineChart() {
+            if(!submissions.length) { if(timelineChart) timelineChart.destroy(); return; }
+            const interval = parseInt(document.getElementById('time-interval-slider').value);
+            const groups = new Map();
+            submissions.forEach(s=>{ let ts = s._server_timestamp; if(!ts) return; let d = new Date(ts); let bucket = Math.floor(d.getTime()/1000/interval)*interval; let key = new Date(bucket*1000).toISOString().slice(0,19).replace('T',' '); groups.set(key, (groups.get(key)||0)+1); });
+            const sorted = Array.from(groups.entries()).sort((a,b)=>a[0].localeCompare(b[0]));
+            const ctx = document.getElementById('timelineChart').getContext('2d');
+            if(timelineChart) timelineChart.destroy();
+            timelineChart = new Chart(ctx, { type:'bar', data:{ labels: sorted.map(p=>p[0]), datasets:[{ label:'提交次数', data: sorted.map(p=>p[1]), backgroundColor:'rgba(52,152,219,0.7)' }] }, options:{ responsive:true } });
+        }
+
+        function renderQuestionStats() {
+            allQuestions = extractAllQuestionFields();
+            if(!allQuestions.length && Object.keys(questionMap).length > 0) {
+                allQuestions = Object.keys(questionMap).filter(k => k !== 'options').map(k => k.startsWith('question_') ? k : `answers.${k}`);
+            }
+            const container = document.getElementById('questions-container');
+            if(!allQuestions.length) { 
+                container.innerHTML='<p class="text-muted">未检测到任何答案字段，也没有从 task.json 中加载到题目</p>'; 
+                document.getElementById('question-pagination').style.display='none'; 
+                return; 
+            }
+            totalQuestionPages = Math.ceil(allQuestions.length / questionsPerPage);
+            renderQuestionPage(currentQuestionPage);
+            const pagDiv = document.getElementById('question-pagination');
+            if(totalQuestionPages>1) {
+                pagDiv.style.display='flex';
+                pagDiv.innerHTML = `<button class="btn btn-sm btn-outline-secondary" id="prev-question-page" ${currentQuestionPage===1?'disabled':''}>上一页</button>
+                    <span>第 ${currentQuestionPage} / ${totalQuestionPages} 页</span>
+                    <button class="btn btn-sm btn-outline-secondary" id="next-question-page" ${currentQuestionPage===totalQuestionPages?'disabled':''}>下一页</button>`;
+                document.getElementById('prev-question-page').onclick = ()=> { if(currentQuestionPage>1){ currentQuestionPage--; renderQuestionStats(); } };
+                document.getElementById('next-question-page').onclick = ()=> { if(currentQuestionPage<totalQuestionPages){ currentQuestionPage++; renderQuestionStats(); } };
+            } else pagDiv.style.display='none';
+        }
+
+        function renderQuestionPage(page) {
+            const start = (page-1)*questionsPerPage;
+            const pageFields = allQuestions.slice(start, start+questionsPerPage);
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            pageFields.forEach(fieldPath => {
+                const stats = new Map();
+                submissions.forEach(sub => {
+                    let val = getAnswerValue(sub, fieldPath);
+                    if (val !== undefined && val !== null) {
+                        let key = (typeof val === 'object') ? JSON.stringify(val) : String(val);
+                        stats.set(key, (stats.get(key)||0)+1);
+                    }
+                });
+                const uniqueCount = stats.size;
+                const isTextHeavy = Array.from(stats.keys()).some(k=>k.length>30) || uniqueCount > 15;
+                let displayHtml = '';
+                const fieldLabel = fieldPath.startsWith('answers.') ? fieldPath.substring(8) : fieldPath;
+                const questionText = questionMap[fieldLabel] || questionMap[fieldPath] || fieldLabel;
+                let questionOptions = (questionMap.options && typeof questionMap.options === 'object') ? (questionMap.options[fieldLabel] || questionMap.options[fieldPath] || []) : [];
+                if (questionOptions.length > 0) {
+                    displayHtml = '<div class="question-options mb-3"><div class="d-flex align-items-center mb-2"><i class="fas fa-list-ul text-primary me-2"></i><strong class="text-primary">选项:</strong></div><div class="options-grid">';
+                    questionOptions.forEach(opt => { displayHtml += `<div class="option-item p-2 mb-2 border rounded bg-light"><small class="text-muted">${escapeHtml(opt)}</small></div>`; });
+                    displayHtml += '</div></div>';
+                }
+                displayHtml += '<div class="answer-stats mt-3"><div class="d-flex align-items-center mb-2"><i class="fas fa-chart-bar text-success me-2"></i><strong class="text-success">学生提交统计:</strong></div>';
+                if (stats.size === 0) {
+                    displayHtml += '<p class="text-muted fst-italic small">暂无学生提交</p>';
+                } else {
+                    const sorted = Array.from(stats.entries()).sort((a,b)=>b[1]-a[1]);
+                    if (isTextHeavy) {
+                        displayHtml += `<div class="text-answer-preview"><small class="text-muted">共 ${sorted.length} 种不同回答</small><ul class="mt-2 small">`;
+                        sorted.slice(0,8).forEach(([ans, cnt]) => { displayHtml += `<li><span class="badge bg-secondary me-2">${cnt}</span> ${escapeHtml(ans.length>60?ans.slice(0,60)+'…':ans)}</li>`; });
+                        if (sorted.length>8) displayHtml += `<li class="text-muted small">…… 还有 ${sorted.length-8} 种回答</li>`;
+                        displayHtml += `</ul></div>`;
+                    } else {
+                        displayHtml += '<ul class="list-group list-group-flush">';
+                        sorted.forEach(([ans, cnt]) => { displayHtml += `<li class="list-group-item d-flex justify-content-between align-items-center"><span class="answer-text">${escapeHtml(ans)}</span><span class="badge bg-primary rounded-pill">${cnt}人</span></li>`; });
+                        displayHtml += '</ul>';
+                    }
+                }
+                displayHtml += '</div>';
+                const div = document.createElement('div');
+                div.className = 'mb-4 p-3 border rounded';
+                div.innerHTML = `<h5 class="mb-2">📌 ${escapeHtml(questionText)} <span class="badge-answer-type">${fieldPath}</span></h5>
+                    <div class="field-hint"><i class="far fa-keyboard"></i> 字段: ${escapeHtml(fieldPath)}</div>
+                    ${displayHtml}`;
+                container.appendChild(div);
+            });
+        }
+
+        function renderAttachmentsPreview() {
+            const images = [];
+            submissions.forEach(s => { if(s._files) s._files.forEach(f=>{ if(/\.(jpe?g|png|gif|webp|bmp)$/i.test(f.original_name)) images.push({url:f.url, name:f.original_name, studentId:s.student_id}); }); });
+            const cont = document.getElementById('analysis-attachments');
+            if(!images.length) { cont.innerHTML='<span class="text-muted">无图片附件</span>'; return; }
+            cont.innerHTML = '<div class="attachment-gallery">'+images.map(img=>`
+                <div class="attachment-card" onclick="window.showImageModal('${img.url}')">
+                    <img src="${img.url}" class="attachment-thumb" onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%22100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%23ddd%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22%23999%22%3E?%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                    <div title="${escapeHtml(img.name)}">${escapeHtml(img.name.slice(0,18))}</div><small>${escapeHtml(img.studentId)}</small>
+                </div>`).join('')+'</div>';
+        }
+        window.showImageModal = (url) => { document.getElementById('modalImage').src=url; imageModal.show(); };
+
+        // ---------- 获取网页题干功能 (修复) ----------
+        async function openHtmlFileSelector() {
+            if (!currentTask || !selectedTaskFolderPath) { showToast('warning', '请先选择任务文件夹'); return; }
+            const teacher = getEffectiveTeacher(); if (!teacher) return;
+            document.getElementById('html-task-folder-display').textContent = `当前任务: ${selectedTaskFolderPath}`;
+            document.getElementById('custom-prompt-input').value = '';
+            document.getElementById('html-file-list-container').style.display = 'block';
+            document.getElementById('generate-options').style.display = 'none';
+            const loading = document.getElementById('html-file-loading');
+            const itemsDiv = document.getElementById('html-file-items');
+            const emptyDiv = document.getElementById('html-file-empty');
+            loading.style.display = 'block'; itemsDiv.innerHTML = ''; emptyDiv.style.display = 'none';
+            try {
+                const res = await apiCall(`/teacher/files?path=${encodeURIComponent(selectedTaskFolderPath)}&teacher=${teacher}`);
+                if (res.success) {
+                    const htmlFiles = res.items.filter(item => item.type === 'file' && item.name.toLowerCase().endsWith('.html'));
+                    renderHtmlFileList(htmlFiles);
+                } else { emptyDiv.style.display = 'block'; emptyDiv.innerText = res.message || '加载失败'; }
+            } catch (e) { emptyDiv.style.display = 'block'; emptyDiv.innerText = '网络错误'; }
+            finally { loading.style.display = 'none'; }
+            htmlFileSelectorModal.show();
+        }
+
+        function renderHtmlFileList(files) {
+            const itemsDiv = document.getElementById('html-file-items');
+            const emptyDiv = document.getElementById('html-file-empty');
+            if (!files.length) { emptyDiv.style.display = 'block'; itemsDiv.innerHTML = ''; return; }
+            emptyDiv.style.display = 'none';
+            itemsDiv.innerHTML = files.map(f => `
+                <div class="html-file-item">
+                    <div class="html-file-name"><i class="fas fa-file-code"></i> <span>${escapeHtml(f.name)}</span></div>
+                    <button class="btn btn-sm btn-outline-primary" data-filepath="${f.path}">选择并生成</button>
+                </div>`).join('');
+            document.querySelectorAll('#html-file-items .btn-outline-primary').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const filePath = e.currentTarget.dataset.filepath;
+                    selectedHtmlFilePath = filePath;
+                    document.getElementById('html-file-list-container').style.display = 'none';
+                    document.getElementById('generate-options').style.display = 'block';
+                });
+            });
+        }
+
+        async function generateQuestionsFromHtml(filePath, customPrompt, useLocal = false) {
+            const teacher = getEffectiveTeacher();
+            if (!teacher || !currentTask) return;
+            const genBtn = useLocal ? document.getElementById('local-generate-btn') : document.getElementById('ai-generate-btn');
+            const originalText = genBtn.innerHTML;
+            genBtn.disabled = true;
+            genBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>生成中...';
+            try {
+                const res = await apiCall('/ai/generate-task-questions', {
+                    method: 'POST',
+                    body: { teacher, activity_id: currentTask, html_file_path: filePath, prompt: customPrompt || '', use_local: useLocal }
+                });
+                if (res.success) {
+                    showToast('success', '题目生成成功！');
+                    htmlFileSelectorModal.hide();
+                    await loadTaskMeta();
+                    renderQuestionStats();
+                } else { showToast('error', res.message || '生成失败'); }
+            } catch (e) { showToast('error', '请求失败'); }
+            finally {
+                genBtn.disabled = false;
+                genBtn.innerHTML = originalText;
+            }
+        }
+
+        // ---------- 初始化 ----------
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = checkLoginState(); if(!user) return;
+            currentUser = user; isAdmin = user.isAdmin === true;
+            await fetchUserProfile();
+            try { await apiCall('/current'); } catch { alert('登录过期'); clearAllLoginState(); window.location.href='login.html'; return; }
+            updateUserDisplay();
+
+            taskFolderModal = new bootstrap.Modal(document.getElementById('taskFolderSelectorModal'));
+            imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            helpModal = new bootstrap.Modal(document.getElementById('helpModal'));
+            detailModal = new bootstrap.Modal(document.getElementById('submissionDetailModal'));
+            htmlFileSelectorModal = new bootstrap.Modal(document.getElementById('htmlFileSelectorModal'));
+
+            document.getElementById('select-task-folder-btn').onclick = openTaskFolderSelector;
+            document.getElementById('clear-task-folder-btn').onclick = clearTaskSelection;
+            document.getElementById('generate-questions-btn').onclick = openHtmlFileSelector;
+            document.getElementById('task-folder-go-up').onclick = ()=> { if(currentBrowsePath){ const parts = currentBrowsePath.split('/'); parts.pop(); currentBrowsePath = parts.join('/'); loadTaskFolderList(currentBrowsePath); } };
+            document.getElementById('time-interval-slider').addEventListener('input', (e) => {
+                const v = parseInt(e.target.value); 
+                let txt = v>=86400?'1天':(v>=3600?`${v/3600}小时`:(v>=60?`${v/60}分钟`:`${v}秒`));
+                document.getElementById('interval-value').innerText = `${v} 秒 (${txt})`; 
+                renderTimelineChart();
+            });
+            document.getElementById('help-trigger').onclick = e => { e.preventDefault(); helpModal.show(); };
+            document.getElementById('logout-btn').onclick = () => { clearAllLoginState(); window.location.href='login.html'; };
+            document.getElementById('export-csv-btn').onclick = ()=> {
+                if(!submissions.length) return;
+                const fields = new Set(); submissions.forEach(s=>Object.keys(s).forEach(k=>fields.add(k)));
+                const cols = Array.from(fields);
+                let csv = cols.map(c=>`"${c}"`).join(',')+'\n';
+                submissions.forEach(s=>{ csv += cols.map(c=>{ let v=s[c]; if(v===undefined||v===null) v=''; if(typeof v==='object') v=JSON.stringify(v); return `"${String(v).replace(/"/g,'""')}"`; }).join(',')+'\n'; });
+                const blob = new Blob(["\uFEFF"+csv],{type:'text/csv'});
+                const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`${currentTask}_数据.csv`; a.click();
+            };
+            document.getElementById('download-attachments-btn').onclick = async ()=>{
+                const paths = []; submissions.forEach(s=>{ if(s._files) s._files.forEach(f=>{ const m = f.url.match(/\/uploads\/(.+)$/); if(m) paths.push(`uploads/${m[1]}`); }); });
+                if(!paths.length) { alert('无附件'); return; }
+                const teacher = getEffectiveTeacher();
+                try {
+                    const res = await fetch(`${API_BASE}/teacher/download-zip`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paths, teacher}), credentials:'include'});
+                    if(res.ok) { const blob=await res.blob(); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`${currentTask}_附件.zip`; a.click(); }
+                    else alert('打包失败');
+                } catch { alert('网络错误'); }
+            };
+            document.getElementById('batch-delete-btn').onclick = ()=>{
+                const selected = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb=>cb.value);
+                if(selected.length && confirm(`删除 ${selected.length} 条？`)) deleteSubmissions(selected);
+            };
+
+            // 生成选项事件绑定
+            document.getElementById('ai-generate-btn').addEventListener('click', () => {
+                const prompt = document.getElementById('custom-prompt-input').value.trim();
+                generateQuestionsFromHtml(selectedHtmlFilePath, prompt, false);
+            });
+            document.getElementById('local-generate-btn').addEventListener('click', () => {
+                generateQuestionsFromHtml(selectedHtmlFilePath, '', true);
+            });
+            document.getElementById('back-to-file-list').addEventListener('click', () => {
+                document.getElementById('generate-options').style.display = 'none';
+                document.getElementById('html-file-list-container').style.display = 'block';
+            });
+        });
+
+        window.loadTaskFolderList = loadTaskFolderList;
+        window.enterTaskFolder = (path) => { currentBrowsePath = path; loadTaskFolderList(path); };
+        window.selectTaskFolderFromModal = (path) => { selectTaskFolder(path); taskFolderModal.hide(); };
+    })();
+</script>
+</body>
+</html>

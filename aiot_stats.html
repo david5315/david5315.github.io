@@ -1,0 +1,343 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统计分析 - AIoT 智慧校园</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: none;
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background: linear-gradient(to right, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 15px 15px 0 0 !important;
+        }
+        .stat-card {
+            border-radius: 15px;
+            transition: transform 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <div class="top-nav mb-4">
+            <a href="index.html" class="btn btn-light"><i class="fas fa-home me-1"></i> 首页</a>
+            <a href="aiot_index.html" class="btn btn-light"><i class="fas fa-th-large me-1"></i> 管理首页</a>
+            <a href="aiot_config.html" class="btn btn-success"><i class="fas fa-tasks me-1"></i> 任务配置</a>
+            <a href="aiot_log.html" class="btn btn-info"><i class="fas fa-file-alt me-1"></i> 日志查看</a>
+            <a href="aiot_stats.html" class="btn btn-success"><i class="fas fa-chart-bar me-1"></i> 统计分析</a>
+            <a href="aiot_admin.html" class="btn btn-danger"><i class="fas fa-cog me-1"></i> 调试管理</a>
+            <a href="aiot_params.html" class="btn btn-success"><i class="fas fa-database me-1"></i> 参数配置</a>
+            <a href="aiot_broadcast.html" class="btn btn-info"><i class="fas fa-broadcast-tower me-1"></i> 智能广播</a>
+            <a href="aiot_electric.html" class="btn btn-secondary"><i class="fas fa-plug me-1"></i> 智能电控</a>
+            <a href="aiot_iot_data.html" class="btn btn-info"><i class="fas fa-database me-1"></i> 物联网实验</a>
+            <button id="logoutBtn" class="btn btn-secondary" style="float: right;"><i class="fas fa-sign-out-alt me-1"></i> 退出</button>
+        </div>
+
+        <!-- 概览统计 -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-tasks fa-3x mb-3"></i>
+                        <h2 id="totalTasks">0</h2>
+                        <p class="mb-0">总任务数</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card bg-success text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-check-circle fa-3x mb-3"></i>
+                        <h2 id="totalExecutions">0</h2>
+                        <p class="mb-0">总执行次数</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-bell fa-3x mb-3"></i>
+                        <h2 id="totalNotifications">0</h2>
+                        <p class="mb-0">通知发送次数</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card bg-danger text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+                        <h2 id="totalIssues">0</h2>
+                        <p class="mb-0">发现问题数</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 任务执行趋势 -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>任务执行趋势（最近 7 天）</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 任务成功率 -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>任务成功率分布</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="successChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-tasks me-2"></i>各任务执行次数</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="taskChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 问题统计 -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-exclamation-circle me-2"></i>常见问题 TOP10</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>排名</th>
+                                <th>问题类型</th>
+                                <th>发生次数</th>
+                                <th>占比</th>
+                                <th>最近发生</th>
+                            </tr>
+                        </thead>
+                        <tbody id="issueTable">
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    暂无问题数据
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = window.location.origin;
+        let trendChartInstance = null;
+        let successChartInstance = null;
+        let taskChartInstance = null;
+
+        // 加载统计数据
+        async function loadStats() {
+            try {
+                // 获取任务列表
+                const tasksRes = await fetch(`${API_BASE}/api/aiot/tasks`);
+                const tasksData = await tasksRes.json();
+                
+                // 获取统计数据
+                const statsRes = await fetch(`${API_BASE}/api/aiot/stats`);
+                const statsData = await statsRes.json();
+                
+                if (statsData.success) {
+                    updateOverview(statsData.stats);
+                    renderCharts(statsData.stats);
+                }
+                
+                if (tasksData.success) {
+                    document.getElementById('totalTasks').textContent = tasksData.tasks.length;
+                }
+                
+            } catch (error) {
+                console.error('加载统计数据失败:', error);
+            }
+        }
+
+        // 更新概览
+        function updateOverview(stats) {
+            document.getElementById('totalExecutions').textContent = stats.total_executions || 0;
+            document.getElementById('totalNotifications').textContent = stats.total_notifications || 0;
+            document.getElementById('totalIssues').textContent = stats.total_issues || 0;
+        }
+
+        // 渲染图表
+        function renderCharts(stats) {
+            renderTrendChart();
+            renderSuccessChart(stats);
+            renderTaskChart(stats);
+        }
+
+        // 趋势图表
+        function renderTrendChart() {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            
+            // 生成最近 7 天数据（示例）
+            const labels = [];
+            const data = [];
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }));
+                data.push(Math.floor(Math.random() * 50) + 10);
+            }
+            
+            if (trendChartInstance) {
+                trendChartInstance.destroy();
+            }
+            
+            trendChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '执行次数',
+                        data: data,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // 成功率图表
+        function renderSuccessChart(stats) {
+            const ctx = document.getElementById('successChart').getContext('2d');
+            
+            const success = stats.success || 0;
+            const error = stats.error || 0;
+            const total = success + error || 1;
+            
+            const successRate = Math.round((success / total) * 100);
+            const errorRate = 100 - successRate;
+            
+            if (successChartInstance) {
+                successChartInstance.destroy();
+            }
+            
+            successChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['成功', '失败'],
+                    datasets: [{
+                        data: [successRate, errorRate],
+                        backgroundColor: ['#2ecc71', '#e74c3c']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // 任务执行次数图表
+        function renderTaskChart(stats) {
+            const ctx = document.getElementById('taskChart').getContext('2d');
+            
+            const byTask = stats.by_task || {};
+            const labels = Object.keys(byTask).map(id => `任务${id}`);
+            const data = Object.values(byTask).map(s => s.executions || 0);
+            
+            if (taskChartInstance) {
+                taskChartInstance.destroy();
+            }
+            
+            taskChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '执行次数',
+                        data: data,
+                        backgroundColor: '#764ba2'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+        });
+    </script>
+</body>
+</html>
+
+
+

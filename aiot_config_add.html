@@ -1,0 +1,854 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务配置 - AIoT 智慧校园</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #2ecc71;
+            --warning: #f39c12;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border: none;
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 1.5rem;
+            border-radius: 20px 20px 0 0 !important;
+        }
+        .nav-tabs {
+            border-bottom: 2px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        .nav-tabs .nav-link {
+            border: none;
+            color: #6c757d;
+            font-weight: 600;
+            padding: 1rem 2rem;
+            transition: all 0.3s;
+        }
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background: transparent;
+            border-bottom: 3px solid var(--primary);
+        }
+        .nav-tabs .nav-link:hover {
+            color: var(--primary);
+            background: rgba(102,126,234,0.1);
+        }
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .form-section h5 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .classroom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+        }
+        .classroom-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .classroom-checkbox:hover {
+            background: #e9ecef;
+        }
+        .classroom-checkbox input {
+            margin-right: 8px;
+        }
+        .btn-group-sm > .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        .config-display {
+            background: #fff9c4;
+            border: 2px solid #ffd54f;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        #config-content {
+            width: 100%;
+            height: 300px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+        }
+        .chat-history {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            max-width: 85%;
+        }
+        .user-message {
+            background: #e3f2fd;
+            margin-left: auto;
+            text-align: right;
+        }
+        .bot-message {
+            background: #f5f5f5;
+            margin-right: auto;
+        }
+        .top-nav { margin-bottom: 20px; }
+        .top-nav .btn { margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <div class="top-nav">
+            <a href="index.html" class="btn btn-light"><i class="fas fa-home me-1"></i> 首页</a>
+            <a href="aiot_index.html" class="btn btn-light"><i class="fas fa-th-large me-1"></i> 管理首页</a>
+            <a href="aiot_config.html" class="btn btn-primary"><i class="fas fa-tasks me-1"></i> 任务配置</a>
+            <a href="aiot_log.html" class="btn btn-info"><i class="fas fa-file-alt me-1"></i> 日志查看</a>
+            <a href="aiot_chat.html" class="btn btn-warning"><i class="fas fa-comments me-1"></i> AI 对话</a>
+            <a href="aiot_admin.html" class="btn btn-danger"><i class="fas fa-cog me-1"></i> 调试管理</a>         <a href="aiot_params.html" class="btn btn-success"><i class="fas fa-database me-1"></i> 参数配置</a>
+        </div>
+
+        <!-- 主卡片 -->
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-plus-circle me-2"></i>新增任务配置</h4>
+            </div>
+            <div class="card-body">
+                <!-- 选项卡导航 -->
+                <ul class="nav nav-tabs" id="configTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual" type="button">
+                            <i class="fas fa-edit me-2"></i>手动配置
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="nlp-tab" data-bs-toggle="tab" data-bs-target="#nlp" type="button">
+                            <i class="fas fa-robot me-2"></i>自然语言配置
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- 选项卡内容 -->
+                <div class="tab-content" id="configTabsContent">
+                    <!-- 手动配置选项卡 -->
+                    <div class="tab-pane fade show active" id="manual" role="tabpanel">
+                        <form id="manualForm">
+                            <!-- 基本信息 -->
+                            <div class="form-section">
+                                <h5><i class="fas fa-info-circle me-2"></i>基本信息</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">任务 ID</label>
+                                        <input type="text" class="form-control" id="taskId" placeholder="例如：88">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label class="form-label">任务名称</label>
+                                        <input type="text" class="form-control" id="taskName" placeholder="例如：公寓入口定时测试">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 教室选择 -->
+                            <div class="form-section">
+                                <h5><i class="fas fa-building me-2"></i>监控教室</h5>
+                                <div class="mb-3">
+                                    <button type="button" class="btn btn-sm btn-primary me-2" onclick="selectAllClassrooms()">
+                                        <i class="fas fa-check-square me-1"></i>全选
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-secondary me-2" onclick="deselectAllClassrooms()">
+                                        <i class="fas fa-square me-1"></i>取消全选
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-success me-2" onclick="selectGrade('高一')">
+                                        <i class="fas fa-graduation-cap me-1"></i>高一
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-info me-2" onclick="selectGrade('高二')">
+                                        <i class="fas fa-graduation-cap me-1"></i>高二
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-warning me-2" onclick="selectGrade('高三')">
+                                        <i class="fas fa-graduation-cap me-1"></i>高三
+                                    </button>
+                                </div>
+                                <div class="classroom-grid" id="classroomGrid"></div>
+                            </div>
+
+                            <!-- 时间设置 -->
+                            <div class="form-section">
+                                <h5><i class="fas fa-clock me-2"></i>时间设置</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-5">
+                                        <label class="form-label">执行时间段</label>
+                                        <input type="text" class="form-control" id="timeRange" placeholder="例如：15:00:00-17:00:00">
+                                        <small class="text-muted">格式：HH:MM:SS-HH:MM:SS</small>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="form-label">执行频率（秒）</label>
+                                        <input type="number" class="form-control" id="frequency" placeholder="例如：300 或 0" value="0" min="0">
+                                        <small class="text-muted">
+                                            <span class="text-primary fw-bold">⚠️ 设置为 0 表示单次执行</span><br>
+                                            在时间段开始时间首次执行，如失败则在时间段结束时重试一次
+                                        </small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">启用</label>
+                                        <div class="form-check form-switch mt-2">
+                                            <input class="form-check-input" type="checkbox" id="enabled" checked>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- AI 提示词 -->
+                            <div class="form-section">
+                                <h5><i class="fas fa-magic me-2"></i>AI 分析提示词</h5>
+                                <textarea class="form-control" id="prompt" rows="4" placeholder="例如：请分析这张图片中有几个人，他们的座位编号是多少..."></textarea>
+                            </div>
+
+                            <!-- 通知设置 -->
+                            <div class="form-section">
+                                <h5><i class="fas fa-bell me-2"></i>通知设置</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="ttsEnabled">
+                                            <label class="form-check-label">TTS 语音播报</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="smsEnabled">
+                                            <label class="form-check-label">短信通知</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="wechatEnabled" checked>
+                                            <label class="form-check-label">微信推送</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 任务管理员手机号 -->
+                                <div class="row g-3 mt-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label"><i class="fas fa-user-tie me-1"></i>任务管理员手机号</label>
+                                        <input type="text" class="form-control" id="receiverPhone" placeholder="138xxxxxxx" value="1381512011">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label"><i class="fas fa-user me-1"></i>任务管理员姓名</label>
+                                        <input type="text" class="form-control" id="receiverName" placeholder="管理员" value="任务管理员">
+                                    </div>
+                                </div>
+                                
+                                <!-- 场地负责人开关 -->
+                                <div class="row g-3 mt-3">
+                                    <div class="col-md-12">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="notifyClassroomOwner">
+                                            <label class="form-check-label"><i class="fas fa-building me-1"></i>发送给场地负责人（如果勾选，则把每个教室的分析内容发送给教室场地负责人）</label>
+                                        </div>
+                                        <div class="form-text">启用后，每个教室的通知将单独发送给该教室配置的负责人手机号</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 操作按钮 -->
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                                <button type="button" class="btn btn-success btn-lg" onclick="generateConfig()">
+                                    <i class="fas fa-magic me-2"></i>生成配置
+                                </button>
+                                <button type="button" class="btn btn-primary btn-lg" onclick="saveConfig()">
+                                    <i class="fas fa-save me-2"></i>保存配置
+                                </button>
+                                <button type="reset" class="btn btn-secondary btn-lg">
+                                    <i class="fas fa-redo me-2"></i>重置
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- 自然语言配置选项卡 -->
+                    <div class="tab-pane fade" id="nlp" role="tabpanel">
+                        <!-- AI分析开关 -->
+                        <div class="form-section">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="nlpAIAnalyze" checked>
+                                <label class="form-check-label" for="nlpAIAnalyze">
+                                    <i class="fas fa-robot me-1"></i>发送AI分析
+                                </label>
+                            </div>
+                            <small class="text-muted">启用后，将用户需求作为提示词的一部分，发送给AI生成配置的JSON返回，然后解析新增到任务列表</small>
+                        </div>
+                        
+                        <div class="chat-history" id="chatHistory">
+                            <div class="message bot-message">
+                                <strong><i class="fas fa-robot"></i> AI 助手：</strong>
+                                <p>您好！请用自然语言描述您的监控任务需求，我会帮您生成配置。</p>
+                                <p class="mt-2"><strong>示例：</strong></p>
+                                <ul>
+                                    <li>监控高一 1 班教室午睡情况，记录不在午睡的学生，时间 12:50-13:20，每 3 分钟一次</li>
+                                    <li>公寓入口人流统计，每天早上 7 点到晚上 6 点，每 5 分钟分析一次</li>
+                                    <li>晚自习纪律检查，监控所有高三教室，19:00-21:00，每 10 分钟一次</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control form-control-lg" id="nlpInput" placeholder="请描述您的任务需求...">
+                            <button class="btn btn-primary" type="button" onclick="sendNLPRequest()">
+                                <i class="fas fa-paper-plane me-1"></i>发送
+                            </button>
+                        </div>
+
+                        <div class="config-display">
+                            <h5><i class="fas fa-code me-2"></i>生成的配置（可编辑）</h5>
+                            <textarea id="config-content" placeholder="生成的 JSON 配置将显示在这里..."></textarea>
+                            <div class="mt-3">
+                                <button class="btn btn-sm btn-outline-primary me-2" onclick="formatJSON()">
+                                    <i class="fas fa-align-left me-1"></i>格式化
+                                </button>
+                                <button class="btn btn-sm btn-outline-success me-2" onclick="copyConfig()">
+                                    <i class="fas fa-copy me-1"></i>复制
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning me-2" onclick="clearConfig()">
+                                    <i class="fas fa-trash me-1"></i>清空
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                            <button class="btn btn-success btn-lg" onclick="saveNLPConfig()">
+                                <i class="fas fa-save me-2"></i>保存配置
+                            </button>
+                            <button class="btn btn-secondary btn-lg" onclick="resetNLP()">
+                                <i class="fas fa-redo me-2"></i>重新生成
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 生成的配置预览（两个选项卡共用） -->
+                <div id="configPreview" class="config-display" style="display: none;">
+                    <h5><i class="fas fa-eye me-2"></i>配置预览</h5>
+                    <pre id="previewContent" class="bg-white p-3 rounded border"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = window.location.origin;
+        const CONFIG_FILE = '配置文件：场地监控班级班主任手机号物联网开关.json';
+        
+        // 教室数据（从 API 动态加载）
+        let classroomsData = {};
+        let allClassrooms = [];
+        
+        // 编辑模式变量
+        let editMode = false;
+        let editTaskId = null;
+        
+        // 加载要编辑的任务
+        async function loadTaskForEdit(taskId) {
+            console.log('开始加载任务配置:', taskId);
+            
+            // 等待教室数据加载完成
+            if (allClassrooms.length === 0) {
+                console.log('等待教室数据加载...');
+                await new Promise(resolve => setTimeout(resolve, 500));
+                if (allClassrooms.length === 0) {
+                    alert('教室数据尚未加载，请稍后重试');
+                    return;
+                }
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/aiot/tasks`);
+                const data = await response.json();
+                
+                if (!data.success) {
+                    alert('加载任务配置失败：' + data.message);
+                    return;
+                }
+                
+                const task = data.tasks.find(t => String(t.task_id) === String(taskId));
+                if (!task) {
+                    alert('未找到任务配置：' + taskId);
+                    return;
+                }
+                
+                console.log('找到任务:', task.task_name);
+                console.log('任务教室:', task.classrooms);
+                
+                // 填充基本信息
+                document.getElementById('taskId').value = task.task_id;
+                document.getElementById('taskName').value = task.task_name;
+                
+                // 填充教室选择
+                const selectedClassrooms = task.classrooms || [];
+                let checkedCount = 0;
+                document.querySelectorAll('#classroomGrid input[type="checkbox"]').forEach(cb => {
+                    const isChecked = selectedClassrooms.includes(cb.value);
+                    cb.checked = isChecked;
+                    if (isChecked) checkedCount++;
+                    
+                    // 添加视觉反馈
+                    if (isChecked) {
+                        cb.parentElement.classList.add('checked');
+                    }
+                });
+                
+                console.log('已选中', checkedCount, '个教室');
+                
+                // 填充时间设置
+                const schedule = task.schedule || {};
+                document.getElementById('timeRange').value = schedule.time || '';
+                document.getElementById('frequency').value = schedule.frequency || '300';
+                document.getElementById('enabled').checked = task.enabled !== false;
+                
+                // 填充提示词
+                document.getElementById('prompt').value = task.prompt || '';
+                
+                // 填充通知设置
+                document.getElementById('ttsEnabled').checked = task.tts_enabled || false;
+                document.getElementById('smsEnabled').checked = task.sms_enabled || false;
+                document.getElementById('wechatEnabled').checked = task.wechat_enabled !== false;
+                
+                // 填充任务管理员配置
+                const receiver = task.receiver || {};
+                document.getElementById('receiverPhone').value = receiver.phone || '1381512011';
+                document.getElementById('receiverName').value = receiver.name || '任务管理员';
+                
+                // 填充场地负责人开关
+                document.getElementById('notifyClassroomOwner').checked = task.notify_classroom_owner || false;
+                
+                console.log('任务配置加载完成');
+                
+            } catch (error) {
+                console.error('加载任务配置失败:', error);
+                alert('加载任务配置失败：' + error.message);
+            }
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查是否是编辑模式
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = urlParams.get('edit');
+            
+            if (editId) {
+                editMode = true;
+                editTaskId = editId;
+                document.querySelector('.card-header h4').innerHTML = '<i class="fas fa-edit me-2"></i>编辑任务配置';
+                
+                // 先加载教室数据，再加载任务配置
+                loadClassroomsData().then(() => {
+                    loadTaskForEdit(editId);
+                });
+            } else {
+                loadClassroomsData();
+            }
+        });
+
+        // 从 API 加载教室数据
+        async function loadClassroomsData() {
+            try {
+                const response = await fetch(`${API_BASE}/api/aiot/classrooms`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    allClassrooms = data.all || [];
+                    
+                    // 将教室数据按年级分组
+                    classroomsData = {};
+                    allClassrooms.forEach(room => {
+                        const classroom = room.classroom || '';
+                        let grade = '其他';
+                        
+                        // 根据教室名称判断年级
+                        if (classroom.includes('高一') || classroom.includes('高一')) {
+                            grade = '高一';
+                        } else if (classroom.includes('高二') || classroom.includes('高二')) {
+                            grade = '高二';
+                        } else if (classroom.includes('高三') || classroom.includes('高三')) {
+                            grade = '高三';
+                        } else if (classroom.includes('中大楼')) {
+                            grade = '中大楼';
+                        } else if (classroom.includes('南大楼')) {
+                            grade = '南大楼';
+                        } else if (classroom.includes('菁华楼')) {
+                            grade = '菁华楼';
+                        } else if (classroom.includes('科技楼')) {
+                            grade = '科技楼';
+                        }
+                        
+                        if (!classroomsData[grade]) {
+                            classroomsData[grade] = [];
+                        }
+                        classroomsData[grade].push(room);
+                    });
+                    
+                    // 数据加载完成后再初始化 UI
+                    initClassroomGrid();
+                    console.log('教室数据加载成功，共', allClassrooms.length, '个教室，分为', Object.keys(classroomsData).length, '个年级/区域');
+                } else {
+                    console.error('加载教室数据失败:', data.message);
+                    alert('加载教室数据失败：' + data.message);
+                }
+            } catch (error) {
+                console.error('加载教室数据失败:', error);
+                alert('加载教室数据失败，请检查网络连接');
+            }
+        }
+
+        // 初始化教室选择器
+        function initClassroomGrid() {
+            const grid = document.getElementById('classroomGrid');
+            let html = '';
+            
+            for (const [grade, rooms] of Object.entries(classroomsData)) {
+                rooms.forEach(room => {
+                    html += `
+                        <label class="classroom-checkbox">
+                            <input type="checkbox" value="${room.classroom}" data-grade="${grade}">
+                            <span>${room.classroom}</span>
+                        </label>
+                    `;
+                });
+            }
+            grid.innerHTML = html;
+        }
+
+        // 全选
+        function selectAllClassrooms() {
+            document.querySelectorAll('#classroomGrid input[type="checkbox"]').forEach(cb => cb.checked = true);
+        }
+
+        // 取消全选
+        function deselectAllClassrooms() {
+            document.querySelectorAll('#classroomGrid input[type="checkbox"]').forEach(cb => cb.checked = false);
+        }
+
+        // 按年级选择
+        function selectGrade(grade) {
+            document.querySelectorAll(`#classroomGrid input[type="checkbox"][data-grade="${grade}"]`).forEach(cb => cb.checked = true);
+        }
+
+        // 生成配置
+        function generateConfig() {
+            const selectedClassrooms = Array.from(document.querySelectorAll('#classroomGrid input[type="checkbox"]:checked'))
+                                            .map(cb => cb.value);
+            
+            const config = {
+                task_id: document.getElementById('taskId').value || Date.now().toString(),
+                task_name: document.getElementById('taskName').value || '新任务',
+                classrooms: selectedClassrooms,
+                schedule: {
+                    time: document.getElementById('timeRange').value || '',
+                    frequency: document.getElementById('frequency').value || '300'
+                },
+                prompt: document.getElementById('prompt').value || '',
+                reference_mode: false,
+                analysis_mode: false,
+                enabled: document.getElementById('enabled').checked,
+                tts_enabled: document.getElementById('ttsEnabled').checked,
+                sms_enabled: document.getElementById('smsEnabled').checked,
+                wechat_enabled: document.getElementById('wechatEnabled').checked,
+                receiver: {
+                    name: document.getElementById('receiverName').value || '任务管理员',
+                    phone: document.getElementById('receiverPhone').value || '1381512011'
+                },
+                notify_classroom_owner: document.getElementById('notifyClassroomOwner').checked
+            };
+
+            const jsonStr = JSON.stringify(config, null, 2);
+            document.getElementById('config-content').value = jsonStr;
+            document.getElementById('previewContent').textContent = jsonStr;
+            document.getElementById('configPreview').style.display = 'block';
+            
+            alert('✅ 配置已生成！请检查后保存。');
+        }
+
+        // 保存配置
+        async function saveConfig() {
+            const configText = document.getElementById('config-content').value;
+            
+            // 编辑模式下需要特殊处理
+            if (editMode && editTaskId) {
+                await saveEditedTask();
+                return;
+            }
+            if (!configText) {
+                alert('⚠️ 请先生成配置！');
+                return;
+            }
+
+            try {
+                const config = JSON.parse(configText);
+                
+                const response = await fetch(`${API_BASE}/api/aiot/tasks`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ 配置保存成功！');
+                    setTimeout(() => window.location.href = 'aiot_config.html', 1500);
+                } else {
+                    alert('❌ 保存失败：' + result.message);
+                }
+            } catch (error) {
+                alert('❌ 配置格式错误：' + error.message);
+            }
+        }
+
+        // 保存编辑的任务
+        async function saveEditedTask() {
+            const configText = document.getElementById('config-content').value;
+            if (!configText) {
+                alert('⚠️ 请先生成配置！');
+                return;
+            }
+
+            try {
+                const config = JSON.parse(configText);
+                
+                const response = await fetch(`${API_BASE}/api/aiot/tasks`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        task_id: editTaskId,
+                        ...config
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ 配置更新成功！');
+                    setTimeout(() => window.location.href = 'aiot_config.html', 1500);
+                } else {
+                    alert('❌ 保存失败：' + result.message);
+                }
+            } catch (error) {
+                alert('❌ 配置格式错误：' + error.message);
+            }
+        }
+
+        // NLP 相关函数
+        async function sendNLPRequest() {
+            const input = document.getElementById('nlpInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            const useAI = document.getElementById('nlpAIAnalyze').checked;
+            
+            // 添加用户消息
+            addChatMessage(message, true);
+            input.value = '';
+
+            // 显示加载状态
+            addChatMessage('<i class="fas fa-spinner fa-spin"></i> 正在分析' + (useAI ? '（AI分析）' : '（规则解析）') + '...', false);
+
+            try {
+                if (useAI) {
+                    // 调用AI分析API
+                    const response = await fetch(`${API_BASE}/api/aiot/nlp/config`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            requirement: message,
+                            classrooms: allClassrooms.map(c => c.classroom)
+                        })
+                    });
+                    const data = await response.json();
+                    
+                    const chatHistory = document.getElementById('chatHistory');
+                    chatHistory.removeChild(chatHistory.lastChild);
+                    
+                    if (data.success && data.config) {
+                        const jsonStr = JSON.stringify(data.config, null, 2);
+                        document.getElementById('config-content').value = jsonStr;
+                        addChatMessage('<i class="fas fa-check-circle text-success"></i> AI 已生成配置', false);
+                    } else {
+                        // 回退到规则解析
+                        const config = parseNLPToConfig(message);
+                        const jsonStr = JSON.stringify(config, null, 2);
+                        document.getElementById('config-content').value = jsonStr;
+                        addChatMessage('<i class="fas fa-info-circle text-warning"></i> 使用规则解析（' + (data.message || 'AI不可用') + '）', false);
+                    }
+                } else {
+                    // 直接规则解析
+                    setTimeout(() => {
+                        const chatHistory = document.getElementById('chatHistory');
+                        chatHistory.removeChild(chatHistory.lastChild);
+
+                        const config = parseNLPToConfig(message);
+                        const jsonStr = JSON.stringify(config, null, 2);
+                        
+                        document.getElementById('config-content').value = jsonStr;
+                        addChatMessage('<i class="fas fa-check-circle text-success"></i> 配置已生成', false);
+                    }, 500);
+                }
+            } catch (error) {
+                console.error('NLP请求失败:', error);
+                const chatHistory = document.getElementById('chatHistory');
+                chatHistory.removeChild(chatHistory.lastChild);
+                
+                // 失败回退到规则解析
+                const config = parseNLPToConfig(message);
+                const jsonStr = JSON.stringify(config, null, 2);
+                document.getElementById('config-content').value = jsonStr;
+                addChatMessage('<i class="fas fa-info-circle text-warning"></i> 使用规则解析（' + error.message + '）', false);
+            }
+        }
+
+        function parseNLPToConfig(text) {
+            // 简单的 NLP 解析逻辑
+            const config = {
+                task_id: Date.now().toString(),
+                task_name: '自然语言生成任务',
+                classrooms: [],
+                schedule: { time: '', frequency: '300' },
+                prompt: '',
+                enabled: true,
+                tts_enabled: false,
+                sms_enabled: false,
+                wechat_enabled: true
+            };
+
+            // 提取年级信息（使用动态加载的数据）
+            if (text.includes('高一') && classroomsData['高一']) {
+                config.classrooms = classroomsData['高一'].map(r => r.classroom);
+            } else if (text.includes('高二') && classroomsData['高二']) {
+                config.classrooms = classroomsData['高二'].map(r => r.classroom);
+            } else if (text.includes('高三') && classroomsData['高三']) {
+                config.classrooms = classroomsData['高三'].map(r => r.classroom);
+            }
+
+            // 提取时间
+            const timeMatch = text.match(/(\d{1,2}:\d{2}(?::\d{2})?\s*-\s*\d{1,2}:\d{2}(?::\d{2})?)/);
+            if (timeMatch) config.schedule.time = timeMatch[1].replace(/\s+/g, '');
+
+            // 提取频率
+            const freqMatch = text.match(/每 (\d+) (分钟 | 秒)/);
+            if (freqMatch) {
+                config.schedule.frequency = freqMatch[1] + (freqMatch[2] === '分钟' ? '0' : '');
+            }
+
+            // 设置提示词
+            if (text.includes('午睡')) config.prompt = '请分析教室中有多少学生在午睡，记录未午睡的学生座位。';
+            else if (text.includes('入口') || text.includes('人流')) config.prompt = '请统计图片中的人数。';
+            else if (text.includes('纪律')) config.prompt = '请分析教室纪律情况，记录违规行为。';
+            else config.prompt = '请分析这张图片。';
+
+            // 提取任务名称
+            if (text.includes('午睡')) config.task_name = '午睡纪律监控';
+            else if (text.includes('入口')) config.task_name = '入口人流统计';
+            else if (text.includes('自习')) config.task_name = '自习纪律检查';
+
+            return config;
+        }
+
+        function addChatMessage(content, isUser) {
+            const chatHistory = document.getElementById('chatHistory');
+            const div = document.createElement('div');
+            div.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            div.innerHTML = `<strong>${isUser ? '<i class="fas fa-user"></i> 您：' : '<i class="fas fa-robot"></i> AI 助手：'}</strong> ${content}`;
+            chatHistory.appendChild(div);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        function formatJSON() {
+            try {
+                const textarea = document.getElementById('config-content');
+                const parsed = JSON.parse(textarea.value);
+                textarea.value = JSON.stringify(parsed, null, 2);
+            } catch (e) {
+                alert('JSON 格式错误');
+            }
+        }
+
+        function copyConfig() {
+            const textarea = document.getElementById('config-content');
+            textarea.select();
+            document.execCommand('copy');
+            alert('配置已复制');
+        }
+
+        function clearConfig() {
+            document.getElementById('config-content').value = '';
+        }
+
+        function saveNLPConfig() {
+            saveConfig();
+        }
+
+        function resetNLP() {
+            document.getElementById('config-content').value = '';
+            document.getElementById('nlpInput').value = '';
+            document.getElementById('chatHistory').innerHTML = '';
+            addChatMessage('您好！请用自然语言描述您的监控任务需求...', false);
+        }
+
+        // 支持回车发送
+        document.getElementById('nlpInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendNLPRequest();
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', initClassroomGrid);
+    </script>
+</body>
+</html>
+
+
+
+

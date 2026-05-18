@@ -1,0 +1,577 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模型参数配置 - AIoT 智慧校园</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --info: #17a2b8;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            margin-bottom: 24px;
+            border: none;
+        }
+        .card-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 16px 24px;
+            border-radius: 16px 16px 0 0 !important;
+            font-weight: 600;
+        }
+        .card-body { padding: 24px; }
+        .form-label { font-weight: 600; color: #333; margin-bottom: 4px; font-size: 0.9rem; }
+
+        /* 模型卡片 */
+        .model-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            background: #fff;
+        }
+        .model-card.is-primary {
+            border-color: var(--success);
+            background: linear-gradient(135deg, #f0fff4 0%, #e8f5e9 100%);
+        }
+        .model-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-1px); }
+        .model-card.dragging { opacity: 0.5; border-style: dashed; }
+        .model-card.drag-over { border-color: var(--primary); border-style: dashed; background: #f0f0ff; }
+
+        .badge-role {
+            font-size: 13px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .badge-primary { background: var(--success); color: #fff; }
+        .badge-backup { background: var(--warning); color: #fff; }
+        .badge-index {
+            background: #e0e0e0;
+            color: #555;
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        /* 拖拽手柄 */
+        .drag-handle {
+            cursor: grab;
+            color: #999;
+            padding: 4px 8px;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+        }
+        .drag-handle:hover { color: var(--primary); }
+        .drag-handle:active { cursor: grabbing; }
+
+        /* 操作按钮 */
+        .btn-promote {
+            background: var(--success);
+            border: none;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+        .btn-promote:hover { background: #27ae60; color: white; }
+
+        .btn-move-up, .btn-move-down {
+            background: var(--info);
+            border: none;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+        .btn-move-up:hover, .btn-move-down:hover { background: #138496; color: white; }
+
+        .btn-save {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            padding: 10px 36px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .btn-save:hover { opacity: 0.9; color: white; }
+
+        .btn-test {
+            background: var(--success);
+            border: none;
+            color: white;
+            padding: 10px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .btn-test:hover { background: #27ae60; color: white; }
+
+        /* 密钥显示切换 */
+        .key-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #999;
+            z-index: 2;
+        }
+        .key-toggle:hover { color: var(--primary); }
+        .key-wrapper { position: relative; }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        .custom-toast {
+            min-width: 300px;
+            padding: 16px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            animation: slideIn 0.3s ease;
+        }
+        .toast-success { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .toast-error { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .toast-info { background: linear-gradient(135deg, #3498db, #2980b9); }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* 短信配置 */
+        .sms-card {
+            border: 2px solid var(--info);
+            border-radius: 12px;
+            padding: 20px;
+            background: linear-gradient(135deg, #e8f4fd 0%, #d6eaf8 100%);
+        }
+
+        /* 当前主力模型提示 */
+        .current-primary-badge {
+            position: absolute;
+            top: -8px;
+            right: 16px;
+            background: var(--success);
+            color: white;
+            padding: 2px 14px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(46,204,113,0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-robot me-2"></i>AI 模型参数配置</span>
+                <span class="badge bg-light text-dark" id="statusBadge">加载中...</span>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    <i class="fas fa-info-circle me-1"></i>
+                    配置主力和备用模型。拖拽或使用箭头调整优先级顺序，排第一位的即为主力模型。切换模型时 API Key 和 Base URL 会一起切换。
+                </p>
+
+                <!-- 模型列表 -->
+                <div id="modelList">
+                    <!-- 动态生成 -->
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <button class="btn btn-test" onclick="testAllModels()">
+                            <i class="fas fa-play me-2"></i>测试所有模型
+                        </button>
+                    </div>
+                    <div class="col-md-8 text-end">
+                        <button class="btn btn-save" onclick="saveConfig()">
+                            <i class="fas fa-save me-2"></i>保存配置
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 测试结果 -->
+                <div class="mt-3" id="testResults"></div>
+            </div>
+        </div>
+
+        <!-- 短信参数配置 -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-sms me-2"></i>短信 API 参数配置
+            </div>
+            <div class="card-body">
+                <div class="sms-card">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">EC_NAME (单位名称)</label>
+                            <input type="text" class="form-control" id="sms_ec_name" placeholder="单位名称">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">AP_ID</label>
+                            <input type="text" class="form-control" id="sms_ap_id" placeholder="AP_ID">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">SECRET_KEY</label>
+                            <input type="password" class="form-control" id="sms_secret_key" placeholder="密钥">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">SIGN</label>
+                            <input type="text" class="form-control" id="sms_sign" placeholder="签名">
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label">API_URL</label>
+                            <input type="text" class="form-control" id="sms_api_url" placeholder="https://...">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button class="btn btn-test w-100" onclick="saveSmsConfig()">
+                                <i class="fas fa-save me-2"></i>保存短信配置
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 配置说明 -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-info-circle me-2"></i>配置说明
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li><strong>主力模型</strong> — 列表中排第一位的模型，系统优先使用</li>
+                    <li><strong>备用模型</strong> — 主力失败时按顺序自动切换</li>
+                    <li><i class="fas fa-arrows-alt-v me-1"></i>拖拽卡片或使用 <strong>↑ ↓</strong> 按钮调整优先级</li>
+                    <li><i class="fas fa-crown me-1"></i>点击 <strong>设为主力</strong> 将某模型提升到第一位</li>
+                    <li>切换模型时，对应的 API Key 和 Base URL 会一起切换</li>
+                    <li>所有修改需点击 <strong>保存配置</strong> 才会生效</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        // 模型数据（从后端加载）
+        let models = [];
+        let smsConfig = {};
+
+        // ==================== 模型管理 ====================
+
+        function getModelRole(index) {
+            return index === 0 ? 'primary' : 'backup';
+        }
+
+        function renderModels() {
+            const container = document.getElementById('modelList');
+            container.innerHTML = '';
+
+            models.forEach((m, idx) => {
+                const isPrimary = idx === 0;
+                const card = document.createElement('div');
+                card.className = `model-card ${isPrimary ? 'is-primary' : ''}`;
+                card.setAttribute('draggable', 'true');
+                card.setAttribute('data-index', idx);
+                card.id = `model-card-${idx}`;
+
+                card.innerHTML = `
+                    ${isPrimary ? '<div class="current-primary-badge"><i class="fas fa-crown me-1"></i>当前主力</div>' : ''}
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex align-items-center">
+                            <span class="drag-handle me-2" title="拖拽排序"><i class="fas fa-grip-vertical"></i></span>
+                            <span class="badge ${isPrimary ? 'badge-primary' : 'badge-backup'} badge-role me-2">
+                                ${isPrimary ? '🏆 主力模型' : '🔄 备用模型 ' + idx}
+                            </span>
+                            <span class="badge-index">${m.model || '未配置'}</span>
+                        </div>
+                        <div class="d-flex gap-1">
+                            ${idx > 0 ? `<button class="btn btn-promote" onclick="promoteModel(${idx})" title="设为主力"><i class="fas fa-crown me-1"></i>设为主力</button>` : ''}
+                            ${idx > 0 ? `<button class="btn btn-move-up" onclick="moveModel(${idx}, -1)" title="上移"><i class="fas fa-arrow-up"></i></button>` : ''}
+                            ${idx < models.length - 1 ? `<button class="btn btn-move-down" onclick="moveModel(${idx}, 1)" title="下移"><i class="fas fa-arrow-down"></i></button>` : ''}
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="form-label">API Key</label>
+                            <div class="key-wrapper">
+                                <input type="password" class="form-control" id="model_key_${idx}"
+                                       value="${m.api_key || ''}" placeholder="sk-..."
+                                       onchange="updateModel(${idx}, 'api_key', this.value)">
+                                <span class="key-toggle" onclick="toggleKeyVisibility('model_key_${idx}', this)">
+                                    <i class="fas fa-eye"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <label class="form-label">Base URL</label>
+                            <input type="text" class="form-control" id="model_url_${idx}"
+                                   value="${m.base_url || ''}" placeholder="https://..."
+                                   onchange="updateModel(${idx}, 'base_url', this.value)">
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">模型名称</label>
+                            <input type="text" class="form-control" id="model_name_${idx}"
+                                   value="${m.model || ''}" placeholder="qwen3-vl-plus"
+                                   onchange="updateModel(${idx}, 'model', this.value)">
+                        </div>
+                    </div>
+                `;
+
+                // 拖拽事件
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+                card.addEventListener('dragover', handleDragOver);
+                card.addEventListener('dragenter', handleDragEnter);
+                card.addEventListener('dragleave', handleDragLeave);
+                card.addEventListener('drop', handleDrop);
+
+                container.appendChild(card);
+            });
+        }
+
+        function updateModel(idx, field, value) {
+            models[idx][field] = value;
+        }
+
+        function promoteModel(idx) {
+            // 将 idx 位置的模型移到第一位（主力）
+            const item = models.splice(idx, 1)[0];
+            models.unshift(item);
+            renderModels();
+            showToast('已将 ' + item.model + ' 设为主力模型', 'info');
+        }
+
+        function moveModel(idx, direction) {
+            const newIdx = idx + direction;
+            if (newIdx < 0 || newIdx >= models.length) return;
+            [models[idx], models[newIdx]] = [models[newIdx], models[idx]];
+            renderModels();
+        }
+
+        // ==================== 拖拽排序 ====================
+
+        let dragSrcIndex = null;
+
+        function handleDragStart(e) {
+            dragSrcIndex = parseInt(this.getAttribute('data-index'));
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.model-card').forEach(c => c.classList.remove('drag-over'));
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            this.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            const targetIndex = parseInt(this.getAttribute('data-index'));
+            if (dragSrcIndex === null || dragSrcIndex === targetIndex) return;
+
+            const item = models.splice(dragSrcIndex, 1)[0];
+            models.splice(targetIndex, 0, item);
+            dragSrcIndex = null;
+            renderModels();
+            showToast('模型顺序已调整', 'info');
+        }
+
+        // ==================== 密钥可见性 ====================
+
+        function toggleKeyVisibility(inputId, toggleEl) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggleEl.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                input.type = 'password';
+                toggleEl.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        }
+
+        // ==================== 加载配置 ====================
+
+        async function loadConfig() {
+            try {
+                const resp = await fetch(API_BASE + '/api/aiot/model-config');
+                const data = await resp.json();
+
+                if (data.success) {
+                    models = data.models || [];
+                    smsConfig = data.sms || {};
+
+                    // 填充短信配置
+                    document.getElementById('sms_ec_name').value = smsConfig.EC_NAME || '';
+                    document.getElementById('sms_ap_id').value = smsConfig.AP_ID || '';
+                    document.getElementById('sms_secret_key').value = smsConfig.SECRET_KEY || '';
+                    document.getElementById('sms_sign').value = smsConfig.SIGN || '';
+                    document.getElementById('sms_api_url').value = smsConfig.API_URL || '';
+
+                    renderModels();
+                    document.getElementById('statusBadge').textContent = `${models.length} 个模型已加载`;
+                } else {
+                    showToast('加载配置失败: ' + data.message, 'error');
+                }
+            } catch (err) {
+                console.error('加载配置失败:', err);
+                showToast('加载配置失败: ' + err.message, 'error');
+            }
+        }
+
+        // ==================== 保存配置 ====================
+
+        async function saveConfig() {
+            // 从表单同步最新值到 models 数组
+            models.forEach((m, idx) => {
+                const keyEl = document.getElementById(`model_key_${idx}`);
+                const urlEl = document.getElementById(`model_url_${idx}`);
+                const nameEl = document.getElementById(`model_name_${idx}`);
+                if (keyEl) m.api_key = keyEl.value;
+                if (urlEl) m.base_url = urlEl.value;
+                if (nameEl) m.model = nameEl.value;
+            });
+
+            try {
+                const resp = await fetch(API_BASE + '/api/aiot/model-config', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ models: models })
+                });
+                const data = await resp.json();
+
+                if (data.success) {
+                    showToast('✅ 模型配置已保存！主力模型: ' + models[0].model, 'success');
+                    renderModels(); // 刷新显示（主力标记等）
+                } else {
+                    showToast('保存失败: ' + data.message, 'error');
+                }
+            } catch (err) {
+                showToast('保存失败: ' + err.message, 'error');
+            }
+        }
+
+        async function saveSmsConfig() {
+            const sms = {
+                EC_NAME: document.getElementById('sms_ec_name').value,
+                AP_ID: document.getElementById('sms_ap_id').value,
+                SECRET_KEY: document.getElementById('sms_secret_key').value,
+                SIGN: document.getElementById('sms_sign').value,
+                API_URL: document.getElementById('sms_api_url').value
+            };
+
+            try {
+                const resp = await fetch(API_BASE + '/api/aiot/sms-config', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(sms)
+                });
+                const data = await resp.json();
+
+                if (data.success) {
+                    showToast('✅ 短信配置已保存！', 'success');
+                } else {
+                    showToast('保存失败: ' + data.message, 'error');
+                }
+            } catch (err) {
+                showToast('保存失败: ' + err.message, 'error');
+            }
+        }
+
+        // ==================== 测试模型 ====================
+
+        async function testAllModels() {
+            const resultDiv = document.getElementById('testResults');
+            resultDiv.innerHTML = '<div class="alert alert-info"><i class="fas fa-spinner fa-spin me-2"></i>正在测试所有模型连接...</div>';
+
+            try {
+                const resp = await fetch(API_BASE + '/api/aiot/model-config/test', {
+                    method: 'POST'
+                });
+                const data = await resp.json();
+
+                if (data.results && data.results.length > 0) {
+                    let html = '<div class="mt-2">';
+                    data.results.forEach(r => {
+                        const cls = r.success ? 'alert-success' : 'alert-danger';
+                        const icon = r.success ? '✅' : '❌';
+                        html += `<div class="alert ${cls} py-2 mb-1">${icon} <strong>${r.model}</strong>: ${r.message}</div>`;
+                    });
+                    html += '</div>';
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = `<div class="alert alert-warning">⚠️ ${data.message || '测试返回异常'}</div>`;
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<div class="alert alert-danger">❌ 测试失败: ${err.message}</div>`;
+            }
+        }
+
+        // ==================== Toast 通知 ====================
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `custom-toast toast-${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.transition = 'opacity 0.3s';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ==================== 初始化 ====================
+        loadConfig();
+    </script>
+</body>
+</html>
+
+

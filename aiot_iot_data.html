@@ -1,0 +1,377 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实验数据 - AIoT 智慧校园</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: none;
+            background: rgba(255, 255, 255, 0.95);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 15px 15px 0 0 !important;
+        }
+        .top-nav { margin-bottom: 20px; }
+        .top-nav .btn { margin-right: 10px; }
+        
+        .table-responsive { max-height: 500px; overflow-y: auto; }
+        .table { font-size: 0.85rem; }
+        .table thead th {
+            background: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .device-online { color: var(--success); }
+        .device-offline { color: var(--danger); }
+        
+        .sensor-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+        }
+        .sensor-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .sensor-unit { font-size: 0.9rem; color: #666; }
+        
+        .chart-box {
+            height: 250px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <div class="top-nav">
+            <a href="index.html" class="btn btn-light"><i class="fas fa-home me-1"></i> 首页</a>
+            <a href="aiot_index.html" class="btn btn-light"><i class="fas fa-th-large me-1"></i> 管理首页</a>
+            <a href="aiot_config.html" class="btn btn-success"><i class="fas fa-tasks me-1"></i> 任务配置</a>
+            <a href="aiot_log.html" class="btn btn-info"><i class="fas fa-file-alt me-1"></i> 日志查看</a>
+            <a href="aiot_stats.html" class="btn btn-success"><i class="fas fa-chart-bar me-1"></i> 统计分析</a>
+            <a href="aiot_params.html" class="btn btn-success"><i class="fas fa-database me-1"></i> 参数配置</a>
+            <a href="aiot_broadcast.html" class="btn btn-info"><i class="fas fa-broadcast-tower me-1"></i> 智能广播</a>
+            <a href="aiot_electric.html" class="btn btn-secondary"><i class="fas fa-plug me-1"></i> 智能电控</a>
+            <button id="logoutBtn" class="btn btn-secondary" style="float: right;"><i class="fas fa-sign-out-alt me-1"></i> 退出</button>
+        </div>
+
+        <!-- 页面标题 -->
+        <div class="card" style="padding: 20px;">
+            <h3 style="margin: 0; color: var(--primary);">
+                <i class="fas fa-database me-2"></i>物联网数据采集统计
+            </h3>
+            <p class="text-muted mb-0">记录物联网开关和相关传感器的控制数据变化情况</p>
+        </div>
+
+        <!-- 设备状态概览 -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="sensor-value" id="onlineDevices">0</div>
+                        <div class="sensor-unit">在线设备</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="sensor-value" id="totalDevices">0</div>
+                        <div class="sensor-unit">总设备数</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="sensor-value" id="todayActions">0</div>
+                        <div class="sensor-unit">今日操作</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="sensor-value" id="todaySensors">0</div>
+                        <div class="sensor-unit">传感器数据</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 设备列表 -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-plug me-2"></i>物联网设备列表</span>
+                <button class="btn btn-sm btn-light" onclick="loadDevices()">
+                    <i class="fas fa-sync-alt me-1"></i> 刷新
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="deviceTable">
+                        <thead>
+                            <tr>
+                                <th>设备ID</th>
+                                <th>设备名称</th>
+                                <th>教室位置</th>
+                                <th>设备类型</th>
+                                <th>开关1(照明)</th>
+                                <th>开关2(空调)</th>
+                                <th>开关3(插座)</th>
+                                <th>在线状态</th>
+                                <th>最后在线</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deviceTableBody">
+                            <tr><td colspan="9" class="text-center text-muted">点击刷新加载设备数据...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 控制记录 -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-history me-2"></i>控制记录</span>
+                <div>
+                    <select class="form-select form-select-sm d-inline-block" style="width: 150px;" id="deviceFilter" onchange="filterByDevice()">
+                        <option value="">全部设备</option>
+                    </select>
+                    <button class="btn btn-sm btn-light" onclick="loadControlLogs()">
+                        <i class="fas fa-sync-alt me-1"></i> 刷新
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm" id="logTable">
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>设备</th>
+                                <th>教室</th>
+                                <th>操作类型</th>
+                                <th>目标状态</th>
+                                <th>结果</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logTableBody">
+                            <tr><td colspan="6" class="text-center text-muted">点击刷新加载控制记录...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 传感器数据 -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-thermometer-half me-2"></i>传感器数据</span>
+                <button class="btn btn-sm btn-light" onclick="loadSensorData()">
+                    <i class="fas fa-sync-alt me-1"></i> 刷新
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="row" id="sensorGrid">
+                    <div class="col-md-3">
+                        <div class="sensor-card">
+                            <div class="text-muted">温度传感器</div>
+                            <div class="sensor-value">--<span class="sensor-unit">°C</span></div>
+                            <small class="text-muted">暂无数据</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="sensor-card">
+                            <div class="text-muted">湿度传感器</div>
+                            <div class="sensor-value">--<span class="sensor-unit">%</span></div>
+                            <small class="text-muted">暂无数据</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="sensor-card">
+                            <div class="text-muted">光照传感器</div>
+                            <div class="sensor-value">--<span class="sensor-unit">lux</span></div>
+                            <small class="text-muted">暂无数据</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="sensor-card">
+                            <div class="text-muted">人体感应</div>
+                            <div class="sensor-value">--<span class="sensor-unit"></span></div>
+                            <small class="text-muted">暂无数据</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = window.location.origin;
+        
+        // 加载设备列表
+        async function loadDevices() {
+            const tbody = document.getElementById('deviceTableBody');
+            tbody.innerHTML = '<tr><td colspan="9" class="text-center"><i class="fas fa-spinner fa-spin"></i> 加载中...</td></tr>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/aiot/classrooms`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const classrooms = data.all || [];
+                    renderDevices(classrooms);
+                    updateStats(classrooms);
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="9" class="text-center text-danger">加载失败: ' + data.message + '</td></tr>';
+                }
+            } catch (error) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center text-danger">加载失败: ' + error.message + '</td></tr>';
+            }
+        }
+        
+        function renderDevices(classrooms) {
+            const tbody = document.getElementById('deviceTableBody');
+            const deviceFilter = document.getElementById('deviceFilter');
+            
+            if (classrooms.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">暂无设备数据</td></tr>';
+                return;
+            }
+            
+            let rows = '';
+            let options = '<option value="">全部设备</option>';
+            
+            classrooms.forEach(room => {
+                const deviceId = room.lighting_id || room.DEVICE_ID || '-';
+                const deviceType = '涂鸦智能';
+                const online = deviceId !== '-' ? 'online' : 'offline';
+                const onlineClass = online === 'online' ? 'device-online' : 'device-offline';
+                const onlineText = online === 'online' ? '在线' : '离线';
+                
+                rows += `<tr>
+                    <td><code>${deviceId.substring(0, 15)}...</code></td>
+                    <td>${room.classroom}</td>
+                    <td>${room.classname || '-'}</td>
+                    <td>${deviceType}</td>
+                    <td><span class="badge bg-secondary">关</span></td>
+                    <td><span class="badge bg-secondary">关</span></td>
+                    <td><span class="badge bg-secondary">关</span></td>
+                    <td class="${onlineClass}">${onlineText}</td>
+                    <td>${new Date().toLocaleTimeString('zh-CN')}</td>
+                </tr>`;
+                
+                options += `<option value="${deviceId}">${room.classroom}</option>`;
+            });
+            
+            tbody.innerHTML = rows;
+            deviceFilter.innerHTML = options;
+        }
+        
+        function updateStats(classrooms) {
+            document.getElementById('totalDevices').textContent = classrooms.length;
+            document.getElementById('onlineDevices').textContent = classrooms.filter(c => c.lighting_id || c.DEVICE_ID).length;
+            document.getElementById('todayActions').textContent = '0';
+            document.getElementById('todaySensors').textContent = '0';
+        }
+        
+        // 加载控制记录
+        function loadControlLogs() {
+            const tbody = document.getElementById('logTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center"><i class="fas fa-spinner fa-spin"></i> 加载中...</td></tr>';
+            
+            // 模拟数据
+            setTimeout(() => {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">暂无控制记录</td></tr>';
+            }, 500);
+        }
+        
+        function filterByDevice() {
+            loadControlLogs();
+        }
+        
+        // 加载传感器数据
+        function loadSensorData() {
+            // 模拟数据
+            const sensors = [
+                { name: '温度传感器', value: 24.5, unit: '°C' },
+                { name: '湿度传感器', value: 65, unit: '%' },
+                { name: '光照传感器', value: 320, unit: 'lux' },
+                { name: '人体感应', value: '无', unit: '' }
+            ];
+            
+            const grid = document.getElementById('sensorGrid');
+            let html = '';
+            
+            sensors.forEach(s => {
+                html += `<div class="col-md-3">
+                    <div class="sensor-card">
+                        <div class="text-muted">${s.name}</div>
+                        <div class="sensor-value">${s.value}<span class="sensor-unit">${s.unit}</span></div>
+                        <small class="text-muted">${new Date().toLocaleTimeString('zh-CN')}</small>
+                    </div>
+                </div>`;
+            });
+            
+            grid.innerHTML = html;
+        }
+        
+        // 检查登录
+        function checkAuth() {
+            const userStr = localStorage.getItem('teacherUser');
+            if (!userStr) {
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // 退出
+        function logout() {
+            if (confirm('确定要退出吗？')) {
+                localStorage.removeItem('teacherUser');
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // 初始化
+        checkAuth();
+        document.getElementById('logoutBtn').onclick = logout;
+        loadDevices();
+        loadSensorData();
+    </script>
+</body>
+</html>
+

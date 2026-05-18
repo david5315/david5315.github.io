@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIoT 智慧校园管理平台 - 登录</title>
+    <!-- 使用 CDN 引入必要资源 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+        }
+        
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border: none;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .card-header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 1.5rem;
+        }
+        
+        .login-card {
+            max-width: 450px;
+            margin: auto;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 12px 20px;
+            font-weight: 500;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .form-control {
+            border-radius: 50px;
+            padding: 12px 20px;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .info-box {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            height: 100%;
+        }
+        
+        .info-box h5 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+        
+        .info-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .info-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 1rem;
+        }
+        
+        .info-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .info-list i {
+            color: var(--success-color);
+            margin-right: 10px;
+            width: 20px;
+        }
+        
+        .system-info {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .system-info h6 {
+            color: var(--primary-color);
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+        
+        .system-info p {
+            font-size: 0.85rem;
+            color: #555;
+            margin-bottom: 5px;
+            line-height: 1.6;
+        }
+        
+        .brand-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .brand-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+        
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+        
+        .toast {
+            min-width: 300px;
+            border-radius: 10px;
+        }
+        
+        .login-logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .feature-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            color: #444;
+        }
+        
+        .feature-item i {
+            color: var(--primary-color);
+            margin-right: 6px;
+        }
+        
+        .footer-info {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .footer-info p {
+            font-size: 0.8rem;
+            color: #888;
+            margin: 3px 0;
+        }
+        
+        .footer-info a {
+            color: #666;
+            text-decoration: none;
+        }
+        
+        .footer-info a:hover {
+            color: var(--primary-color);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .brand-title {
+                font-size: 1.8rem;
+            }
+            
+            .brand-subtitle {
+                font-size: 1rem;
+            }
+            
+            .info-box {
+                padding: 20px;
+            }
+            
+            .card-body {
+                padding: 1.5rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="text-center mb-5">
+                    <div class="brand-title">
+                        <i class="fas fa-brain me-2"></i>AIoT 智慧校园管理平台
+                    </div>
+                    <div class="brand-subtitle">视觉语言智能体 · 多模态校园管理自动化系统</div>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <h5><i class="fas fa-rocket me-2"></i>核心能力</h5>
+                            <ul class="info-list">
+                                <li>
+                                    <i class="fas fa-eye"></i>
+                                    <strong>视觉理解</strong> - 多模态大模型分析监控画面
+                                </li>
+                                <li>
+                                    <i class="fas fa-comments"></i>
+                                    <strong>智能机器人</strong> - OpenClaw 企业微信自建应用
+                                </li>
+                                <li>
+                                    <i class="fas fa-plug"></i>
+                                    <strong>物联网管理</strong> - AI控制照明/空调/智能音箱
+                                </li>
+                                <li>
+                                    <i class="fas fa-clock"></i>
+                                    <strong>定时任务</strong> - 自动生成和执行分析任务
+                                </li>
+                                <li>
+                                    <i class="fas fa-bell"></i>
+                                    <strong>智能通知</strong> - 企业微信/飞书/短信推送
+                                </li>
+                            </ul>
+                            
+                            <div class="feature-grid">
+                                <div class="feature-item">
+                                    <i class="fas fa-video"></i> 教室监控分析
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-lightbulb"></i> 无人灯检测
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-users"></i> 人数统计
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-clipboard-check"></i> 纪律巡查
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-robot"></i> AI 对话查询
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-file-alt"></i> 日志记录
+                                </div>
+                            </div>
+                            
+                            <div class="system-info">
+                                <h6><i class="fas fa-microchip me-1"></i>技术架构</h6>
+                                <p><strong>AI 视觉：</strong>阿里云 DashScope (qwen-vl-max)</p>
+                                <p><strong>智能体：</strong>OpenClaw + 企业微信 MCP</p>
+                                <p><strong>物联网：</strong>涂鸦云 API + tinytuya</p>
+                                <p><strong>通知：</strong>短信平台 + 企业微信 + 飞书</p>
+                            </div>
+                            
+                            <div class="footer-info">
+                                <p>© 江苏省南菁高级中学 版权所有</p>
+                                <p>
+                                    <a href="https://beian.miit.gov.cn" target="_blank">苏ICP备06060021号-1</a>
+                                </p>
+                                <p style="margin-top: 8px; font-size: 0.75rem; color: #999;">
+                                    技术支持：AI 教学研究小组
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card login-card">
+                            <div class="card-header text-center">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-sign-in-alt me-2"></i>管理员登录
+                                </h4>
+                            </div>
+                            <div class="card-body p-4">
+                                <form id="login-form" novalidate>
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">
+                                            <i class="fas fa-user me-1"></i> 用户名
+                                        </label>
+                                        <input type="text" class="form-control" id="username" 
+                                               placeholder="请输入用户名" required autocomplete="username">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">
+                                            <i class="fas fa-lock me-1"></i> 密码
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="password" 
+                                                   placeholder="请输入密码" required autocomplete="current-password">
+                                            <button class="btn btn-outline-secondary" type="button" id="toggle-password" 
+                                                    style="border-radius: 0 50px 50px 0;">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="remember-me">
+                                        <label class="form-check-label" for="remember-me">记住登录状态</label>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100" id="login-btn">
+                                        <i class="fas fa-sign-in-alt me-1"></i> 登录系统
+                                    </button>
+                                </form>
+                                
+                   
+                                <div class="text-center mt-4">
+                                    <div class="login-logo">
+                                        <i class="fas fa-shield-virus"></i>
+                                    </div>
+                                    <h5>智慧管理 安全高效</h5>
+                                    <p class="text-muted small">OpenClaw 驱动的校园物联网智能体</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 消息提示容器 -->
+    <div class="toast-container">
+        <div id="message-toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toast-message">操作成功</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 使用 CDN 引入 Bootstrap JS -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = window.location.origin;
+
+        // ==================== 工具函数 ====================
+
+        function showMessage(type, message) {
+            const toast = document.getElementById('message-toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            const colors = {
+                success: 'bg-success',
+                error: 'bg-danger',
+                warning: 'bg-warning',
+                info: 'bg-info'
+            };
+            
+            const icons = {
+                success: '✓',
+                error: '✗',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+            
+            // 移除所有颜色类
+            toast.className = 'toast align-items-center text-white border-0';
+            toast.classList.add(colors[type] || 'bg-success');
+            toastMessage.innerHTML = `${icons[type] || ''} ${message}`;
+            
+            const bsToast = new bootstrap.Toast(toast, {
+                delay: 3000
+            });
+            bsToast.show();
+        }
+
+        // ==================== 登录状态管理 ====================
+
+        function clearAllLoginState() {
+            console.log("🧹 清除所有登录状态...");
+            localStorage.removeItem('teacherToken');
+            localStorage.removeItem('teacherUser');
+            localStorage.removeItem('rememberMe');
+            localStorage.removeItem('savedUsername');
+            sessionStorage.clear();
+            
+            // 清除 cookies
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i];
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substring(0, eqPos).trim() : cookie.trim();
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+            }
+            
+            console.log("✓ 登录状态已清除");
+        }
+
+        function saveLoginState(user) {
+            localStorage.setItem('teacherToken', 'logged_in');
+            localStorage.setItem('teacherUser', JSON.stringify(user));
+            console.log("✓ 登录状态已保存", user.username);
+        }
+
+        // ==================== 默认账号配置 ====================
+        
+        // 内置默认账号，无需外部 JSON 文件
+        const DEFAULT_ACCOUNTS = {
+            teachers: [
+                {
+                    username: 'admin',
+                    password: 'admin123',
+                    name: '管理员',
+                    role: 'admin'
+                },
+                {
+                    username: 'teacher1',
+                    password: 'teacher123',
+                    name: '张老师',
+                    role: 'teacher'
+                },
+                {
+                    username: 'teacher2',
+                    password: 'teacher123',
+                    name: '李老师',
+                    role: 'teacher'
+                }
+            ]
+        };
+
+        // 尝试加载外部账号配置，失败则使用默认配置
+        async function loadAccounts() {
+            try {
+                const response = await fetch(`${API_BASE}/data/accounts.json`);
+                if (!response.ok) {
+                    throw new Error('配置文件不存在');
+                }
+                const data = await response.json();
+                console.log("✓ 已加载外部账号配置");
+                return data;
+            } catch (error) {
+                console.warn("⚠️ 无法加载外部账号配置，使用默认配置");
+                return DEFAULT_ACCOUNTS;
+            }
+        }
+
+        // ==================== 登录功能 ====================
+
+        async function handleLogin(e) {
+            if (e) {
+                e.preventDefault();
+            }
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+            
+            // 表单验证
+            if (!username) {
+                showMessage('error', '请输入用户名');
+                document.getElementById('username').focus();
+                return;
+            }
+            
+            if (!password) {
+                showMessage('error', '请输入密码');
+                document.getElementById('password').focus();
+                return;
+            }
+            
+            // 显示加载状态
+            const submitBtn = document.getElementById('login-btn');
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> 登录中...';
+            submitBtn.disabled = true;
+            
+            try {
+                // 验证账号密码
+                const accounts = await loadAccounts();
+                
+                if (!accounts || !accounts.teachers) {
+                    throw new Error('账号配置格式错误');
+                }
+                
+                const user = accounts.teachers.find(t => 
+                    t.username === username && t.password === password
+                );
+                
+                if (user) {
+                    // 登录成功
+                    saveLoginState(user);
+                    
+                    if (rememberMe) {
+                        localStorage.setItem('rememberMe', 'true');
+                        localStorage.setItem('savedUsername', username);
+                    } else {
+                        localStorage.removeItem('savedUsername');
+                        localStorage.removeItem('rememberMe');
+                    }
+                    
+                    showMessage('success', `欢迎回来，${user.name || user.username}！正在跳转...`);
+                    
+                    // 登录成功后跳转到 AIoT 管理首页
+                    setTimeout(() => {
+                        window.location.href = 'aiot_index.html';
+                    }, 1500);
+                    
+                } else {
+                    // 登录失败
+                    showMessage('error', '用户名或密码错误，请重试');
+                    document.getElementById('password').value = '';
+                    document.getElementById('password').focus();
+                    
+                    // 抖动效果提示错误
+                    const loginCard = document.querySelector('.login-card');
+                    loginCard.style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        loginCard.style.animation = '';
+                    }, 500);
+                }
+            } catch (error) {
+                console.error('登录失败:', error);
+                showMessage('error', '登录失败，请检查网络连接或联系管理员');
+                document.getElementById('password').value = '';
+            } finally {
+                // 恢复按钮状态
+                submitBtn.innerHTML = originalHTML;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // ==================== 初始化函数 ====================
+
+        function initPage() {
+            console.log("🚀 初始化登录页面...");
+            
+            // 检查是否已登录
+            const token = localStorage.getItem('teacherToken');
+            if (token) {
+                console.log("检测到已登录状态，可选择跳转到主页");
+                // 如果已经登录，可以选择直接跳转
+                // window.location.href = 'aiot_index.html';
+            }
+            
+            // 检查是否有记住的用户名
+            const savedUsername = localStorage.getItem('savedUsername');
+            const rememberMe = localStorage.getItem('rememberMe');
+            
+            if (savedUsername && rememberMe === 'true') {
+                document.getElementById('username').value = savedUsername;
+                document.getElementById('remember-me').checked = true;
+            }
+            
+            // 绑定登录表单提交事件
+            const loginForm = document.getElementById('login-form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+            }
+            
+            // 密码显示/隐藏切换
+            const togglePassword = document.getElementById('toggle-password');
+            if (togglePassword) {
+                togglePassword.addEventListener('click', function() {
+                    const passwordInput = document.getElementById('password');
+                    const icon = this.querySelector('i');
+                    
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        passwordInput.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                });
+            }
+            
+            // 回车键提交表单
+            document.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const activeElement = document.activeElement;
+                    const loginForm = document.getElementById('login-form');
+                    
+                    if (activeElement && loginForm && 
+                        (activeElement.id === 'username' || activeElement.id === 'password')) {
+                        e.preventDefault();
+                        handleLogin(e);
+                    }
+                }
+            });
+            
+            console.log("✓ 登录页面初始化完成");
+        }
+
+        // 页面加载完成后初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPage);
+        } else {
+            initPage();
+        }
+    </script>
+    
+    <!-- 添加抖动动画 -->
+    <style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+    </style>
+</body>
+</html>

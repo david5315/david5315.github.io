@@ -1,0 +1,881 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日志管理 - AIoT 智慧校园</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --info: #17a2b8;
+            --dark: #2c3e50;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        .container { max-width: 1800px; margin: 0 auto; }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: none;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.98);
+        }
+        .card-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 15px 15px 0 0 !important;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-nav { 
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            background: rgba(255,255,255,0.15);
+            padding: 15px 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .top-nav .btn {
+            background: rgba(255,255,255,0.95);
+            border: none;
+            color: #667eea;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-decoration: none;
+        }
+        .top-nav .btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        .top-nav .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .top-nav .btn-outline-primary {
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.5);
+            color: white;
+        }
+        .top-nav .btn-outline-primary:hover {
+            background: white;
+            color: #667eea;
+        }
+        .top-nav .btn-success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .filter-bar {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .filter-bar .form-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .filter-row:last-child { margin-bottom: 0; }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid var(--primary);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-3px); }
+        .stat-card.success { border-left-color: var(--success); }
+        .stat-card.warning { border-left-color: var(--warning); }
+        .stat-card.error { border-left-color: var(--danger); }
+        .stat-card.info { border-left-color: var(--info); }
+        .stat-number { font-size: 2em; font-weight: 700; color: var(--primary); }
+        .stat-card.success .stat-number { color: var(--success); }
+        .stat-card.warning .stat-number { color: var(--warning); }
+        .stat-card.error .stat-number { color: var(--danger); }
+        .stat-card.info .stat-number { color: var(--info); }
+        .stat-label { color: #666; font-size: 0.9em; margin-top: 8px; }
+
+        .table-responsive {
+            max-height: 700px;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .table {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+        }
+        .table thead th {
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            padding: 14px 10px;
+            font-weight: 600;
+            color: #555;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .table tbody td {
+            padding: 12px 10px;
+            vertical-align: middle;
+            border-bottom: 1px solid #eee;
+        }
+        .table tbody tr:hover { background: #f8f9fa; }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-success { background: #d4edda; color: #155724; }
+        .status-error { background: #f8d7da; color: #721c24; }
+        .status-info { background: #d1ecf1; color: #0c5460; }
+        .status-warning { background: #fff3cd; color: #856404; }
+
+        .img-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .img-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .analysis-box {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            max-width: 400px;
+            font-size: 0.85rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .time-box {
+            text-align: center;
+        }
+        .time-date { color: #333; font-weight: 600; font-size: 0.9rem; }
+        .time-time { color: #888; font-size: 0.8em; }
+
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .image-modal img {
+            max-width: 90%;
+            max-height: 85%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        .image-modal .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            z-index: 10000;
+        }
+        .image-modal .image-info {
+            color: white;
+            margin-top: 20px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .pagination-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .pagination-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .source-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .source-auto { background: #e3f2fd; color: #1976d2; }
+        .source-manual { background: #e8f5e9; color: #388e3c; }
+        .source-debug { background: #fff3e0; color: #f57c00; }
+
+        .qf-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .qf-switch label {
+            font-weight: 600;
+            color: #555;
+            margin: 0;
+            cursor: pointer;
+        }
+        .qf-switch .form-check-input {
+            width: 2em;
+            height: 1em;
+            cursor: pointer;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .loading-spinner .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .type-icon {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin-right: 8px;
+        }
+        .type-capture { background: #e3f2fd; color: #1976d2; }
+        .type-control { background: #fff3e0; color: #f57c00; }
+        .type-summary { background: #e8f5e9; color: #388e3c; }
+        .type-debug { background: #f3e5f5; color: #7b1fa2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <div class="top-nav">
+            <a href="index.html" class="btn btn-light"><i class="fas fa-home me-1"></i> 首页</a>
+            <a href="aiot_index.html" class="btn btn-light"><i class="fas fa-th-large me-1"></i> 管理首页</a>
+            <a href="aiot_config.html" class="btn btn-outline-primary"><i class="fas fa-tasks me-1"></i> 任务配置</a>
+            <a href="aiot_log.html" class="btn btn-primary"><i class="fas fa-file-alt me-1"></i> 日志查看</a>
+            <a href="aiot_stats.html" class="btn btn-success"><i class="fas fa-chart-bar me-1"></i> 统计分析</a>
+            <a href="aiot_admin.html" class="btn btn-danger"><i class="fas fa-cog me-1"></i> 调试管理</a>
+            <a href="aiot_params.html" class="btn btn-success"><i class="fas fa-database me-1"></i> 参数配置</a>
+            <a href="aiot_broadcast.html" class="btn btn-info"><i class="fas fa-broadcast-tower me-1"></i> 智能广播</a>
+            <a href="aiot_electric.html" class="btn btn-secondary"><i class="fas fa-plug me-1"></i> 智能电控</a>
+            <a href="aiot_iot_data.html" class="btn btn-info"><i class="fas fa-database me-1"></i> 物联网实验</a>
+            <button id="refreshBtn" class="btn btn-success">
+                <i class="fas fa-sync-alt me-1"></i> 刷新
+            </button>
+            <div class="qf-switch" style="
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                background: rgba(255,255,255,0.95);
+                padding: 8px 15px;
+                border-radius: 10px;
+                margin-left: auto;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            ">
+                <div class="form-check form-switch" style="margin: 0;">
+                    <input class="form-check-input" type="checkbox" id="quickforgeSwitch" style="cursor: pointer;">
+                </div>
+                <label class="form-check-label" for="quickforgeSwitch" style="
+                    font-weight: 600;
+                    color: #667eea;
+                    margin: 0;
+                    cursor: pointer;
+                    white-space: nowrap;
+                ">
+                    <i class="fas fa-exchange-alt me-1"></i>
+                    启用 QuickForge 数据同步
+                </label>
+                <span class="badge" id="qfStatus" style="
+                    background: linear-gradient(135deg, #667eea, #764ba2);
+                    color: white;
+                    padding: 5px 12px;
+                    border-radius: 15px;
+                    font-weight: 600;
+                    font-size: 0.85em;
+                    margin-left: auto;
+                ">未连接</span>
+            </div>
+        </div>
+
+        <!-- 筛选栏 -->
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fas fa-filter me-2"></i>筛选条件</span>
+                <div>
+                    <button class="btn btn-sm btn-outline-warning me-1" onclick="resetFilters()">
+                        <i class="fas fa-undo me-1"></i> 重置
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger me-1" onclick="clearLogs()">
+                        <i class="fas fa-trash me-1"></i> 清空日志
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" onclick="exportLogs()">
+                        <i class="fas fa-download me-1"></i> 导出
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="filter-bar">
+                    <div class="filter-row">
+                        <div>
+                            <label class="form-label"><i class="fas fa-calendar-alt me-1"></i> 日期范围</label>
+                            <select class="form-select" id="dateSelect">
+                                <option value="all">全部</option>
+                                <option value="today">今天</option>
+                                <option value="yesterday">昨天</option>
+                                <option value="week">最近 7 天</option>
+                                <option value="month">最近 30 天</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label"><i class="fas fa-tasks me-1"></i> 任务</label>
+                            <select class="form-select" id="taskSelect">
+                                <option value="">全部任务</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label"><i class="fas fa-building me-1"></i> 教室/场地</label>
+                            <select class="form-select" id="classroomSelect">
+                                <option value="">全部教室</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label"><i class="fas fa-list me-1"></i> 日志类型</label>
+                            <select class="form-select" id="typeSelect">
+                                <option value="">全部类型</option>
+                                <option value="capture">📸 抓图分析</option>
+                                <option value="control">⚡ IoT 控制</option>
+                                <option value="summary">📊 汇总报告</option>
+                                <option value="debug">🐛 调试日志</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div>
+                            <label class="form-label"><i class="fas fa-check-circle me-1"></i> 执行状态</label>
+                            <select class="form-select" id="statusSelect">
+                                <option value="">全部状态</option>
+                                <option value="success">✅ 成功</option>
+                                <option value="false">❌ 失败</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label"><i class="fas fa-image me-1"></i> 图片</label>
+                            <select class="form-select" id="imageSelect">
+                                <option value="">全部</option>
+                                <option value="yes">📷 有图片</option>
+                                <option value="no">❌ 无图片</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label"><i class="fas fa-search me-1"></i> 关键词</label>
+                            <input type="text" class="form-control" id="keywordInput" placeholder="搜索教室、分析结果...">
+                        </div>
+                        <div class="d-flex align-items-end">
+                            <button class="btn btn-primary w-100" onclick="applyFilters()">
+                                <i class="fas fa-search me-1"></i> 应用筛选
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 日志表格 -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-list me-2"></i>日志明细</span>
+                <span class="badge bg-light text-dark" id="logCount">共 0 条记录</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width: 130px;">时间</th>
+                                <th style="width: 80px;">类型</th>
+                                <th style="width: 80px;">来源</th>
+                                <th style="width: 120px;">教室</th>
+                                <th style="width: 350px;">分析结果</th>
+                                <th style="width: 140px;">抓图</th>
+                                <th style="width: 100px;">状态</th>
+                                <th style="width: 100px;">同步</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logTableBody">
+                            <tr>
+                                <td colspan="8" class="text-center py-5">
+                                    <div class="loading-spinner">
+                                        <div class="spinner-border text-primary" role="status"></div>
+                                        <p class="mt-3 text-muted">正在加载日志...</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分页 -->
+        <div class="pagination-container" id="pagination"></div>
+    </div>
+
+    <!-- 图片查看模态框 -->
+    <div class="image-modal" id="imageModal" onclick="this.style.display='none'">
+        <span class="close-btn">&times;</span>
+        <img id="modalImage" src="" alt="抓图">
+        <div class="image-info" id="imageInfo"></div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = window.location.origin;
+        let allLogs = [];
+        let filteredLogs = [];
+        let currentPage = 1;
+        const pageSize = 30;
+        let currentFilterTaskId = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQfSwitch();
+            // 页面加载时默认显示全部日志
+            document.getElementById('dateSelect').value = 'all';
+            loadLogs();
+            loadFilterOptions();
+
+            document.getElementById('refreshBtn').addEventListener('click', function() {
+                loadLogs();
+                loadFilterOptions();
+                loadQfSwitch();
+            });
+
+            document.getElementById('keywordInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') applyFilters();
+            });
+
+            document.getElementById('quickforgeSwitch').addEventListener('change', function() {
+                saveQfSwitch(this.checked);
+            });
+        });
+
+        async function loadQfSwitch() {
+            try {
+                const response = await fetch(`${API_BASE}/api/aiot/settings/qf`);
+                const data = await response.json();
+                const switchEl = document.getElementById('quickforgeSwitch');
+                const statusEl = document.getElementById('qfStatus');
+                if (data.success) {
+                    switchEl.checked = data.enabled || false;
+                    statusEl.textContent = data.enabled ? '已启用' : '已禁用';
+                    statusEl.className = `badge ${data.enabled ? 'bg-success' : 'bg-secondary'}`;
+                }
+            } catch (error) {
+                console.error('加载 QuickForge 开关失败:', error);
+            }
+        }
+
+        async function saveQfSwitch(enabled) {
+            try {
+                const response = await fetch(`${API_BASE}/api/aiot/settings/qf`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ enabled })
+                });
+                const data = await response.json();
+                const statusEl = document.getElementById('qfStatus');
+                if (data.success) {
+                    statusEl.textContent = enabled ? '已启用' : '已禁用';
+                    statusEl.className = `badge ${enabled ? 'bg-success' : 'bg-secondary'}`;
+                    const msg = enabled ?
+                        '✅ QuickForge 同步已启用，新的截图将自动上传' :
+                        '⏸️ QuickForge 同步已禁用，截图仅保存在本地';
+                    alert(msg);
+                }
+            } catch (error) {
+                console.error('保存 QuickForge 开关失败:', error);
+                alert('保存失败：' + error.message);
+            }
+        }
+
+        async function loadFilterOptions() {
+            try {
+                const [taskRes, classroomRes] = await Promise.all([
+                    fetch(`${API_BASE}/api/aiot/tasks`),
+                    fetch(`${API_BASE}/api/aiot/classrooms`)
+                ]);
+                const taskData = await taskRes.json();
+                const classroomData = await classroomRes.json();
+
+                const taskSelect = document.getElementById('taskSelect');
+                if (taskData.success && taskData.tasks) {
+                    taskSelect.innerHTML = '<option value="">全部任务</option>';
+                    taskData.tasks.forEach(task => {
+                        const option = document.createElement('option');
+                        option.value = task.task_id || task.task_name;
+                        option.textContent = task.task_name || task.task_id;
+                        taskSelect.appendChild(option);
+                    });
+                }
+
+                const classroomSelect = document.getElementById('classroomSelect');
+                if (classroomData.success && classroomData.all) {
+                    classroomSelect.innerHTML = '<option value="">全部教室</option>';
+                    classroomData.all.forEach(cr => {
+                        const option = document.createElement('option');
+                        option.value = cr.classroom || cr;
+                        option.textContent = cr.classname || cr.classroom || cr;
+                        classroomSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('加载筛选选项失败:', error);
+            }
+        }
+
+        async function loadLogs(filterTaskId = null) {
+            const timeRange = document.getElementById('dateSelect').value;
+            let url = `${API_BASE}/api/aiot/logs?time=${timeRange}&page=1&pageSize=1000`;
+            if (filterTaskId) url += `&task_id=${filterTaskId}`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.success) {
+                    allLogs = (data.logs || []).reverse();
+                    filterLogs();
+                } else {
+                    showEmptyState(data.message || '加载日志失败');
+                }
+            } catch (error) {
+                console.error('加载日志失败:', error);
+                showEmptyState('加载失败：' + error.message);
+            }
+        }
+
+        function applyFilters() {
+            filterLogs();
+        }
+
+        function resetFilters() {
+            document.getElementById('dateSelect').value = 'today';
+            document.getElementById('taskSelect').value = '';
+            document.getElementById('classroomSelect').value = '';
+            document.getElementById('typeSelect').value = '';
+            document.getElementById('statusSelect').value = '';
+            document.getElementById('imageSelect').value = '';
+            document.getElementById('keywordInput').value = '';
+            filterLogs();
+        }
+
+        function filterLogs() {
+            const taskName = document.getElementById('taskSelect').value;
+            const classroom = document.getElementById('classroomSelect').value;
+            const logType = document.getElementById('typeSelect').value;
+            const status = document.getElementById('statusSelect').value;
+            const hasImage = document.getElementById('imageSelect').value;
+            const keyword = document.getElementById('keywordInput').value;
+
+            filteredLogs = allLogs.filter(log => {
+                const logObj = typeof log === 'string' ? JSON.parse(log) : log;
+                if (taskName && logObj.task_name !== taskName) return false;
+                if (classroom && (logObj.classroom !== classroom && logObj.classname !== classroom)) return false;
+                if (logType && logObj.type !== logType) return false;
+                if (status) {
+                    const isSuccess = logObj.success === true;
+                    if (status === 'success' && !isSuccess) return false;
+                    if (status === 'false' && isSuccess) return false;
+                }
+                if (hasImage) {
+                    const hasImg = !!(logObj.image || logObj.screenshot);
+                    if (hasImage === 'yes' && !hasImg) return false;
+                    if (hasImage === 'no' && hasImg) return false;
+                }
+                if (keyword) {
+                    const text = JSON.stringify(logObj).toLowerCase();
+                    if (!text.includes(keyword.toLowerCase())) return false;
+                }
+                return true;
+            });
+
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('logTableBody');
+            if (filteredLogs.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-5">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <p>暂无日志数据</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('logCount').textContent = '共 0 条记录';
+                return;
+            }
+
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageLogs = filteredLogs.slice(start, end);
+
+            let html = '';
+            pageLogs.forEach(log => {
+                const logObj = typeof log === 'string' ? JSON.parse(log) : log;
+                // 兼容 timestamp 和 time 两种格式
+                const time = logObj.timestamp || logObj.time || '';
+                const date = time.split(' ')[0] || '';
+                const timeOnly = time.split(' ')[1] || '';
+                const type = logObj.type || 'capture';
+                const typeIcon = {
+                    'capture': '<i class="fas fa-camera"></i>',
+                    'control': '<i class="fas fa-bolt"></i>',
+                    'summary': '<i class="fas fa-chart-bar"></i>',
+                    'debug': '<i class="fas fa-bug"></i>'
+                }[type] || '<i class="fas fa-file"></i>';
+                const source = logObj.source || '自动任务';
+                const sourceClass = {
+                    '自动任务': 'source-auto',
+                    '手动测试': 'source-manual',
+                    '调试': 'source-debug'
+                }[source] || 'source-auto';
+                const classroom = logObj.classroom || logObj.classname || '-';
+                const analysis = logObj.analysis || logObj.action || logObj.summary || logObj.message || '-';
+                const analysisDisplay = analysis.length > 80 ? analysis.substring(0, 80) + '...' : analysis;
+                const hasImage = !!(logObj.image || logObj.screenshot);
+                let imageUrl = null;
+                if (logObj.screenshot) {
+                    const filename = logObj.screenshot.split(/[\\/]/).pop();
+                    imageUrl = `${API_BASE}/api/aiot/captures/file/${filename}`;
+                } else if (logObj.image) {
+                    const filename = logObj.image.split(/[\\/]/).pop();
+                    imageUrl = `${API_BASE}/api/aiot/captures/file/${filename}`;
+                }
+                const imgHtml = hasImage && imageUrl ?
+                    `<a href="#" class="img-link" onclick="showImage('${imageUrl}', '${classroom}', '${time}'); return false;"><i class="fas fa-image me-1"></i>查看图片</a>` :
+                    '<span class="text-muted">无图片</span>';
+                const status = logObj.success;
+                const statusHtml = status === true ?
+                    '<span class="status-badge status-success">✅ 成功</span>' :
+                    (status === false ? '<span class="status-badge status-error">❌ 失败</span>' : '<span class="status-badge status-info">-</span>');
+                const qfStatus = logObj.quickforge_pushed || 'skipped';
+                const qfHtml = qfStatus === 'success' ?
+                    '<span class="status-badge status-success">✅ 已同步</span>' :
+                    (qfStatus === 'failed' ? '<span class="status-badge status-error">❌ 失败</span>' : '<span class="status-badge status-warning">⏸️ 未同步</span>');
+
+                html += `
+                    <tr>
+                        <td>
+                            <div class="time-box">
+                                <div class="time-date">${date}</div>
+                                <div class="time-time">${timeOnly}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="type-icon type-${type}">${typeIcon}</span>
+                            <small>${type}</small>
+                        </td>
+                        <td>
+                            <span class="source-badge ${sourceClass}">${source}</span>
+                        </td>
+                        <td>${classroom}</td>
+                        <td>
+                            <div class="analysis-box" title="${analysis}">${analysisDisplay}</div>
+                        </td>
+                        <td>${imgHtml}</td>
+                        <td>${statusHtml}</td>
+                        <td>${qfHtml}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+            document.getElementById('logCount').textContent = `共 ${filteredLogs.length} 条记录 (第${currentPage}/${Math.ceil(filteredLogs.length / pageSize)}页)`;
+        }
+
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+            const totalPages = Math.ceil(filteredLogs.length / pageSize);
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            let html = '';
+            html += `<button class="pagination-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">
+                <i class="fas fa-chevron-left"></i> 上一页
+            </button>`;
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    html += `<span class="pagination-btn" disabled>...</span>`;
+                }
+            }
+            html += `<button class="pagination-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">
+                下一页 <i class="fas fa-chevron-right"></i>
+            </button>`;
+            pagination.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            const totalPages = Math.ceil(filteredLogs.length / pageSize);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderTable();
+            renderPagination();
+        }
+
+        function showImage(url, classroom, time) {
+            const modal = document.getElementById('imageModal');
+            const img = document.getElementById('modalImage');
+            const info = document.getElementById('imageInfo');
+            img.src = url;
+            info.textContent = `${classroom} - ${time}`;
+            modal.style.display = 'flex';
+        }
+
+        function clearLogs() {
+            if (!confirm('⚠️ 确定要清空所有日志吗？此操作不可恢复！')) return;
+            fetch(`${API_BASE}/api/aiot/logs`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`✅ 已清空 ${data.count || 0} 个日志文件`);
+                        loadLogs();
+                        loadFilterOptions();
+                    } else {
+                        alert('❌ 清空失败：' + data.message);
+                    }
+                })
+                .catch(error => alert('❌ 清空失败：' + error.message));
+        }
+
+        function exportLogs() {
+            const dataStr = JSON.stringify(filteredLogs, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `aiot_logs_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showEmptyState(message) {
+            document.getElementById('logTableBody').innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center py-5">
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>${message}</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+    </script>
+</body>
+</html>
+
+

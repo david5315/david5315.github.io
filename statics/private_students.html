@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>私有学生管理 - 课堂互动教学评测系统</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+            cursor: pointer;
+        }
+        
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #eaeaea;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .admin-badge {
+            background-color: #e74c3c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-left: 8px;
+        }
+        
+        .user-profile-link {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .user-profile-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            text-decoration: underline;
+        }
+        
+        .user-profile-link .admin-badge {
+            margin-left: 5px;
+            font-size: 0.65rem;
+            vertical-align: middle;
+        }
+        
+        .batch-actions {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .batch-checkbox {
+            margin-right: 10px;
+        }
+        
+        .modal-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+        
+        .form-label.required::after {
+            content: " *";
+            color: #e74c3c;
+        }
+        
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        
+        .toast {
+            min-width: 300px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .import-preview {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .import-preview table {
+            width: 100%;
+            font-size: 0.9em;
+        }
+        
+        .import-preview th {
+            background-color: #e9ecef;
+            position: sticky;
+            top: 0;
+        }
+
+        #account-info {
+            color: #fff;
+            margin-right: 15px;
+            padding: 5px 10px;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        #account-info i {
+            margin-right: 3px;
+        }
+        #account-info a.btn-warning {
+            color: #212529;
+            text-decoration: none;
+        }
+        #teacher-selector {
+            color: #fff;
+            background-color: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            padding: 4px 8px;
+            margin-right: 10px;
+        }
+        #teacher-selector option {
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        /* 隐藏指定元素 */
+        #teacher-selector,
+        #expiry-display,
+        #remaining-display,
+        #refresh-all-btn {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#" id="help-trigger">
+                <i class="fas fa-chalkboard-teacher me-2"></i>
+                互动教学发布系统说明
+            </a>
+            
+            <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+                <!-- 页面切换按钮 -->
+                <a class="btn btn-outline-light btn-sm me-2" href="teacher.html">
+                    <i class="fas fa-folder-open me-1"></i> 我的网站群
+                </a>
+                <a class="btn btn-outline-light btn-sm me-2" href="pubshare.html">
+                    <i class="fas fa-globe me-1"></i> 公开资源
+                </a>
+                <a class="btn btn-outline-light btn-sm me-2 active" href="private_students.html" id="private-students-link">
+                    <i class="fas fa-user-graduate me-1"></i> 学生管理
+                </a>
+                <a class="btn btn-outline-light btn-sm me-2" href="admin_management.html" id="admin-link" style="display: none;">
+                    <i class="fas fa-user-shield me-1"></i> 全局管理
+                </a>
+                <a class="btn btn-outline-light btn-sm me-2" href="data_viewer.html">
+                    <i class="fas fa-database me-1"></i> 数据管理
+                </a>
+                <a class="btn btn-outline-light btn-sm me-2" href="ai_prompt_templates.html">
+                    <i class="fas fa-file-code me-1"></i> 模板管理
+                </a>
+
+                <!-- 教师选择器（管理员用，已隐藏） -->
+                <select id="teacher-selector" class="form-select form-select-sm me-2" style="display: none; width: auto;">
+                    <option value="">加载中...</option>
+                </select>
+
+                <span class="navbar-text me-3">
+                    <i class="fas fa-user me-1"></i>
+                    <span id="current-user-display" class="user-profile-link">教师用户</span>
+                </span>
+                
+                <!-- 刷新按钮（已隐藏） -->
+                <button class="btn btn-outline-light btn-sm me-2" id="refresh-all-btn">
+                    <i class="fas fa-sync-alt me-1"></i> 刷新
+                </button>
+                <button id="logout-btn" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-sign-out-alt me-1"></i> 退出
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-users me-2"></i>我的私有学生</h5>
+                <div>
+                    <button class="btn btn-sm btn-success me-1" data-bs-toggle="modal" data-bs-target="#importModal"><i class="fas fa-file-import"></i> 导入CSV</button>
+                    <button class="btn btn-sm btn-info me-1" id="export-btn"><i class="fas fa-file-export"></i> 导出CSV</button>
+                    <button class="btn btn-sm btn-warning me-1" id="generate-btn"><i class="fas fa-magic"></i> 生成默认60个</button>
+                    <button class="btn btn-sm btn-secondary me-1" id="reset-password-btn" disabled><i class="fas fa-key"></i> 重置密码</button>
+                    <button class="btn btn-sm btn-danger" id="batch-delete-btn" disabled><i class="fas fa-trash"></i> 批量删除</button>
+                    <button class="btn btn-sm btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#addStudentModal"><i class="fas fa-plus"></i> 添加学生</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- 批量操作区域 -->
+                <div class="batch-actions d-flex align-items-center">
+                    <div class="form-check batch-checkbox">
+                        <input class="form-check-input" type="checkbox" id="select-all">
+                        <label class="form-check-label" for="select-all">全选</label>
+                    </div>
+                    <span id="selected-count">已选择 0 名学生</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th width="50"><input type="checkbox" id="select-all-header" disabled></th>
+                                <th>学号</th>
+                                <th>姓名</th>
+                                <th>班级</th>
+                                <th>密码</th>
+                                <th width="200">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-list">
+                            <!-- 动态数据 -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="empty-message" class="text-center text-muted py-4" style="display: none;">
+                    <i class="fas fa-user-graduate fa-3x mb-3"></i>
+                    <p>暂无私有学生，请点击上方按钮添加或导入。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 帮助模态框 -->
+    <div class="modal fade" id="helpModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-question-circle me-2 text-primary"></i>私有学生管理使用说明</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <p class="mb-2">管理您自己的学生名单，用于限制访问或记录学生身份。</p>
+                    </div>
+                    <ol class="list-group list-group-numbered mb-3">
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>添加单个学生</strong><br>点击“添加学生”按钮，填写学号、姓名、班级，密码可选（默认为学号）。</div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>批量导入</strong><br>点击“导入CSV”按钮，上传符合格式的CSV文件（学号,姓名,班级,密码），可选择覆盖已存在的学号。</div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>生成默认学生</strong><br>点击“生成默认60个”按钮，自动生成学号前缀为2025207的学生，密码123456。</div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>批量操作</strong><br>选中复选框后，可批量删除或重置密码（支持统一密码或设为学号）。</div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>编辑与删除</strong><br>每行操作按钮可编辑学生信息或删除单个学生。</div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="ms-2 me-auto"><strong>导出CSV</strong><br>点击“导出CSV”按钮，将当前列表导出为CSV文件。</div>
+                        </li>
+                    </ol>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导入CSV模态框（已添加模板下载按钮） -->
+    <div class="modal fade" id="importModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-file-import me-2"></i>导入学生（CSV格式）</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>请上传符合格式的CSV文件，第一行应为表头：学号,姓名,班级,密码（可选）</p>
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-sm btn-outline-secondary me-2" id="download-template-btn">
+                            <i class="fas fa-download"></i> 下载模板
+                        </button>
+                        <input type="file" class="form-control" id="import-file" accept=".csv" style="display: inline-block; width: auto;">
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="overwrite-existing">
+                        <label class="form-check-label" for="overwrite-existing">覆盖已存在的学号（否则跳过）</label>
+                    </div>
+                    <div id="import-preview" class="import-preview" style="display: none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="confirm-import-btn">确认导入</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加学生模态框 -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user-plus me-2"></i>添加私有学生</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addStudentForm">
+                        <div class="mb-3">
+                            <label class="form-label required">学号</label>
+                            <input type="text" class="form-control" id="student-id" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">姓名</label>
+                            <input type="text" class="form-control" id="student-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">班级</label>
+                            <input type="text" class="form-control" id="student-class" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">密码（默认与学号相同）</label>
+                            <input type="text" class="form-control" id="student-password" placeholder="留空则使用学号">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="confirm-add-student">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 重置密码模态框 -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-key me-2"></i>重置密码</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>将选中学生的密码重置为：</p>
+                    <div class="mb-3">
+                        <select class="form-select" id="reset-password-option">
+                            <option value="sameAsId">与学号相同</option>
+                            <option value="fixed">固定密码（如下）</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="fixed-password-input" style="display: none;">
+                        <input type="text" class="form-control" id="fixed-password" placeholder="输入新密码">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-warning" id="confirm-reset-password">重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑学生模态框 -->
+    <div class="modal fade" id="editStudentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>编辑学生信息</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit-student-id">
+                    <div class="mb-3">
+                        <label class="form-label">学号</label>
+                        <input type="text" class="form-control" id="edit-student-id-display" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label required">姓名</label>
+                        <input type="text" class="form-control" id="edit-student-name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label required">班级</label>
+                        <input type="text" class="form-control" id="edit-student-class" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="confirm-edit-student">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 消息提示容器 -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ==================== 全局变量 ====================
+        const API_BASE = window.location.origin + '/api';
+        let currentUser = null;
+        let isAdmin = false;
+        let students = [];
+        let importData = [];
+        let currentEditingId = null;
+
+        // ==================== 登录状态管理 ====================
+        function checkLoginState() {
+            const token = localStorage.getItem('teacherToken');
+            const userStr = localStorage.getItem('teacherUser');
+            if (!token || !userStr) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            try {
+                return JSON.parse(userStr);
+            } catch (e) {
+                window.location.href = 'login.html';
+                return null;
+            }
+        }
+
+        function clearAllLoginState() {
+            localStorage.removeItem('teacherToken');
+            localStorage.removeItem('teacherUser');
+            sessionStorage.clear();
+            const cookies = document.cookie.split(";");
+            for (let cookie of cookies) {
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+            }
+        }
+
+        // ==================== 获取完整用户资料 ====================
+        async function fetchUserProfile() {
+            try {
+                const res = await apiCall('/account/profile');
+                if (res.success && res.profile) {
+                    currentUser.user_key = res.profile.user_key;
+                    currentUser.name = res.profile.name;
+                    currentUser.subject = res.profile.subject;
+                    currentUser.phone = res.profile.phone;
+                    currentUser.email = res.profile.email;
+                    currentUser.expiry_date = res.profile.expiry_date;
+                    currentUser.remaining_uses = res.profile.remaining_uses;
+                    localStorage.setItem('teacherUser', JSON.stringify(currentUser));
+                    updateRemainingDisplay();
+                }
+            } catch (error) {
+                console.warn('获取用户资料失败', error);
+            }
+        }
+
+        // ==================== 额度显示 ====================
+        async function updateRemainingDisplay() {
+            const expirySpan = document.getElementById('expiry-display');
+            const remainingSpan = document.getElementById('remaining-display');
+            const accountInfo = document.getElementById('account-info');
+
+            if (currentUser.role === 'admin' || currentUser.role === 'QF_school' || currentUser.role === 'QF_user') {
+                accountInfo.style.display = 'inline-block';
+                expirySpan.textContent = currentUser.expiry_date || '无限制';
+                const remaining = currentUser.remaining_uses;
+                remainingSpan.textContent = (remaining === 0 || remaining === undefined) ? '∞' : remaining;
+                return;
+            }
+
+            try {
+                const res = await fetch(API_BASE + '/gui-user');
+                const data = await res.json();
+                if (data.success && data.user) {
+                    const guiUser = data.user;
+                    if (guiUser.remaining_uses > 0) {
+                        accountInfo.style.display = 'inline-block';
+                        expirySpan.textContent = guiUser.expiry_date || '无限制';
+                        remainingSpan.textContent = guiUser.remaining_uses;
+                    } else {
+                        showUpgradeLink();
+                    }
+                } else {
+                    showUpgradeLink();
+                }
+            } catch (error) {
+                console.error('获取 GUI 用户信息失败', error);
+                showUpgradeLink();
+            }
+        }
+
+        function showUpgradeLink() {
+            const accountInfo = document.getElementById('account-info');
+            accountInfo.style.display = 'inline-block';
+            accountInfo.innerHTML = '<a href="payment.html" class="btn btn-sm btn-warning">开通</a>';
+        }
+
+        function updateUserDisplay(user) {
+            const userDisplay = document.getElementById('current-user-display');
+            if (userDisplay) {
+                let displayText = user.username;
+                if (user.isAdmin) {
+                    displayText += ' <span class="admin-badge">管理员</span>';
+                    isAdmin = true;
+                }
+                userDisplay.innerHTML = displayText;
+                userDisplay.style.cursor = 'pointer';
+                userDisplay.title = '点击查看个人资料';
+                userDisplay.addEventListener('click', function() {
+                    window.location.href = 'profile.html';
+                });
+            }
+            
+            const adminLink = document.getElementById('admin-link');
+            const privateStudentsLink = document.getElementById('private-students-link');
+            if (user.isAdmin) {
+                if (adminLink) adminLink.style.display = 'block';
+                if (privateStudentsLink) privateStudentsLink.style.display = 'block';
+            } else {
+                if (adminLink) adminLink.style.display = 'none';
+                if (privateStudentsLink) privateStudentsLink.style.display = 'block';
+            }
+
+            updateRemainingDisplay();
+
+            if (user.isAdmin) {
+                loadTeacherSelector();
+            } else {
+                document.getElementById('teacher-selector').style.display = 'none';
+            }
+        }
+
+        // ==================== 加载教师选择器（管理员用）====================
+        async function loadTeacherSelector() {
+            try {
+                const teachersRes = await apiCall('/admin/teachers');
+                if (teachersRes.success && teachersRes.teachers) {
+                    const selector = document.getElementById('teacher-selector');
+                    selector.innerHTML = '';
+                    const rootOption = document.createElement('option');
+                    rootOption.value = '';
+                    rootOption.textContent = '根目录 (templates)';
+                    selector.appendChild(rootOption);
+                    teachersRes.teachers.forEach(t => {
+                        const option = document.createElement('option');
+                        option.value = t.username;
+                        option.textContent = `${t.name || t.username} (${t.username})`;
+                        selector.appendChild(option);
+                    });
+                    selector.style.display = 'inline-block';
+                    selector.value = currentUser.username;
+                    selector.addEventListener('change', (e) => {
+                        loadStudents(e.target.value);
+                    });
+                }
+            } catch (error) {
+                console.error('加载教师列表失败', error);
+            }
+        }
+
+        // ==================== API 调用（已修复自动序列化）====================
+        async function apiCall(endpoint, options = {}) {
+            try {
+                let body = options.body;
+                let headers = { ...options.headers };
+                // 如果是对象且不是 FormData/Blob，则自动转为 JSON
+                if (body && typeof body === 'object' && !(body instanceof FormData) && !(body instanceof Blob)) {
+                    body = JSON.stringify(body);
+                    headers['Content-Type'] = 'application/json';
+                }
+
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    headers: headers,
+                    credentials: 'include',
+                    ...options,
+                    body: body,
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('API调用失败:', error);
+                throw error;
+            }
+        }
+
+        // ==================== 加载站点配置 ====================
+        async function loadSiteSetup() {
+            try {
+                const res = await apiCall('/site-setup');
+                if (res.success) {
+                    window.siteSetup = res.site_setup || {};
+                }
+            } catch (e) {
+                console.error('加载站点配置失败', e);
+            }
+        }
+
+        // ==================== 私有学生管理函数 ====================
+        async function loadStudents(teacherName = null) {
+            const targetTeacher = teacherName || currentUser.username;
+            try {
+                let url = '/teacher/private-students';
+                if (targetTeacher !== currentUser.username && isAdmin) {
+                    url += `?teacher=${encodeURIComponent(targetTeacher)}`;
+                }
+                const res = await apiCall(url);
+                if (res.success) {
+                    students = res.students || [];
+                    renderStudentList();
+                } else {
+                    showToast('error', res.message || '加载学生列表失败');
+                }
+            } catch (error) {
+                console.error('加载学生列表失败', error);
+                showToast('error', '网络错误');
+            }
+        }
+
+        function renderStudentList() {
+            const tbody = document.getElementById('student-list');
+            const emptyMsg = document.getElementById('empty-message');
+            if (students.length === 0) {
+                tbody.innerHTML = '';
+                emptyMsg.style.display = 'block';
+                return;
+            }
+            emptyMsg.style.display = 'none';
+            let html = '';
+            students.forEach(s => {
+                html += `<tr>
+                    <td><input type="checkbox" class="student-checkbox" data-id="${s.id}"></td>
+                    <td>${s.id}</td>
+                    <td>${s.name}</td>
+                    <td>${s.class || ''}</td>
+                    <td>${s.password}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${s.id}"><i class="fas fa-edit"></i> 编辑</button>
+                        <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${s.id}"><i class="fas fa-trash"></i> 删除</button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+            updateSelectedCount();
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.currentTarget.dataset.id;
+                    openEditModal(id);
+                });
+            });
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.currentTarget.dataset.id;
+                    if (confirm('确定要删除该学生吗？')) {
+                        deleteStudent(id);
+                    }
+                });
+            });
+        }
+
+        function updateSelectedCount() {
+            const selected = document.querySelectorAll('.student-checkbox:checked').length;
+            document.getElementById('selected-count').textContent = `已选择 ${selected} 名学生`;
+            document.getElementById('reset-password-btn').disabled = selected === 0;
+            document.getElementById('batch-delete-btn').disabled = selected === 0;
+        }
+
+        // 全选
+        document.getElementById('select-all').addEventListener('change', (e) => {
+            document.querySelectorAll('.student-checkbox').forEach(cb => cb.checked = e.target.checked);
+            updateSelectedCount();
+        });
+
+        document.addEventListener('change', (e) => {
+            if (e.target.classList.contains('student-checkbox')) {
+                updateSelectedCount();
+            }
+        });
+
+        // 添加学生
+        document.getElementById('confirm-add-student').addEventListener('click', async () => {
+            const id = document.getElementById('student-id').value.trim();
+            const name = document.getElementById('student-name').value.trim();
+            const className = document.getElementById('student-class').value.trim();
+            const password = document.getElementById('student-password').value.trim() || id;
+            if (!id || !name) {
+                showToast('error', '学号和姓名不能为空');
+                return;
+            }
+            const newStudent = { id, name, class: className, password };
+            try {
+                const res = await apiCall('/teacher/private-students', {
+                    method: 'POST',
+                    body: newStudent
+                });
+                if (res.success) {
+                    showToast('success', '添加成功');
+                    bootstrap.Modal.getInstance(document.getElementById('addStudentModal')).hide();
+                    document.getElementById('student-id').value = '';
+                    document.getElementById('student-name').value = '';
+                    document.getElementById('student-class').value = '';
+                    document.getElementById('student-password').value = '';
+                    await loadStudents();
+                } else {
+                    showToast('error', res.message || '添加失败');
+                }
+            } catch (error) {
+                showToast('error', '网络错误');
+            }
+        });
+
+        async function deleteStudent(id) {
+            try {
+                const res = await apiCall(`/teacher/private-students/${id}`, {
+                    method: 'DELETE'
+                });
+                if (res.success) {
+                    showToast('success', '删除成功');
+                    await loadStudents();
+                } else {
+                    showToast('error', res.message || '删除失败');
+                }
+            } catch (error) {
+                showToast('error', '网络错误');
+            }
+        }
+
+        function openEditModal(id) {
+            const student = students.find(s => s.id === id);
+            if (!student) return;
+            document.getElementById('edit-student-id').value = student.id;
+            document.getElementById('edit-student-id-display').value = student.id;
+            document.getElementById('edit-student-name').value = student.name;
+            document.getElementById('edit-student-class').value = student.class || '';
+            currentEditingId = id;
+            new bootstrap.Modal(document.getElementById('editStudentModal')).show();
+        }
+
+        document.getElementById('confirm-edit-student').addEventListener('click', async () => {
+            const name = document.getElementById('edit-student-name').value.trim();
+            const className = document.getElementById('edit-student-class').value.trim();
+            if (!name) {
+                showToast('error', '姓名不能为空');
+                return;
+            }
+            const updated = { name, class: className };
+            try {
+                const res = await apiCall(`/teacher/private-students/${currentEditingId}`, {
+                    method: 'PUT',
+                    body: updated
+                });
+                if (res.success) {
+                    showToast('success', '更新成功');
+                    bootstrap.Modal.getInstance(document.getElementById('editStudentModal')).hide();
+                    await loadStudents();
+                } else {
+                    showToast('error', res.message || '更新失败');
+                }
+            } catch (error) {
+                showToast('error', '网络错误');
+            }
+        });
+
+        document.getElementById('batch-delete-btn').addEventListener('click', async () => {
+            const selected = Array.from(document.querySelectorAll('.student-checkbox:checked')).map(cb => cb.dataset.id);
+            if (selected.length === 0) return;
+            if (!confirm(`确定要删除选中的 ${selected.length} 名学生吗？`)) return;
+            try {
+                const res = await apiCall('/teacher/private-students/batch-delete', {
+                    method: 'POST',
+                    body: { studentIds: selected }
+                });
+                if (res.success) {
+                    showToast('success', res.message);
+                    await loadStudents();
+                } else {
+                    showToast('error', res.message || '批量删除失败');
+                }
+            } catch (error) {
+                showToast('error', '网络错误');
+            }
+        });
+
+        document.getElementById('reset-password-btn').addEventListener('click', () => {
+            const selected = Array.from(document.querySelectorAll('.student-checkbox:checked')).map(cb => cb.dataset.id);
+            if (selected.length === 0) return;
+            document.getElementById('reset-password-option').value = 'sameAsId';
+            document.getElementById('fixed-password-input').style.display = 'none';
+            new bootstrap.Modal(document.getElementById('resetPasswordModal')).show();
+        });
+
+        document.getElementById('reset-password-option').addEventListener('change', (e) => {
+            document.getElementById('fixed-password-input').style.display = e.target.value === 'fixed' ? 'block' : 'none';
+        });
+
+        document.getElementById('confirm-reset-password').addEventListener('click', async () => {
+            const selected = Array.from(document.querySelectorAll('.student-checkbox:checked')).map(cb => cb.dataset.id);
+            const option = document.getElementById('reset-password-option').value;
+            let newPassword = '123456';
+            if (option === 'fixed') {
+                newPassword = document.getElementById('fixed-password').value.trim();
+                if (!newPassword) {
+                    showToast('error', '请输入新密码');
+                    return;
+                }
+            } else {
+                newPassword = '123456';
+            }
+            try {
+                const res = await apiCall('/teacher/private-students/reset-password', {
+                    method: 'POST',
+                    body: { studentIds: selected, newPassword }
+                });
+                if (res.success) {
+                    showToast('success', res.message);
+                    bootstrap.Modal.getInstance(document.getElementById('resetPasswordModal')).hide();
+                    await loadStudents();
+                } else {
+                    showToast('error', res.message || '重置失败');
+                }
+            } catch (error) {
+                showToast('error', '网络错误');
+            }
+        });
+
+        document.getElementById('export-btn').addEventListener('click', () => {
+            if (students.length === 0) {
+                showToast('warning', '没有学生数据可导出');
+                return;
+            }
+            let csv = '学号,姓名,班级,密码\n';
+            students.forEach(s => {
+                csv += `${s.id},${s.name},${s.class || ''},${s.password}\n`;
+            });
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `private_students_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+        });
+
+        document.getElementById('generate-btn').addEventListener('click', async () => {
+            if (!confirm('确定要生成60个默认学生吗？将自动添加学号前缀2025207。')) return;
+            const newStudents = [];
+            for (let i = 1; i <= 60; i++) {
+                newStudents.push({
+                    id: `2025207${i.toString().padStart(2, '0')}`,
+                    name: `学生${i}`,
+                    class: '高中班级',
+                    password: '123456'
+                });
+            }
+            try {
+                const res = await apiCall('/teacher/private-students/batch', {
+                    method: 'POST',
+                    body: newStudents
+                });
+                if (res.success) {
+                    showToast('success', res.message);
+                    await loadStudents();
+                } else {
+                    showToast('error', res.message || '生成失败');
+                }
+            } catch (error) {
+                showToast('error', '网络错误');
+            }
+        });
+
+        // 导入CSV相关
+        document.getElementById('import-file').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const content = ev.target.result;
+                const lines = content.split('\n').filter(l => l.trim());
+                if (lines.length < 2) {
+                    showToast('error', 'CSV文件至少包含表头和一行数据');
+                    return;
+                }
+                const headers = lines[0].split(',').map(h => h.trim());
+                if (headers.length < 3 || headers[0] !== '学号' || headers[1] !== '姓名' || headers[2] !== '班级') {
+                    showToast('error', 'CSV表头应为: 学号,姓名,班级,密码(可选)');
+                    return;
+                }
+                const data = [];
+                for (let i = 1; i < lines.length; i++) {
+                    const values = lines[i].split(',').map(v => v.trim());
+                    const student = {
+                        id: values[0],
+                        name: values[1] || '',
+                        class: values[2] || '',
+                        password: values[3] || values[0]
+                    };
+                    if (student.id && student.name) {
+                        data.push(student);
+                    }
+                }
+                importData = data;
+                const previewDiv = document.getElementById('import-preview');
+                previewDiv.style.display = 'block';
+                let table = '<table class="table table-sm"><thead><tr><th>学号</th><th>姓名</th><th>班级</th><th>密码</th></tr></thead><tbody>';
+                data.slice(0, 10).forEach(s => {
+                    table += `<tr><td>${s.id}</td><td>${s.name}</td><td>${s.class}</td><td>${s.password}</td></tr>`;
+                });
+                if (data.length > 10) {
+                    table += `<tr><td colspan="4">... 共 ${data.length} 条记录</td></tr>`;
+                }
+                table += '</tbody></table>';
+                previewDiv.innerHTML = table;
+            };
+            reader.readAsText(file, 'UTF-8');
+        });
+
+        document.getElementById('confirm-import-btn').addEventListener('click', async () => {
+            if (importData.length === 0) {
+                showToast('error', '没有可导入的数据');
+                return;
+            }
+            // 注意：后端批量添加接口目前不支持覆盖，此处简单调用批量添加
+            try {
+                const res = await apiCall('/teacher/private-students/batch', {
+                    method: 'POST',
+                    body: importData
+                });
+                if (res.success) {
+                    showToast('success', res.message);
+                    bootstrap.Modal.getInstance(document.getElementById('importModal')).hide();
+                    document.getElementById('import-file').value = '';
+                    document.getElementById('import-preview').style.display = 'none';
+                    importData = [];
+                    await loadStudents();
+                } else {
+                    showToast('error', res.message || '导入失败');
+                }
+            } catch (error) {
+                showToast('error', '网络错误');
+            }
+        });
+
+        // 下载模板
+        document.getElementById('download-template-btn').addEventListener('click', () => {
+            const templateContent = '学号,姓名,班级,密码\n202501001,张三,一班,123456\n202501002,李四,一班,\n';
+            const blob = new Blob(['\uFEFF' + templateContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'student_import_template.csv';
+            link.click();
+            URL.revokeObjectURL(link.href);
+        });
+
+        // 刷新
+        document.getElementById('refresh-all-btn').addEventListener('click', () => {
+            location.reload();
+        });
+
+        // 帮助
+        document.getElementById('help-trigger').addEventListener('click', (e) => {
+            e.preventDefault();
+            new bootstrap.Modal(document.getElementById('helpModal')).show();
+        });
+
+        // 退出登录
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            clearAllLoginState();
+            window.location.href = 'login.html';
+        });
+
+        function showToast(type, message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0 show`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ==================== 初始化 ====================
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = checkLoginState();
+            if (!user) return;
+            currentUser = user;
+            isAdmin = user.isAdmin || false;
+            updateUserDisplay(user);
+
+            await fetchUserProfile();
+            await loadSiteSetup();
+
+            await loadStudents();
+        });
+    </script>
+</body>
+</html>

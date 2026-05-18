@@ -1,0 +1,502 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物联网监控任务概览</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px 30px;
+            background: #f8f9fa;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .task-list {
+            padding: 30px;
+        }
+        .task-card {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #fff;
+            transition: all 0.2s;
+        }
+        .task-card:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .task-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .task-id {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .task-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .task-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-enabled {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-disabled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .task-body {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .task-info {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        .task-info-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        .task-info-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        .classroom-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        .classroom-tag {
+            background: #e9ecef;
+            color: #495057;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .schedule-badge {
+            display: inline-block;
+            background: #fff3cd;
+            color: #856404;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            margin-right: 8px;
+        }
+        .prompt-text {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #495057;
+            line-height: 1.6;
+            max-height: 100px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .log-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+        .log-link:hover {
+            transform: translateY(-2px);
+            color: white;
+        }
+        .log-link.disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .feature-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .feature-tag {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .feature-tts { background: #d1ecf1; color: #0c5460; }
+        .feature-sms { background: #d4edda; color: #155724; }
+        .feature-wechat { background: #d1e7dd; color: #0f5132; }
+        .feature-analysis { background: #f8d7da; color: #842029; }
+        .refresh-btn {
+            display: inline-block;
+            margin: 20px 30px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 物联网监控任务概览</h1>
+            <p>查看所有监控任务的配置信息和日志链接 | 最后更新：<span id="updateTime">-</span></p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalTasks">0</div>
+                <div class="stat-label">总任务数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="enabledTasks">0</div>
+                <div class="stat-label">启用中</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalClassrooms">0</div>
+                <div class="stat-label">监控点位</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="scheduledTasks">0</div>
+                <div class="stat-label">定时任务</div>
+            </div>
+        </div>
+        
+        <button class="refresh-btn" onclick="location.reload()">🔄 刷新数据</button>
+        
+        <div class="task-list" id="taskList">
+            <!-- 任务列表将由 JavaScript 动态生成 -->
+        </div>
+    </div>
+    
+    <script>
+        // 任务数据（硬编码在页面中，无需 API）
+        const tasksData = [
+  {
+    "task_id": "2",
+    "task_name": "早读课学生人数统计",
+    "classrooms": ["高一 13 班", "高一 14 班", "高一 15 班", "高一 09 班", "高一 10 班", "高一 11 班", "高一 12 班", "高一 05 班", "高一 06 班", "高一 07 班", "高一 08 班", "高一 01 班", "高一 02 班", "高一 03 班", "高一 04 班", "高二 21 班", "高二 11 班", "高二 12 班", "高二 13 班", "高二 14 班", "高二 15 班", "高二 06 班", "高二 07 班", "高二 08 班", "高二 09 班", "高二 10 班", "高二 01 班", "高二 02 班", "高二 03 班", "高二 04 班", "高二 05 班", "高三 12 班", "高三 13 班", "高三 14 班", "高三 09 班", "高三 10 班", "高三 11 班", "高三 07 班", "高三 08 班", "高三 04 班", "高三 05 班", "高三 06 班", "高三 01 班", "高三 02 班", "高三 03 班"],
+    "schedule": {"time": "07:20:00-07:30:00", "frequency": "0"},
+    "prompt": "现在是早读时间，请统计教室里有多少学生。",
+    "enabled": false,
+    "tts_enabled": false,
+    "sms_enabled": false,
+    "wechat_enabled": false,
+    "analysis_mode": true
+  },
+  {
+    "task_id": "3",
+    "task_name": "课间操滞留学生统计",
+    "classrooms": ["高一 13 班", "高一 14 班", "高一 15 班", "高一 09 班", "高一 10 班", "高一 11 班", "高一 12 班", "高一 05 班", "高一 06 班", "高一 07 班", "高一 08 班", "高一 01 班", "高一 02 班", "高一 03 班", "高一 04 班"],
+    "schedule": {"time": "09:50:00-10:00:00", "frequency": "0"},
+    "prompt": "现在是课间操时间，请统计教室里是否有滞留学生。",
+    "enabled": false,
+    "tts_enabled": false,
+    "sms_enabled": false,
+    "wechat_enabled": false,
+    "analysis_mode": true
+  },
+  {
+    "task_id": "4",
+    "task_name": "晚自习班级纪律监控",
+    "classrooms": ["高一 13 班", "高一 14 班", "高一 15 班", "高一 09 班", "高一 10 班", "高一 11 班", "高一 12 班", "高一 05 班", "高一 06 班", "高一 07 班", "高一 08 班", "高一 01 班", "高一 02 班", "高一 03 班", "高一 04 班", "高二 21 班", "高二 11 班", "高二 12 班", "高二 13 班", "高二 14 班", "高二 15 班", "高二 06 班", "高二 07 班", "高二 08 班", "高二 09 班", "高二 10 班", "高二 01 班", "高二 02 班", "高二 03 班", "高二 04 班", "高二 05 班", "高三 12 班", "高三 13 班", "高三 14 班", "高三 09 班", "高三 10 班", "高三 11 班", "高三 07 班", "高三 08 班", "高三 04 班", "高三 05 班", "高三 06 班", "高三 01 班", "高三 02 班", "高三 03 班"],
+    "schedule": {"time": "19:00:00-21:30:00", "frequency": "3600"},
+    "prompt": "现在是晚自习时间，请分析班级纪律情况。",
+    "enabled": false,
+    "tts_enabled": false,
+    "sms_enabled": false,
+    "wechat_enabled": false,
+    "analysis_mode": true
+  },
+  {
+    "task_id": "5",
+    "task_name": "电子监考纪律巡查",
+    "classrooms": ["公寓入口"],
+    "schedule": {"time": "", "frequency": "0"},
+    "prompt": "请分析监控画面中的纪律情况。",
+    "enabled": false,
+    "tts_enabled": false,
+    "sms_enabled": false,
+    "wechat_enabled": false,
+    "analysis_mode": false
+  },
+  {
+    "task_id": "6",
+    "task_name": "无人灯检测",
+    "classrooms": ["高一 13 班", "高一 14 班", "高一 15 班", "高一 09 班", "高一 10 班", "高一 11 班", "高一 12 班", "高一 05 班", "高一 06 班", "高一 07 班", "高一 08 班", "高一 01 班", "高一 02 班", "高一 03 班", "高一 04 班"],
+    "schedule": {"time": "21:20:00-22:20:00", "frequency": "0"},
+    "prompt": "图中教室顶部有个长方形的吊灯，背面是半透光的塑料外壳，请你根据背面的亮度判断灯是否开着，同时告诉我是否有学生在教室里。",
+    "enabled": true,
+    "tts_enabled": false,
+    "sms_enabled": true,
+    "wechat_enabled": true,
+    "analysis_mode": false
+  },
+  {
+    "task_id": "7",
+    "task_name": "晚自习学生人数统计",
+    "classrooms": ["高一 13 班", "高一 14 班", "高一 15 班", "高一 09 班", "高一 10 班", "高一 11 班", "高一 12 班", "高一 05 班", "高一 06 班", "高一 07 班", "高一 08 班", "高一 01 班", "高一 02 班", "高一 03 班", "高一 04 班", "高二 21 班", "高二 11 班", "高二 12 班", "高二 13 班", "高二 14 班", "高二 15 班", "高二 06 班", "高二 07 班", "高二 08 班", "高二 09 班", "高二 10 班", "高二 01 班", "高二 02 班", "高二 03 班", "高二 04 班", "高二 05 班", "高三 12 班", "高三 13 班", "高三 14 班", "高三 09 班", "高三 10 班", "高三 11 班", "高三 07 班", "高三 08 班", "高三 04 班", "高三 05 班", "高三 06 班", "高三 01 班", "高三 02 班", "高三 03 班"],
+    "schedule": {"time": "19:00:00-19:10:00", "frequency": "0"},
+    "prompt": "",
+    "enabled": false,
+    "tts_enabled": false,
+    "sms_enabled": false,
+    "wechat_enabled": false,
+    "analysis_mode": false
+  },
+  {
+    "task_id": "8",
+    "task_name": "师生教学行为分析",
+    "classrooms": ["高一 01 班"],
+    "schedule": {"time": "", "frequency": "0"},
+    "prompt": "现在是上课时间，请分析这个班级的上课秩序，讲台前是否有教师。",
+    "enabled": false,
+    "tts_enabled": false,
+    "sms_enabled": false,
+    "wechat_enabled": false,
+    "analysis_mode": false
+  },
+  {
+    "task_id": "17",
+    "task_name": "午休时段学生人数统计",
+    "classrooms": ["高一 13 班"],
+    "schedule": {"time": "09:30:00-12:40:00", "frequency": "0"},
+    "prompt": "现在是午休时间，请统计教室里有多少学生。",
+    "enabled": false,
+    "tts_enabled": false,
+    "sms_enabled": false,
+    "wechat_enabled": false,
+    "analysis_mode": false
+  },
+  {
+    "task_id": "88",
+    "task_name": "校门口交通情况",
+    "classrooms": ["东门卫"],
+    "schedule": {"time": "", "frequency": "0"},
+    "prompt": "请分析校门口交通情况。",
+    "enabled": false,
+    "tts_enabled": false,
+    "sms_enabled": false,
+    "wechat_enabled": false,
+    "analysis_mode": false
+  },
+  {
+    "task_id": "89",
+    "task_name": "定时测试任务",
+    "classrooms": ["公寓入口"],
+    "schedule": {"time": "", "frequency": "0"},
+    "prompt": "测试任务提示词。",
+    "enabled": true,
+    "tts_enabled": false,
+    "sms_enabled": false,
+    "wechat_enabled": false,
+    "analysis_mode": false
+  }
+];
+        
+        // 渲染任务列表
+        function renderTaskList() {
+            const taskList = document.getElementById('taskList');
+            let html = '';
+            
+            tasksData.forEach(task => {
+                const taskId = task.task_id || 'N/A';
+                const taskName = task.task_name || '未命名任务';
+                const enabled = task.enabled || false;
+                const classrooms = task.classrooms || [];
+                const schedule = task.schedule || {};
+                const prompt = task.prompt || '无提示词';
+                const timeRange = schedule.time || '无时间限制';
+                const frequency = schedule.frequency || 0;
+                const frequencyText = frequency == 0 ? '单次执行' : `每${frequency}秒`;
+                
+                // 功能标签
+                let features = [];
+                if (task.tts_enabled) features.push('<span class="feature-tag feature-tts">🔊 TTS</span>');
+                if (task.sms_enabled) features.push('<span class="feature-tag feature-sms">📱 短信</span>');
+                if (task.wechat_enabled) features.push('<span class="feature-tag feature-wechat">💬 微信</span>');
+                if (task.analysis_mode) features.push('<span class="feature-tag feature-analysis">🤖 AI 分析</span>');
+                
+                // 教室标签（最多显示 10 个）
+                const classroomTags = classrooms.slice(0, 10).map(c => 
+                    `<span class="classroom-tag">${c}</span>`
+                ).join('');
+                const moreClassrooms = classrooms.length > 10 ? 
+                    `<span class="classroom-tag">+${classrooms.length - 10}更多</span>` : '';
+                
+                // 日志链接（使用相对路径）
+                const logUrl = `${taskName}/log.html`;
+                const lightLogUrl = 'aiot_light_log.html'; // 无人灯专用日志系统
+                
+                let logLink;
+                if (taskName === '无人灯检测') {
+                    // 无人灯任务显示两个链接：原版日志 + 新版日志系统
+                    logLink = enabled ? 
+                        `<div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <a href="${logUrl}" target="_blank" class="log-link">
+                                <i class="fas fa-external-link-alt"></i> 原版日志
+                            </a>
+                            <a href="${lightLogUrl}" target="_blank" class="log-link" style="background:#28a745;">
+                                <i class="fas fa-chart-line"></i> 日志系统 v2
+                            </a>
+                        </div>` :
+                        `<span class="log-link disabled">
+                            <i class="fas fa-lock"></i> 未启用
+                        </span>`;
+                } else {
+                    logLink = enabled ? 
+                        `<a href="${logUrl}" target="_blank" class="log-link">
+                            <i class="fas fa-external-link-alt"></i> 查看日志
+                        </a>` :
+                        `<span class="log-link disabled">
+                            <i class="fas fa-lock"></i> 未启用
+                        </span>`;
+                }
+                
+                html += `
+                    <div class="task-card">
+                        <div class="task-header">
+                            <div class="task-title">
+                                <span class="task-id">#${taskId}</span>
+                                <span class="task-name">${taskName}</span>
+                            </div>
+                            <span class="task-status ${enabled ? 'status-enabled' : 'status-disabled'}">
+                                ${enabled ? '✅ 已启用' : '❌ 已禁用'}
+                            </span>
+                        </div>
+                        <div class="task-body">
+                            <div class="task-info">
+                                <div class="task-info-label">📅 执行时间</div>
+                                <div class="task-info-value">
+                                    <span class="schedule-badge">${timeRange}</span>
+                                    <span class="schedule-badge">${frequencyText}</span>
+                                </div>
+                            </div>
+                            <div class="task-info">
+                                <div class="task-info-label">📍 监控点位</div>
+                                <div class="task-info-value">
+                                    <div class="classroom-tags">
+                                        ${classroomTags}
+                                        ${moreClassrooms}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="task-info" style="grid-column: 1 / -1;">
+                                <div class="task-info-label">💬 AI 提示词</div>
+                                <div class="prompt-text">${prompt}</div>
+                            </div>
+                        </div>
+                        ${features.length > 0 ? `<div class="feature-tags">${features.join('')}</div>` : ''}
+                        ${logLink}
+                    </div>
+                `;
+            });
+            
+            taskList.innerHTML = html;
+        }
+        
+        // 更新统计信息
+        function updateStats() {
+            const total = tasksData.length;
+            const enabled = tasksData.filter(t => t.enabled).length;
+            const totalClassrooms = tasksData.reduce((sum, t) => sum + (t.classrooms || []).length, 0);
+            const scheduled = tasksData.filter(t => t.schedule && t.schedule.time).length;
+            
+            document.getElementById('totalTasks').textContent = total;
+            document.getElementById('enabledTasks').textContent = enabled;
+            document.getElementById('totalClassrooms').textContent = totalClassrooms;
+            document.getElementById('scheduledTasks').textContent = scheduled;
+            
+            document.getElementById('updateTime').textContent = new Date().toLocaleString('zh-CN');
+        }
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTaskList();
+            updateStats();
+        });
+    </script>
+</body>
+</html>
+
+
