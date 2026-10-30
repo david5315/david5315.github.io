@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuickForge教师工作台功能（完整版）</title>
+<style>
+:root{
+  --primary:#667eea; --primary-dark:#764ba2; --ink:#22323f; --sub:#5a6b7b;
+  --card:#ffffff; --line:#e5ebf5; --bg:#f4f7fd; --ok:#1f9d55; --warn:#d97706;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
+.hero{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:48px 24px 42px;text-align:center}
+.hero h1{font-size:2.2em;margin-bottom:12px;text-shadow:0 2px 12px rgba(0,0,0,.2)}
+.hero p{max-width:860px;margin:0 auto;font-size:1.05em;opacity:.96}
+.hero .chips{margin-top:18px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.hero .chips span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);padding:6px 14px;border-radius:999px;font-size:.9em;backdrop-filter:blur(4px)}
+.wrap{max-width:1080px;margin:0 auto;padding:30px 22px 80px}
+h2.sec{font-size:1.5em;margin:44px 0 6px;display:flex;align-items:center;gap:10px}
+h2.sec .ico{font-size:1.3em}
+p.lead{color:var(--sub);margin-bottom:18px;font-size:.98em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 20px 18px;box-shadow:0 4px 16px rgba(102,126,234,.07);transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(102,126,234,.16)}
+.card h4{font-size:1.06em;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.card h4 .tag{margin-left:auto;font-size:.72em;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--primary),var(--primary-dark));padding:2px 9px;border-radius:999px;white-space:nowrap}
+.card p{font-size:.92em;color:var(--sub)}
+.card p b{color:var(--ink)}
+.card .hl{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:.88em;color:var(--primary);font-weight:600}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(102,126,234,.07);font-size:.94em}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-weight:600}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+.scene{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.scene .s{background:#fff;border:1px solid var(--line);border-left:4px solid var(--primary);border-radius:10px;padding:14px 16px}
+.scene .s h5{font-size:1em;margin-bottom:6px}
+.scene .s ul{margin:0 0 0 18px;font-size:.9em;color:var(--sub)}
+.foot{background:linear-gradient(135deg,#22323f,#2b3d50);color:#c9d6e2;text-align:center;padding:30px 20px;font-size:.9em}
+.foot a{color:#8fb7ff;text-decoration:none}
+.note{background:#eef4ff;border:1px solid #c9dbf0;border-radius:10px;padding:12px 16px;font-size:.92em;margin:16px 0}
+.tip{background:#f0fbf4;border:1px solid #bde8cd;border-radius:10px;padding:12px 16px;font-size:.92em;margin:16px 0}
+.warn{background:#fff7ed;border:1px solid #fbd7a4;border-radius:10px;padding:12px 16px;font-size:.92em;margin:16px 0}
+@media(max-width:720px){.hero h1{font-size:1.6em}.grid,.scene{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>⚡ QuickForge教师工作台功能（完整版）</h1>
+  <p>一套装在老师电脑里的「AI 智慧教学工具箱」：<b>图形界面（GUI）</b>一键生成网页/语音/图片/视频，<b>网站端</b>提供学生可访问的互动页面，<b>内置 12+ 网站模板、34 套垂类应用系统与海量教学课件资源</b>，无需编程、无需公网，双击即用，一键发布到内网供全班手机/电脑访问。</p>
+  <div class="chips">
+    <span>🤖 AI 生成网页</span><span>🎨 语音/图片/视频</span><span>📚 知识库问答</span>
+    <span>📝 论文写作与审稿</span><span>🔎 知网检索核验</span><span>📥 资源本地化</span>
+    <span>🧑‍🏫 数字人开口视频</span><span>🧩 模板与系统 46+</span><span>🚀 一键内网建站</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <h2 class="sec"><span class="ico">🧭</span>一、三大入口，各有所长</h2>
+  <p class="lead">同一个程序，三种用法：桌面窗口里点按钮、浏览器里让学生访问、资源库里直接套用现成系统。</p>
+  <table>
+    <tr><th style="width:150px">入口</th><th>是什么</th><th>最适合</th></tr>
+    <tr><td>🖥️ <b>后端 GUI 界面</b></td><td>桌面窗口（Python/Tkinter），10 个功能选项卡，点按钮即用，无需开浏览器</td><td>教师本人：生成网页、配置模型、建知识库、写论文、发布网站</td></tr>
+    <tr><td>🌐 <b>前端网页（网站端）</b></td><td>程序自动发布的网站：首页门户、AI 生成/多模态、知识库问答、人设问答、审稿改稿系统等</td><td>学生访问、随处可用的功能页面、在线审稿与答题</td></tr>
+    <tr><td>🧩 <b>网站模板和资源</b></td><td>「我的课件」里内置 12+ 可直接套用的网站模板、34 套垂类应用系统、精品教学课件 10000+</td><td>快速搭系统：作业评测、知识库问答、留言互动、报名统计、行业管理……</td></tr>
+  </table>
+  <div class="tip">💡 三者的产物都在 <b>「我的课件」</b> 文件夹里统一管理，可互相引用：GUI 生成的网页放进网站模板、网站端发布后学生即可访问。</div>
+
+  <h2 class="sec"><span class="ico">🖥️</span>二、后端 GUI 界面（10 个功能选项卡）</h2>
+  <p class="lead">打开程序即出现主窗口，顶部一排选项卡即全部功能——每个都突出一个「能帮你省多少事」的亮点。</p>
+  <div class="grid">
+
+    <div class="card"><h4>🌐 网页生成 <span class="tag">备课神器</span></h4>
+      <p><b>一句话生成教学网页</b>：输入需求直接产出可运行的 HTML，支持常规页 / 交互采集 / 作业提交 / 网页转换 / 学情报告/ PPT 网页6 大类网页；内置 AI 与外部 AI 双通道，可附加文件。</p>
+      <div class="hl">✦ 亮点：不会代码也能 30 秒生成带交互、能收作业的网页课件</div>
+    </div>
+
+    <div class="card"><h4>📥 资源本地化 <span class="tag">断网可用</span></h4>
+      <p>把任意<b>在线网页一键下载并本地化</b>：图片、脚本、样式全部打包到本地，离线也能打开演示。</p>
+      <div class="hl">✦ 亮点：机房断外网也能上课，课件永不失效</div>
+    </div>
+
+    <div class="card"><h4>🎨 多模态生成 <span class="tag">素材工厂</span></h4>
+      <p>文字转语音（6 种音色）、<b>声音克隆</b>（录一段即得你的音色）、AI 生成图片、AI 生成视频、文本朗读。</p>
+      <div class="hl">✦ 亮点：PPT/PDF 上传即转视频——自动逐字稿 + 配音 + 带字幕视频</div>
+    </div>
+
+    <div class="card"><h4>💬 AI 对话 <span class="tag">备课助手</span></h4>
+      <p>智能问答，<b>可附带文档/图片</b>分析；支持语音输入与播报，实现"语音对话"。</p>
+      <div class="hl">✦ 亮点：把资料丢给它，问答/润色/分析一步到位</div>
+    </div>
+
+    <div class="card"><h4>📚 本地知识库（RAG） <span class="tag">专属私教</span></h4>
+      <p>把 pdf/docx/pptx 等资料<b>建成自己的知识库</b>，AI 基于资料回答并标注引用来源；支持混合检索、重排序、知识图谱预览、全量/增量更新。</p>
+      <div class="hl">✦ 亮点：AI 回答"有据可查"，不瞎编</div>
+    </div>
+
+    <div class="card"><h4>📝 论文写作 / 改稿 <span class="tag">科研加速</span></h4>
+      <p>填写学科、研究问题、创新点等<b>建档</b>，设定"AI 不得改动"的合规边界，一键生成大纲或初稿，无缝衔接审稿润色。</p>
+      <div class="hl">✦ 亮点：从空白到成稿的完整流程，合规红线可控</div>
+    </div>
+
+    <div class="card"><h4>🔎 知网检索与参考文献 <span class="tag">文献管家</span></h4>
+      <p>上传文章由大模型<b>自动提取关键词/参考文献</b>，按检索词在知网批量检索、下载、AI 核验，自动生成 GB/T 7714 参考文献列表。</p>
+      <div class="hl">✦ 亮点：参考文献格式全自动，核验防"编造文献"</div>
+    </div>
+
+    <div class="card"><h4>✅ AI 审稿润色 <span class="tag">文章医生</span></h4>
+      <p>选择学术化表达、逻辑连贯、规范引用等要点，<b>AI 自动改稿</b>；支持基于知识库的事实/数据核验与终稿复审。</p>
+      <div class="hl">✦ 亮点：投稿前多一次 AI 质检</div>
+    </div>
+
+    <div class="card"><h4>⚙️ AI 模型配置 <span class="tag">一处配全局</span></h4>
+      <p>集中配置文本 / 图像 / 视频 / 视觉理解<b>四类大模型</b>的地址、密钥与模型，保存即生效并写入 config.ini，全程序共用。</p>
+      <div class="hl">✦ 亮点：换模型只改一处，所有功能立刻跟随</div>
+    </div>
+
+    <div class="card"><h4>🚀 网站发布 <span class="tag">一键上线</span></h4>
+      <p>一键启动内网网站服务，把「我的课件」发布为<b>浏览器/手机可访问</b>的站点，自动生成 HTTP / HTTPS 地址与二维码。</p>
+      <div class="hl">✦ 亮点：全班扫码即访问，无需服务器与域名</div>
+    </div>
+
+  </div>
+
+  <h2 class="sec"><span class="ico">🌐</span>三、前端网页（网站端）</h2>
+  <p class="lead">程序启动即自动发布网站。这些页面既是给学生用的，也是给自己用的在线工作台。</p>
+  <table>
+    <tr><th style="width:220px">页面</th><th>功能亮点</th></tr>
+    <tr><td>🏠 首页（index.html）</td><td>网站门户：汇总入口、展示你的资源与模板，<b>内容可自行修改</b>。</td></tr>
+    <tr><td>🌐 网页生成与转换（deepseek.html）</td><td>在线生成教学网页；内置<b>提示词模板库</b>（按学科筛选）与 <b>AI 逆向工程</b>（从现有网页反推出风格/描述/模板）。</td></tr>
+    <tr><td>🎨 多模态内容生成（quickforgeai.html）</td><td>文生文 / 文生图 / 文生视频 / <b>图生视频</b> / <b>讲稿转视频（上传 PPT/PDF 自动配音合成）</b> / 图生图 / 文生网页 / 文生语音 / 语音克隆 + AI 对话，全部网页化。</td></tr>
+    <tr><td>📚 知识库管理与问答（kb.html）</td><td>在线管理任务知识库、知识图谱预览，<b>数字人人设问答</b>门户。</td></tr>
+    <tr><td>🎓 任务知识库与人设问答（/taskkb/）</td><td>按「教师 + 活动」隔离的<b>任务级知识库</b>；AI 以自定义数字人身份回答学生提问，支持语音输入、通话模式、自动朗读，可合并全局库与 IMA 云端库。</td></tr>
+    <tr><td>🤖 智能审稿和改稿系统（/review/）</td><td>论文全流程工作台：建档 → 知网检索下载 → <b>多源事实核验</b>（知识库/互联网/知网原文/文献）→ <b>四引擎改稿</b>（发表级润色 / 技能驱动 / OpenClaw / WorkBuddy）→ 知识库问答弹窗。</td></tr>
+    <tr><td>☁️ 学生答案词云</td><td>对学生提交的文本答案做分词与词频统计，一键生成<b>全班答案词云</b>，热点与共性一目了然。</td></tr>
+    <tr><td>⚙️ AI 模型配置（ai_config.html）</td><td>与 GUI 同步的网页版四类模型配置，保存即生效。</td></tr>
+  </table>
+  <div class="warn">🔒 涉及<b>视觉识别、拍照、摄像头</b>的网页（如拍照留言、图片识别）浏览器要求使用 <b>HTTPS</b> 链接访问；程序已内置自签名证书，首次访问点"高级 → 继续访问"即可。</div>
+
+  <h2 class="sec"><span class="ico">🧩</span>四、网站模板和资源</h2>
+  <p class="lead">「我的课件」里预置了大量<b>开箱即用</b>的模板系统与资源，复制目录、改改内容就是一套自己的系统。</p>
+
+  <h3 style="margin:14px 0 10px">① 网站模板（12 套，教师版直接可用）</h3>
+  <table>
+    <tr><th style="width:200px">模板</th><th>亮点</th></tr>
+    <tr><td>🤖 AI学生和教师助手</td><td>学生端 AI 问答 + 教师端管理配置，自定义 AI 助手与知识库问答。</td></tr>
+    <tr><td>📝 AI作业评测系统</td><td>学生在线作答提交、教师批阅评分，支持 AI 辅助批改与学情统计。</td></tr>
+    <tr><td>🤖 Coze知识库问答</td><td>按"扣子搭建指南"在 Coze 平台建库后即得专属智能问答。</td></tr>
+    <tr><td>📖 IMA与本地知识库问答</td><td>接入本地知识库 / IMA 云端库的智能问答（含配置页）。</td></tr>
+    <tr><td>💬 互动留言版 / 课堂留言模板</td><td>拍照留言、课堂留言板，改改即联网数据采集、学生登记、选课统计。</td></tr>
+    <tr><td>📊 数据管理模板</td><td>查看提交数据、学情分析、删除提交记录等教学数据管理模板。</td></tr>
+    <tr><td>📝 练习生成发布平台</td><td>即测即评，学情报告含成绩分布图表、薄弱环节一目了然。</td></tr>
+    <tr><td>🏃 运动会管理平台</td><td>运动员/项目/成绩/数据大屏/导出，可作为"管理系统开发"范例。</td></tr>
+    <tr><td>🎯 课堂教学和练习</td><td>Python 教学、二次函数教学、MQTT 模拟系统、菜品营养搭配等教学资源。</td></tr>
+    <tr><td>🖼️ 网页截图示例 / 我的第一课</td><td>VR 虚拟展厅、图片相册、台灯组装游戏等示例与第一课模板。</td></tr>
+  </table>
+
+  <h3 style="margin:18px 0 10px">② 垂类应用系统（34 套，按单位直接套用）</h3>
+  <table>
+    <tr><th style="width:170px">行业</th><th>包含系统</th></tr>
+    <tr><td>🎓 教育行业（16）</td><td>图片作业批改、<b>AI学生和教师助手</b>、<b>AI作业评测</b>、编程代码评测、练习生成发布、在线考试、学生考勤、学生选课、招生报名、活动报名、课程管理、课堂教学练习、课堂留言、运动会管理、数据管理、网页截图示例。</td></tr>
+    <tr><td>🏢 工厂企业（9）</td><td>设备巡检录入、生产质量台账、车间报修、安全巡查、库存盘点、培训考核、销售数据看板、门店巡检、客户会员登记。</td></tr>
+    <tr><td>🏛️ 机关单位（8）</td><td>政务问卷、群众诉求登记、值班排班、会议报名、辖区信息采集、健康建档、物资申领、满意度评价。</td></tr>
+    <tr><td>📚 知识库与技能（2）</td><td>Coze 知识库问答、IMA 与本地知识库问答。</td></tr>
+  </table>
+
+  <h3 style="margin:18px 0 10px">③ 精品教学资源</h3>
+  <ul style="margin-left:20px;font-size:.95em;color:var(--sub)">
+    <li><b>互动教学实验室</b>：AI 通识教育、数学、物理、信息等多学科互动资源。</li>
+    <li><b>学科教学课件 10000+</b>：可一键分发到班级；另有精选教学课件、数学实验室、物理实验室。</li>
+    <li><b>内置课程示例</b>：「我的第一课」「安全记心上」（含 coze 知识库问答、任务知识库）、互动留言版。</li>
+    <li><b>软件下载 / 精品资源 / 垂类应用 / 算法课件</b> 四张导航页，点击直达线上资源。</li>
+  </ul>
+  <div class="note">🧩 模板页可直接<b>复制到其他任务目录</b>使用：在「我的课件」下新建任务文件夹，把模板 .html 复制进去按需改内容即可，无需从头生成。部分系统（校园版专用：编程代码评测、图片作业批改、自助建站等）需校园版用户体系。</div>
+
+  <h2 class="sec"><span class="ico">🎯</span>五、我能用它做什么（场景速查）</h2>
+  <div class="scene">
+    <div class="s"><h5>📚 备课</h5><ul><li>一句话生成教学网页课件</li><li>在线网页本地化，断网可讲</li><li>文生图/文生视频做素材</li></ul></div>
+    <div class="s"><h5>🖥️ 上课</h5><ul><li>课堂留言互动、拍照/图片提交</li><li>学生扫码访问互动页面</li><li>人设数字人问答、语音对话</li><li>数字人开口视频对话，面对面答疑</li></ul></div>
+    <div class="s"><h5>📝 作业与批改</h5><ul><li>图片作业 AI 批改、编程作业评测</li><li>在线作答提交 + 学情看板</li><li>PPT 讲稿转视频（自动配音）</li></ul></div>
+    <div class="s"><h5>📊 学情分析</h5><ul><li>学生答案词云看共性热点</li><li>答题分析、成绩分布图表</li><li>提交数据导出管理</li></ul></div>
+    <div class="s"><h5>✍️ 论文科研</h5><ul><li>论文建档 → 大纲/初稿（合规边界）</li><li>知网检索 + 参考文献 GB/T 7714</li><li>多源事实核验 + 四引擎改稿</li></ul></div>
+    <div class="s"><h5>🚀 建站与分享</h5><ul><li>一键内网发布 + HTTPS + 二维码</li><li>模板改造成自己的系统</li><li>全校共享网盘与课件分发</li></ul></div>
+  </div>
+
+  <h2 class="sec"><span class="ico">🧑‍🏫</span>六、数字人开口视频对话功能（新增）</h2>
+  <p class="lead">让静态形象「开口说话」：上传一张照片或选择内置数字人，输入文字/语音即可生成口型同步的开口视频；更支持「视频对话」模式——数字人实时聆听、理解并开口回应，像面对面交流。</p>
+  <div class="grid">
+
+    <div class="card"><h4>🧑 数字人形象生成 <span class="tag">一张照即助教</span></h4>
+      <p>上传一张<b>正面照</b>一键生成专属数字人；内置教师 / 讲解员 / 卡通等多种风格形象可选，免建模、免拍摄。</p>
+      <div class="hl">✦ 亮点：几分钟得到一位「不会累的数字助教」</div>
+    </div>
+
+    <div class="card"><h4>🗣️ 文字 / 语音驱动口型 <span class="tag">口型同步</span></h4>
+      <p>输入<b>讲稿或语音</b>，AI 自动匹配口型、表情与语气，输出口型精准同步的开口说话视频，支持多语言与音色。</p>
+      <div class="hl">✦ 亮点：PPT/讲稿一键变「老师亲自讲」的视频</div>
+    </div>
+
+    <div class="card"><h4>🎥 视频对话（实时开口） <span class="tag">面对面答疑</span></h4>
+      <p>数字人<b>实时聆听</b>用户语音 / 文字，理解后<b>即时开口回复</b>，形成「你问我答」的面对面对话视频，可结合知识库作答。</p>
+      <div class="hl">✦ 亮点：把答疑、招生宣讲做成可反复播放的「真人视频」</div>
+    </div>
+
+    <div class="card"><h4>🎬 多场景模板 <span class="tag">即套即用</span></h4>
+      <p>内置<b>微课讲解、课前导入、课后答疑、招生宣讲、政策解读、新闻播报</b>等模板，选模板填内容即得成片。</p>
+      <div class="hl">✦ 亮点：教学短视频批量产出，省去录制剪辑</div>
+    </div>
+
+  </div>
+
+  <table>
+    <tr><th style="width:200px">能力</th><th>说明</th></tr>
+    <tr><td>🖼️ 形象来源</td><td>单张照片生成 / 内置形象库 / 导入已有视频形象；生成后可保存复用。</td></tr>
+    <tr><td>🎙️ 驱动方式</td><td>文字讲稿、语音文件、<b>实时麦克风</b>三种驱动；实时对话走语音识别 + 大模型理解 + 口型合成。</td></tr>
+    <tr><td>💡 知识支撑</td><td>对话可接入<b>本地知识库 / IMA 云端库</b>，让数字人「言之有物」，按学校资料作答。</td></tr>
+    <tr><td>📤 产出形式</td><td>开口说话短视频（MP4）/ 实时对话视频流，可直接嵌入课件、网站发布页或扫码观看。</td></tr>
+  </table>
+  <div class="note">🧑‍🏫 数字人功能由多模态视频生成模型驱动（口型 / 表情 / 语音合成），与「多模态生成」「本地知识库」选项卡联动：先建好知识库，再让数字人基于它开口答疑，效果最佳。</div>
+
+  <div class="tip">💡 程序以 exe 形式分发，内置全部运行环境，<b>无需安装 Python</b>，双击即用；所有产物默认存于「我的课件」目录，便于统一管理与打包分享。</div>
+
+</div>
+
+<div class="foot">
+  QuickForge教师工作台功能（完整版）<br>
+  软件下载：<a href="http://quickforge.njschool.cn/public_browse.html" target="_blank" rel="noopener">quickforge.njschool.cn</a> · 内置 3 分钟/8 分钟学习视频
+</div>
+
+</body>
+</html>
